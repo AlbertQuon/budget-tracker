@@ -1,3 +1,4 @@
+
 function NavigBar() {
     return ( <div></div> );
 }
