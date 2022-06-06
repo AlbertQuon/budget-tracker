@@ -6,17 +6,17 @@ function NavigBar() {
         <Container>
         <Navbar expand="lg" variant="dark" bg="dark">
             <Container>
-                <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
+                <Navbar.Brand>Budget Track</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="me-auto">
                     <Nav.Link as={NavLink} exact to="/">Home</Nav.Link>
-                    <Nav.Link as={NavLink} exact to="preferences/">Link</Nav.Link>
+                    <Nav.Link as={NavLink} exact to="preferences/">Preferences</Nav.Link>
                 </Nav>
                 </Navbar.Collapse>
             </Container>
         </Navbar>
-      </Container>
+        </Container>
     );
 }
 

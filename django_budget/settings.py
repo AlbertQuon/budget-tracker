@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-t#*og7_ndz$wb@$c)69=p(t0kavs$c01b9)=7(z$e%!thw3x!u'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -38,13 +38,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_tracker',
     'rest_framework',
-    'corsheaders'
+    'knox',
+    'corsheaders',
+    'rest_auth'
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
 }
 
 MIDDLEWARE = [
@@ -86,11 +89,11 @@ WSGI_APPLICATION = 'django_budget.wsgi.application'
 
 DATABASES = {} # remove sqlite default
 
-try:
-    from .local_settings import *
-except ImportError:
-    pass
+
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+]
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
@@ -136,3 +139,7 @@ django_heroku.settings(locals())
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+try:
+    from .local_settings import *
+except ImportError:
+    pass
