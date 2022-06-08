@@ -2,25 +2,60 @@ from . import models
 from . import serializers
 from rest_framework import generics
 
+from django.shortcuts import render
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
 # Auth
 from django.contrib.auth import login
+from django.contrib.auth.models import User
 
 from rest_framework import permissions
 from rest_framework.authtoken.serializers import AuthTokenSerializer
-from knox.views import LoginView as KnoxLoginView
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+#from knox.views import LoginView as KnoxLoginView
 
 
 http_method_names = ['get', 'head']
+# @api_view(['GET'])
+# def current_user(request):
+#     """
+#     Determine the current user by their token, and return their data
+#     """
+    
+#     serializer = UserSerializer(request.user)
+#     return Response(serializer.data)
 
-class LoginView(KnoxLoginView):
-    permission_classes = (permissions.AllowAny,)
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = serializers.MyTokenObtainPairSerializer
 
-    def post(self, request, format=None):
-        serializer = AuthTokenSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        login(request, user)
-        return super(LoginView, self).post(request, format=None)
+
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = serializers.RegisterSerializer
+
+
+@api_view(['GET'])
+def getRoutes(request):
+    routes = [
+        '/api/token/',
+        '/api/register/',
+        '/api/token/refresh/'
+    ]
+    return Response(routes)
+
+
+# class LoginView(KnoxLoginView):
+#     permission_classes = (permissions.AllowAny,)
+
+#     def post(self, request, format=None):
+#         serializer = AuthTokenSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.validated_data['user']
+#         login(request, user)
+#         return super(LoginView, self).post(request, format=None)
 
 
 class PurchaseCategoryView(generics.ListCreateAPIView):

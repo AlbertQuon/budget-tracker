@@ -28,6 +28,23 @@ function TransactPrefs() {
             console.log(err)
         })
     }
+    /*
+     const [res, setRes] = useState("");
+  const api = useAxios();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.get("/test/");
+        setRes(response.data.response);
+      } catch {
+        setRes("Something went wrong");
+      }
+    };
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+    */
 
     const onCtgyDelete = (event) => {
         event.preventDefault()

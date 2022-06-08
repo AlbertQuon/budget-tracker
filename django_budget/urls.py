@@ -20,7 +20,8 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('django_tracker.urls')),
-    path('api/auth/', include('knox.urls')),
+    #path(r'api/auth/', include('knox.urls')),
+    #path('dj-rest-auth/', include('dj_rest_auth.urls')),
     re_path(r'^.*', TemplateView.as_view(template_name='index.html')),
     
 ]
