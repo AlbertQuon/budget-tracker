@@ -22,7 +22,7 @@ function Login() {
         <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
                 <Form.Label>Username</Form.Label>
-                <Form.Control id="username" type="text" placeholder="Enter email" />
+                <Form.Control id="username" type="text" placeholder="Enter username" />
             </Form.Group>
 
             <Form.Group className="mb-3">

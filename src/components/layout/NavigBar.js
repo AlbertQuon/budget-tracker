@@ -16,8 +16,9 @@ function NavigBar() {
                 <Nav className="me-auto">
                 {user ? ( <>
                     <Nav.Link as={NavLink} end to="/">Home</Nav.Link>
-                    <Nav.Link as={NavLink} to="preferences/">Preferences</Nav.Link>
+                    <Nav.Link as={NavLink} to="budget/">Budget</Nav.Link>
                     <Nav.Link as={NavLink} to="transactions/">Transactions</Nav.Link>
+                    <Nav.Link as={NavLink} to="preferences/">Preferences</Nav.Link>
                     <Button onClick={logoutUser}>Logout</Button>
                     </>
                 ) : 
@@ -26,8 +27,6 @@ function NavigBar() {
                     <Nav.Link as={NavLink} to="register/">Register</Nav.Link>
                     </>
                 )}
-                    
-                    
                 </Nav>
                 </Navbar.Collapse>
                 

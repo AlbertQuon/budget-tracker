@@ -8,14 +8,17 @@ import TransactPrefs from '../transaction/TransactPrefs';
 import axios from 'axios';
 import Login from '../auth/Login';
 import Register from '../auth/Register';
-import TransactForm from '../transaction/TransactForm';
 import { AuthProvider } from '../auth/AuthContext';
+import Budget from '../budget/Budget';
+import RequireAuth from "../utils/RequireAuth"
+import NoMatch404 from './NoMatch404';
+import Transact from '../transaction/Transact';
 
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
 function App() {
-
+ 
   return (
     <Router>
       <div className="app">
@@ -24,10 +27,15 @@ function App() {
           <NavigBar/>
           <Routes>
             <Route path="/" element={<Home/>}/>
-            <Route path="preferences/*" element={<TransactPrefs/>}/>
-            <Route path="transactions/*" element={<TransactForm/>}/>
+            <Route path="*" element={<NoMatch404/>}/>
+            
             <Route path="login/*" element={<Login/>}/>
             <Route path="register/*" element={<Register/>}/>
+
+            <Route path="preferences/*" element={<RequireAuth><TransactPrefs/></RequireAuth>}/>
+            <Route path="transactions/*" element={<RequireAuth><Transact/></RequireAuth>}/>
+            <Route path="budget/*" element={<RequireAuth><Budget/></RequireAuth>}/> 
+            
           </Routes>
         </Container>
         </AuthProvider>

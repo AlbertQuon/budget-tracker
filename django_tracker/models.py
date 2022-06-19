@@ -80,6 +80,29 @@ class AuthUserUserPermissions(models.Model):
         unique_together = (('user', 'permission'),)
 
 
+class Budget(models.Model):
+    budget_id = models.AutoField(primary_key=True)
+    start_time = models.DateField()
+    end_time = models.DateField()
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    budget_name = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'budget'
+
+
+class BudgetLimits(models.Model):
+    budget = models.OneToOneField(Budget, models.DO_NOTHING, primary_key=True)
+    purc_category = models.ForeignKey('PurchaseCategory', models.DO_NOTHING)
+    spend_limit = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'budget_limits'
+        unique_together = (('budget', 'purc_category'),)
+
+
 class DjangoAdminLog(models.Model):
     action_time = models.DateTimeField()
     object_id = models.TextField(blank=True, null=True)

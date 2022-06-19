@@ -1,90 +1,165 @@
-import { Container, Form, Button, Row, ListGroup } from "react-bootstrap";
+import { Container, Form, Button, Row, ListGroup, Col, InputGroup } from "react-bootstrap";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import useAxios from "./../utils/useAxios"
+import AuthContext from "../auth/AuthContext";
 
 
 function TransactPrefs() {
-    
-    const [currCtgyPrefs, setcurrCtgyPrefs] = useState({});
+    const {user} = useContext(AuthContext);
+    const [purcCategories, setPurcCategories] = useState({});
+    const [taxCategories, setTaxCategories] = useState({});
+    const api = useAxios();
     
     useEffect(() => {
-        axios.get('http://127.0.0.1:8000/api/purchasecategory/')
-        .then(res => {
-            //console.log(res.data)
-            setcurrCtgyPrefs(res.data)
-        }).catch(err => {
-            console.log(err)
-        })
+        getPurcCategories();
+        getTaxCategories();
     }, [])
 
-    const onCtgyPrefAdd = (event) => {
+    // GET Functions
+    function getPurcCategories() {
+        api.get('/purchasecategory/')
+        .then(res => {
+            //console.log(res.data)
+            setPurcCategories(res.data);
+        }).catch(err => {
+            console.log(err);
+        });
+    }
+
+    function getTaxCategories() {
+        api.get('/taxcategory/')
+        .then(res => {
+                setTaxCategories(res.data);
+        }).catch( err=>{
+            console.log(err);
+        });
+    }
+
+    // POST functions
+    const onPurcCtgyPrefAdd = (event) => {
         event.preventDefault();
         const form = event.currentTarget;
-        axios.post('http://127.0.0.1:8000/api/purchasecategory/', {
-            category:  form[0].value
+        api.post('/purchasecategory/', {
+            purc_category_name:  form[0].value,
+            user: user.user_id
         }).then(res => {
             console.log(res.data)
         }).catch(err => {
             console.log(err)
         })
+        getPurcCategories();
     }
-    /*
-     const [res, setRes] = useState("");
-  const api = useAxios();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get("/test/");
-        setRes(response.data.response);
-      } catch {
-        setRes("Something went wrong");
-      }
-    };
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-    */
-
-    const onCtgyDelete = (event) => {
+    const onTaxCtgyPrefAdd = (event) => {
+        event.preventDefault();
+        const form = event.currentTarget;
+        api.post('/taxcategory/', {
+            tax_name:  form[0].value,
+            user: user.user_id
+        }).then(res => {
+            console.log(res.data)
+        }).catch(err => {
+            console.log(err)
+        });
+    }
+    
+    // DELETE functions
+    const onPurcCtgyDelete = (event) => {
         event.preventDefault()
-        const form = event.currentTarget
-        console.log(form[0].value)
+        const form = event.currentTarget;
+        const url = `/purchasecategory/${form[0].value}/`
+        api.delete(url, {
+            data: { purc_category_id: form[0].value }
+        })
+        getPurcCategories();
     }
 
-    console.log(currCtgyPrefs)
-    /*{currCtgyPrefs ? currCtgyPrefs.map((ctgy) => (
-                        <option value={`${ctgy.id}`}>{ctgy.category}</option>
-                    )) : null  
-                }*/
+    const onTaxCtgyDelete = (event) => {
+        event.preventDefault()
+        const form = event.currentTarget;
+        const url = `/taxcategory/${form[0].value}/`
+        api.delete(url, {
+            data: { tax_id: form[0].value }
+        })
+    }
+
+    
     return ( 
     <Container>
-        <Row>
-        <Form onSubmit={onCtgyPrefAdd}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Label>Add purchase category</Form.Label>
-                <Form.Control type="text" placeholder="Enter a purchase category" />
-                <Form.Text className="text-muted">
-                Add categories to sort your purchases and budget limits
-                </Form.Text>
-            </Form.Group>
-            <Button variant="dark" type="submit">
-                Add category
-            </Button>
-        </Form>
+        <Row className="my-4">
+            <h3>Purchase Categories</h3>
+            <Col>
+                <Form onSubmit={onPurcCtgyPrefAdd}>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Add purchase category</Form.Label>
+                        <Form.Control type="text" placeholder="Enter a purchase category" />
+                        <Form.Text className="text-muted">
+                        Add categories to sort your purchases and budget limits
+                        </Form.Text>
+                    </Form.Group>
+                    <Button variant="dark" type="submit">
+                        Add category
+                    </Button>
+                </Form>
+            </Col>
+            <Col>
+                <Form onSubmit={onPurcCtgyDelete}>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Delete purchase category</Form.Label>
+                        <Form.Select>
+                        {Object.keys(purcCategories).length !== 0 ? purcCategories.map((ctgy) => (
+                                <option key={ctgy.purc_category_id}
+                                value={`${ctgy.purc_category_id}`}>{ctgy.purc_category_name}</option>
+                            )) : null  
+                        }
+                        </Form.Select>
+                        <Button variant="dark" type="submit">
+                            Delete purchase category
+                        </Button>
+                    </Form.Group>
+                </Form>
+            </Col>
         </Row>
-        <Row>
-        <Form onSubmit={onCtgyDelete}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-                <Form.Label>Delete purchase category</Form.Label>
-                <Form.Select>
-                
-            </Form.Select>
-            <Button variant="dark" type="submit">
-                Delete category
-            </Button>
-            </Form.Group>
-        </Form>
+        <Row className="my-4">
+            <h3>Tax Categories</h3>
+            <Col>
+                <Form onSubmit={onTaxCtgyPrefAdd}>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Tax Category Name</Form.Label>
+                        <Form.Control type="text" placeholder="Enter a tax category" />
+                        <Form.Text className="text-muted">
+                        Add taxes to keep track within your purchases
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                    <InputGroup>
+                        <Form.Control type="text" onKeyPress={(e) => !/^\d*(\.\d{0,2})?$/.test(e.key) && e.preventDefault()} placeholder="Tax rate" />
+                        <InputGroup.Text id="inputGroupPrepend">%</InputGroup.Text>
+                    </InputGroup>  
+                    </Form.Group>
+                    <Button variant="dark" type="submit">
+                        Add tax category
+                    </Button>
+                </Form>
+            </Col>
+            <Col>
+                <Form onSubmit={onTaxCtgyDelete}>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Delete tax category</Form.Label>
+                        <Form.Select>
+                        {Object.keys(taxCategories).length !== 0 ? taxCategories.map((tax) => (
+                                <option key={tax.tax_id}
+                                value={`${tax.tax_id}`}>{tax.tax_name}</option>
+                            )) : null  
+                        }
+                        </Form.Select>
+                        <Button variant="dark" type="submit">
+                            Delete tax category
+                        </Button>
+                    </Form.Group>
+                </Form>
+            </Col>
         </Row>
     </Container> );
 }

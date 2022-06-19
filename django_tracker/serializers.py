@@ -48,18 +48,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
-        
-
-
-# class LoginSerializer(serializers.Serializer):
-#     username = serializers.CharField()
-#     password = serializers.CharField()
-    
-#     def validate(self, data):
-#         user = authenticate(**data)
-#         if user and user.is_active:
-#             return user
-#         return serializers.ValidationError('Incorrect Credentials Passed')
 
 
 class PurchaseCategorySerializer(serializers.ModelSerializer):
@@ -90,4 +78,29 @@ class PurchasesSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = models.Purchases
+
+
+class BudgetSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = models.Budget
+        
+        
+class BudgetLimitSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = models.BudgetLimits
+
+
+# class LoginSerializer(serializers.Serializer):
+#     username = serializers.CharField()
+#     password = serializers.CharField()
+    
+#     def validate(self, data):
+#         user = authenticate(**data)
+#         if user and user.is_active:
+#             return user
+#         return serializers.ValidationError('Incorrect Credentials Passed')
+
+
 
