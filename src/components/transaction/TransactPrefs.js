@@ -1,5 +1,4 @@
 import { Container, Form, Button, Row, ListGroup, Col, InputGroup } from "react-bootstrap";
-import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import useAxios from "./../utils/useAxios"
 import AuthContext from "../auth/AuthContext";
@@ -7,8 +6,8 @@ import AuthContext from "../auth/AuthContext";
 
 function TransactPrefs() {
     const {user} = useContext(AuthContext);
-    const [purcCategories, setPurcCategories] = useState({});
-    const [taxCategories, setTaxCategories] = useState({});
+    const [purcCategories, setPurcCategories] = useState([]);
+    const [taxCategories, setTaxCategories] = useState([]);
     const api = useAxios();
     
     useEffect(() => {
@@ -54,9 +53,11 @@ function TransactPrefs() {
     const onTaxCtgyPrefAdd = (event) => {
         event.preventDefault();
         const form = event.currentTarget;
+        console.log(form[1].value);
         api.post('/taxcategory/', {
             tax_name:  form[0].value,
-            user: user.user_id
+            user: user.user_id,
+            tax_rate: form[1].value
         }).then(res => {
             console.log(res.data)
         }).catch(err => {
@@ -108,11 +109,10 @@ function TransactPrefs() {
                     <Form.Group className="mb-3">
                         <Form.Label>Delete purchase category</Form.Label>
                         <Form.Select>
-                        {Object.keys(purcCategories).length !== 0 ? purcCategories.map((ctgy) => (
+                        {purcCategories.map((ctgy) => (
                                 <option key={ctgy.purc_category_id}
                                 value={`${ctgy.purc_category_id}`}>{ctgy.purc_category_name}</option>
-                            )) : null  
-                        }
+                            ))}
                         </Form.Select>
                         <Button variant="dark" type="submit">
                             Delete purchase category
@@ -148,11 +148,10 @@ function TransactPrefs() {
                     <Form.Group className="mb-3">
                         <Form.Label>Delete tax category</Form.Label>
                         <Form.Select>
-                        {Object.keys(taxCategories).length !== 0 ? taxCategories.map((tax) => (
+                        {taxCategories.map((tax) => (
                                 <option key={tax.tax_id}
                                 value={`${tax.tax_id}`}>{tax.tax_name}</option>
-                            )) : null  
-                        }
+                            ))}
                         </Form.Select>
                         <Button variant="dark" type="submit">
                             Delete tax category

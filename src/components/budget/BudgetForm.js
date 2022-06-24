@@ -1,14 +1,15 @@
 import { useContext, useEffect, useState } from "react";
-import { Container, Row, Form, Card, Button } from "react-bootstrap";
+import { Container, Row, Form, Card, Button, Spinner, Alert } from "react-bootstrap";
 import AuthContext from "../auth/AuthContext";
 import useAxios from "../utils/useAxios";
 import DatePicker from "react-datepicker";
+import dayjs from "dayjs";
 
-
-function BudgetForm() {
+function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits}) {
     const {user} = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
-    const [purcCategories, setPurcCategories] = useState({});
+    const [error, setError] = useState("");
+    const [purcCategories, setPurcCategories] = useState([]);
     const [endDate, setEndDate] = useState(new Date());
     const api = useAxios();
 
@@ -30,19 +31,48 @@ function BudgetForm() {
             console.log(element.value);
           })
         setLoading(true);
+
+        var budgetId = 0;
+
         api.post('/budget/', {
             budget_name: form[0].value,
-            start_time: Date.now(),
-            end_time: form[1].value,
-            user_id: user.user_id,
-        })
-        .then(res=> {
-            console.log(res);
-        })
-        .catch(err => {
-            console.log(err)})
+            start_time: dayjs(Date.now()).format("YYYY-MM-DD"),
+            end_time: dayjs(form[1].value).format("YYYY-MM-DD"),
+            user: user.user_id,
+        }).then(res=> {
+            budgetId = res.data.budget_id;
+            //console.log(res.data);
+            for (let i = 0; i < purcCategories.length; i++) {
+                api.post('/budgetLimits/', {
+                    budget: budgetId,
+                    purc_category: purcCategories[i].purc_category_id,
+                    spend_limit: form[i+2].value*100,
+                }).then(res=> {
+                    budgetId = res.data.budget_id;
+                    //console.log(res.data);
+                    setLoading(false);
+                }).catch(err => {
+                    console.log(err);
+                    setLoading(false);
+                    setError(err.response.statusText)
+                });
+            }
+            setBudgets([...budgets, {
+                budget_name: res.data.budget_name,
+                budget_id: res.data.budget_id, 
+                start_time: res.data.start_time,
+                end_time: res.data.end_time
+            }])
+            
+            form.reset();
+        }).catch(err => {
+            console.log(err);
+            setLoading(false);
+            setError(err.response.statusText)
+        });
+        
     }
-
+    
     return ( 
             <Card bg='dark' text='white' style={{ width: '18rem' }}>
                 <Card.Body>
@@ -53,15 +83,14 @@ function BudgetForm() {
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label>Select budget end date</Form.Label>
-                        <DatePicker selected={endDate} onChange={(date) => setEndDate(date)}></DatePicker>
+                        <DatePicker minDate={Date.now()} selected={endDate} onChange={(date) => setEndDate(date)}></DatePicker>
                     </Form.Group>
                     <Form.Group className="py-3">
                         <Form.Label><strong>Purchase limits</strong></Form.Label>
-                        {Object.keys(purcCategories).length !== 0 ? 
+                        {purcCategories.length !== 0 ? 
                             purcCategories.map((ctgy) => (
                                 <Form.Group key={ctgy.purc_category_id}>
-                                    <Form.Label 
-                                    >{ctgy.purc_category_name}</Form.Label>
+                                    <Form.Label>{ctgy.purc_category_name}</Form.Label>
                                     <Form.Control type="text" 
                                     onKeyPress={(e) => !/^\d*(\.\d{0,2})?$/.test(e.key) && e.preventDefault()} placeholder="Spend limit"/>
                                 </Form.Group>
@@ -70,11 +99,13 @@ function BudgetForm() {
                     </Form.Group>
 
                     <Button variant="primary" type="submit">
-                        Submit
+                    {loading ? <Spinner animation="border" role="status"><span className="visually-hidden">Loading...</span></Spinner> : "Submit"}
                     </Button>
-                    {loading ? <p>Sending to server...</p> : null}
+                    
                 </Form>
+                
                 </Card.Body>
+                {error.length > 0 ? <Alert variant="danger">{error}</Alert>: null}
             </Card>
      );
 }

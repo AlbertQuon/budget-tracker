@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { Container, Row } from "react-bootstrap";
+import { Container, Row, Tab, Tabs } from "react-bootstrap";
 import TransactForm from "./TransactForm";
 import useAxios from "../utils/useAxios";
 
 function Transact() {
-    const [purcCategories, setPurcCategories] = useState({});
-    const [taxCategories, setTaxCategories] = useState({});
-    const [transactions, setTransactions] = useState({});
-    const [budgets, setBudgets] = useState({});
-    
+    const [purcCategories, setPurcCategories] = useState([]);
+    const [taxCategories, setTaxCategories] = useState([]);
+    const [transactions, setTransactions] = useState([]);
+    const [budgets, setBudgets] = useState([]);
+    // tab layout (summary, add, view all)
     const api = useAxios();
     useEffect(() => {
         api.get('/purchasecategory/')
@@ -44,17 +44,27 @@ function Transact() {
     return ( <Container>
     
         <Row>
-        <h3>Add transaction</h3>
-            <TransactForm budgets={budgets} purcCategories={purcCategories} taxCategories={taxCategories}/>
+        <Tabs className="my-3">
+            <Tab eventKey="transactHome" title="Summary">
+                <h3>Summary</h3>
+            </Tab>
+            <Tab eventKey="transactList" title="View">
+                <Row>
+                <h3>Add transaction</h3>
+                    <TransactForm budgets={budgets} purcCategories={purcCategories} taxCategories={taxCategories}/>
+                </Row>
+                <Row>
+                    <h3>Transactions</h3>
+                    {Object.keys(transactions).length !== 0 ? transactions.map((transact) => (
+                                        <p key={transact.transact_id}
+                                        value={`${transact.transact_id}`}>{transact.name}</p>
+                                    )) : <h5>No transactions found</h5> 
+                                }
+                </Row>
+            </Tab>
+        </Tabs>
         </Row>
-        <Row>
-            <h3>Transactions</h3>
-            {Object.keys(transactions).length !== 0 ? transactions.map((transact) => (
-                                <p key={transact.transact_id}
-                                value={`${transact.transact_id}`}>{transact.name}</p>
-                            )) : <p><h5>No transactions found</h5></p>  
-                        }
-        </Row>
+        
     </Container> );
 }
 

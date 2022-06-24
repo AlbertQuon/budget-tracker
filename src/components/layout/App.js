@@ -14,8 +14,8 @@ import RequireAuth from "../utils/RequireAuth"
 import NoMatch404 from './NoMatch404';
 import Transact from '../transaction/Transact';
 
-axios.defaults.xsrfCookieName = 'csrftoken'
-axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+axios.defaults.xsrfCookieName = 'csrftoken'; 
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 
 function App() {
  
@@ -23,7 +23,7 @@ function App() {
     <Router>
       <div className="app">
         <AuthProvider>
-        <Container className="header">
+        <Container className="header pb-lg-3">
           <NavigBar/>
           <Routes>
             <Route path="/" element={<Home/>}/>

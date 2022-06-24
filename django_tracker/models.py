@@ -93,14 +93,17 @@ class Budget(models.Model):
 
 
 class BudgetLimits(models.Model):
-    budget = models.OneToOneField(Budget, models.DO_NOTHING, primary_key=True)
-    purc_category = models.ForeignKey('PurchaseCategory', models.DO_NOTHING)
+    budget = models.ForeignKey(Budget, models.DO_NOTHING, db_index=True)
+    purc_category = models.ForeignKey('PurchaseCategory', models.DO_NOTHING, db_index=True)
     spend_limit = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'budget_limits'
-        unique_together = (('budget', 'purc_category'),)
+        constraints = [
+            models.UniqueConstraint(fields=['budget', 'purc_category'], name='unique_budget_purc_category')
+        ]
+        #unique_together = (('budget', 'purc_category'),)
 
 
 class DjangoAdminLog(models.Model):
@@ -184,14 +187,17 @@ class TaxCategory(models.Model):
 
 
 class TransactTax(models.Model):
-    transact = models.OneToOneField('Transactions', models.DO_NOTHING, primary_key=True)
-    tax = models.ForeignKey(TaxCategory, models.DO_NOTHING)
+    transact = models.ForeignKey('Transactions', models.DO_NOTHING, db_index=True)
+    tax = models.ForeignKey(TaxCategory, models.DO_NOTHING, db_index=True)
     user_id = models.IntegerField()
 
     class Meta:
         managed = False
         db_table = 'transact_tax'
-        unique_together = (('transact', 'tax'),)
+        #unique_together = (('transact', 'tax'),)
+        constraints = [
+            models.UniqueConstraint(fields=['transact', 'tax'], name='unique_transact_tax_category')
+        ]
 
 
 class Transactions(models.Model):

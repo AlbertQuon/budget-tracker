@@ -15,6 +15,7 @@ urlpatterns = [
     path('users/', views.AuthUserView.as_view()),
     path('taxcategory/', views.TaxCategoryListView.as_view()),
     path('taxcategory/<int:pk>/', views.TaxCategoryDetailView.as_view()),
+    #path('taxCategory/<int:transact_id>/<int:tax_id>/', views.TaxCategoryListView.as_view())
     path('budget/', views.BudgetListView.as_view()),
     path('budget/<int:pk>/', views.BudgetDetailView.as_view()),
     path('budgetLimits/', views.BudgetLimitListView.as_view()),

@@ -5,6 +5,7 @@ from rest_framework import generics
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django_filters import rest_framework as filters
 
 # Auth
 from django.contrib.auth import login
@@ -93,6 +94,8 @@ class TaxCategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
 class TransactTaxListView(generics.ListCreateAPIView):
     #queryset = models.TransactTax.objects.all()
     serializer_class = serializers.TransactTaxSerializer
+    filter_backends=(filters.DjangoFilterBackend,)
+    filterset_fields=('tax', 'transact')
     def get_queryset(self):
         user = self.request.user.id
         return models.TransactTax.objects.filter(user=user)
@@ -142,6 +145,8 @@ class BudgetDetailView(generics.RetrieveUpdateDestroyAPIView):
 class BudgetLimitListView(generics.ListCreateAPIView):
     queryset = models.BudgetLimits.objects.all()
     serializer_class = serializers.BudgetLimitSerializer
+    filter_backends=(filters.DjangoFilterBackend,)
+    filterset_fields=('budget', 'purc_category')
 
 
 class BudgetLimitDetailView(generics.RetrieveUpdateDestroyAPIView):
