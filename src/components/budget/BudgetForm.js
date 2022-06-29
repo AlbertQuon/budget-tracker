@@ -27,9 +27,6 @@ function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits}) {
         event.preventDefault();
         const form = event.target;
         
-        Array.prototype.forEach.call(form.elements, (element) => {
-            console.log(element.value);
-          })
         setLoading(true);
 
         var budgetId = 0;
@@ -46,7 +43,7 @@ function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits}) {
                 api.post('/budgetLimits/', {
                     budget: budgetId,
                     purc_category: purcCategories[i].purc_category_id,
-                    spend_limit: form[i+2].value*100,
+                    spend_limit: parseFloat(parseFloat(form[i+2].value).toFixed(2))*100,
                 }).then(res=> {
                     budgetId = res.data.budget_id;
                     //console.log(res.data);
@@ -72,7 +69,7 @@ function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits}) {
         });
         
     }
-    
+    /*<Form.Control type="text" onKeyPress={(e) => !/^\d*(\.\d{0,2})?$/.test(e.key) && e.preventDefault()} placeholder="Spend limit"/>*/
     return ( 
             <Card bg='dark' text='white' style={{ width: '18rem' }}>
                 <Card.Body>
@@ -91,8 +88,7 @@ function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits}) {
                             purcCategories.map((ctgy) => (
                                 <Form.Group key={ctgy.purc_category_id}>
                                     <Form.Label>{ctgy.purc_category_name}</Form.Label>
-                                    <Form.Control type="text" 
-                                    onKeyPress={(e) => !/^\d*(\.\d{0,2})?$/.test(e.key) && e.preventDefault()} placeholder="Spend limit"/>
+                                    <Form.Control type="number" step="0.01" min='0' onKeyPress={(e) => !/^\d*(\.\d{0,2})?$/.test(e.key) && e.preventDefault()}/>
                                 </Form.Group>
                                 )) : <p><em>No purchase categories set</em></p>
                         }

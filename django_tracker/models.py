@@ -187,25 +187,22 @@ class TaxCategory(models.Model):
 
 
 class TransactTax(models.Model):
-    transact = models.ForeignKey('Transactions', models.DO_NOTHING, db_index=True)
-    tax = models.ForeignKey(TaxCategory, models.DO_NOTHING, db_index=True)
-    user_id = models.IntegerField()
+    transact = models.OneToOneField('Transactions', models.DO_NOTHING, primary_key=True)
+    tax = models.ForeignKey(TaxCategory, models.DO_NOTHING)
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
 
     class Meta:
         managed = False
         db_table = 'transact_tax'
-        #unique_together = (('transact', 'tax'),)
-        constraints = [
-            models.UniqueConstraint(fields=['transact', 'tax'], name='unique_transact_tax_category')
-        ]
+        unique_together = (('transact', 'tax'),)
 
 
 class Transactions(models.Model):
     transact_id = models.AutoField(primary_key=True)
     transact_date = models.DateField()
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING) # change to on_delete
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    budget = models.ForeignKey(Budget, models.DO_NOTHING)
 
     class Meta:
         managed = False
         db_table = 'transactions'
-

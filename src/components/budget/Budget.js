@@ -85,7 +85,7 @@ function Budget(props) {
                 limitsList.push(
                     <Card.Text key={limit.id}>
                     {purcCtgy.purc_category_name}: 
-                    ${limit.spend_limit}</Card.Text>
+                    ${(limit.spend_limit/100).toFixed(2)}</Card.Text>
                 );
             } else {
                 //console.log(limit.purc_category)
