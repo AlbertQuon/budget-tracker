@@ -135,6 +135,7 @@ function TransactForm({purcCategories, taxCategories, budgets}) {
             <Col>
             <Form.Label>Purchase Category</Form.Label>
             <Form.Select>
+            <option disabled selected value>Select a purchase category</option>
                 {purcCategories.map((ctgy) => (<option key={ctgy.purc_category_id}
                                 value={`${ctgy.purc_category_id}`}>{ctgy.purc_category_name}</option>))}
             </Form.Select></Col>
@@ -158,6 +159,7 @@ function TransactForm({purcCategories, taxCategories, budgets}) {
             <Form.Label>Budget</Form.Label>
             {budgets.length > 0 ? // e.target value is string
                 <Form.Select onChange={(e) => {setCurrentBudget(budgets[budgets.findIndex(b => b.budget_id===parseInt(e.target.value))])}}> 
+                <option disabled selected value>Select a budget</option>
                 {budgets.map((budget) => {
                     if (Date.parse(budget.end_time) >= Date.now()) {
                         return (<option key={budget.budget_id} value={budget.budget_id}>{budget.budget_name}

@@ -6,7 +6,7 @@ import DatePicker from "react-datepicker";
 import BudgetForm from "./BudgetForm";
 
 
-function Budget(props) {
+function Budget() {
     const [budgets, setBudgets] = useState([]);
     const [purcCategories, setPurcCategories] = useState([]);
     const [spendLimits, setSpendLimits] = useState({});
@@ -31,7 +31,6 @@ function Budget(props) {
                                 spendLimitsData[limits[0].budget].push(limits[0]);
                             }
                         }
-                        
                     });
                     setSpendLimits(spendLimitsData);
                 });
@@ -56,7 +55,6 @@ function Budget(props) {
         }
         return Promise.all(promises);
     }
-
 
     const onBudgetDelete = (id) => {
         const url = `/budget/${id}/`

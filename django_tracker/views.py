@@ -122,6 +122,8 @@ class TransactionsDetailView(generics.RetrieveUpdateDestroyAPIView):
 class PurchasesListView(generics.ListCreateAPIView):
     queryset = models.Purchases.objects.all()
     serializer_class = serializers.PurchasesSerializer
+    filter_backends=(filters.DjangoFilterBackend,)
+    filterset_fields=('purc_category', 'transact')
 
 
 class PurchasesDetailView(generics.RetrieveUpdateDestroyAPIView):

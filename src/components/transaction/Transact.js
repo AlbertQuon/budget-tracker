@@ -8,7 +8,7 @@ function Transact() {
     const [purcCategories, setPurcCategories] = useState([]);
     const [taxCategories, setTaxCategories] = useState([]);
     const [transactions, setTransactions] = useState([]);
-    const [purchases, setPurchases] = useState([]);
+    const [purchases, setPurchases] = useState({});
     const [budgets, setBudgets] = useState([]);
     const [transactTaxes, setTransactTaxes] = useState([]);
     // tab layout (summary, add, view all)
@@ -31,7 +31,23 @@ function Transact() {
         api.get('/transactions/')
         .then(res => {
             //console.log(res.data)
-            setTransactions(res.data)
+            let transactList = res.data;
+            setTransactions(transactList);
+            fetchPurchases(transactList).then((purchasesRes)=>{
+                let purchasesData = {};
+                purchasesRes.forEach((res)=>{
+                    let purchase = res.data;
+                    if (purchase.length > 0) {
+                        if (purchasesData[purchase[0].transact] === undefined) {
+                            purchasesData[purchase[0].transact]= purchase;
+                        } else {
+                            purchasesData[purchase[0].transact].push(purchase[0]);
+                        }
+                    }
+                });
+                console.log(purchasesData);
+                setPurchases(purchasesData);
+            })
         }).catch(err => {
             console.log(err)
         });
@@ -48,7 +64,30 @@ function Transact() {
         }).catch(err => {
             console.log(err)
         });
-    }, [])
+    }, []);
+
+    const onTransactDelete = (id) => {
+        const url = `/transactions/${id}/`
+        api.delete(url, {
+            data: {transact_id : id}
+        })
+        .then(res => {
+            let newTransacts = transactions.filter((transact) => transact.transact_id !== id);
+            setTransactions(newTransacts);
+            //console.log(res);
+        }).catch(err => {
+            console.log(err);
+        });
+    }
+
+    function fetchPurchases(transactList) {
+        let promises = [];
+        for (let i = 0; i < transactList.length; i++) {
+            let url = `/purchases/?transact=${transactList[i].transact_id}`;
+            promises.push(api.get(url));
+        }
+        return Promise.all(promises);
+    }
 
     return ( <Container>
     
@@ -69,8 +108,7 @@ function Transact() {
                                         <Card key={transact.transact_id}>
                                             <p value={`${transact.transact_id}`}>{transact.name}</p>
                                         </Card>
-                                    )) : <h5>No transactions found</h5> 
-                                }
+                                    )) : <h5>No transactions found</h5>}
                 </Row>
             </Tab>
         </Tabs>
