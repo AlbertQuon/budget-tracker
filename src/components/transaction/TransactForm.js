@@ -5,12 +5,12 @@ import AuthContext from "../auth/AuthContext";
 import DatePicker from "react-datepicker";
 import dayjs from "dayjs";
 
-function TransactForm({purcCategories, taxCategories, budgets}) {
+function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm}) {
 
     // * do not put components into state, use state data to render component (due to inconsistencies)
     const {user} = useContext(AuthContext);
 
-    const [purchasePrices, setPurchasePrices] = useState({});
+    const [purchasePrices, setPurchasePrices] = useState([]);
     const [purchaseCounter, setPurchaseCounter] = useState(0);
     const [subtotal, setSubtotal] = useState(0.00);
     const [taxRates, setTaxRates] = useState([]);
@@ -28,20 +28,14 @@ function TransactForm({purcCategories, taxCategories, budgets}) {
         /* update subtotal*/
         let newSubtotal = parseFloat(0.00);
         for (let purcPrice in purchasePrices) {
-            newSubtotal += parseFloat(purchasePrices[purcPrice]);
+            newSubtotal += parseFloat(purchasePrices[purcPrice].price);
         }
         setSubtotal(newSubtotal);
         /* update total */
         let newTotal = parseFloat(0.00);
         taxRates.forEach(tax => {
-            newTotal += newSubtotal*parseFloat((Object.values(tax)[0]/100).toFixed(2));
+            newTotal += newSubtotal*parseFloat((tax.taxRate/100).toFixed(2));
         })
-        /*for (let tax in taxRates) {
-            newTotal += newSubtotal*parseFloat((Object.values(taxRates[tax])[0]/100).toFixed(2));
-        }*/
-        /*for (let i = 0; i<taxRates.length; i++) {
-            newTotal += newSubtotal*parseFloat((taxRates[i]/100).toFixed(2));
-        }*/
         setTotal(newTotal+newSubtotal);
         }, [purchasePrices, taxRates]);
 
@@ -49,34 +43,33 @@ function TransactForm({purcCategories, taxCategories, budgets}) {
         let key = purchaseCounter.toString();
         
         setPurchaseCounter(purchaseCounter => purchaseCounter+1);
-        setPurchasePrices(purchasePrices => ({...purchasePrices, [key]: 0.00}));
+        setPurchasePrices(purchasePrices => ([...purchasePrices, {key: key, price: 0.00}]));
     }
 
     const removePurchaseField = (key) => {
-        //console.log(purchasePrices)
-        // TODO: bug, must modify field before deletion
-        setPurchasePrices(purchasePrices => {
-            const newPrices = {...purchasePrices};
-            delete purchasePrices[key];
-            return newPrices;
-        });
+        setPurchasePrices(purchasePrices.filter(purc => purc.key !== key));
     }
 
     const onPriceChange = (key, value) => {
         let price = parseFloat(parseFloat(value).toFixed(2));
-        setPurchasePrices(purchasePrices=>({...purchasePrices, [key]: price}));
+        let index = purchasePrices.findIndex(price => price.key === key);
+        if (index !== -1) {
+            setPurchasePrices(purchasePrices => 
+                purchasePrices.slice(0, index).concat([{key:key, price: price}]).concat(purchasePrices.slice(index+1)))
+        } 
     }
 
     const onTaxChecked = (taxId, taxRate, isChecked) => { 
         // use slice, due to splice mutating the state and not updating the reference
         // taxId is int, object.keys is string
         if (isChecked) {
-            setTaxRates(taxRates => [...taxRates, {[taxId]: taxRate}]);
+            setTaxRates(taxRates => [...taxRates, {taxId: taxId, taxRate: taxRate}]);
         } else {
-            let index = taxRates.findIndex(tax => Object.keys(tax)[0] === taxId.toString()); 
+            /*let index = taxRates.findIndex(tax => Object.keys(tax)[0] === taxId.toString()); 
             if (index !== -1) {
                 setTaxRates(taxRates => taxRates.slice(0,index).concat(taxRates.slice(index+1)));
-            } 
+            } */
+            setTaxRates(taxRates => taxRates.filter(tax => tax.taxId !== taxId))
         }
     }
 
@@ -89,7 +82,7 @@ function TransactForm({purcCategories, taxCategories, budgets}) {
         var budget = form[0].value;
 
         var purchases = [];
-        for (let i = 0; i < Object.keys(purchasePrices).length; i++) {
+        for (let i = 0; i < purchasePrices.length; i++) {
             let formIndex = 3 + 4*i;
             //console.log("input", form.elements[i].type, form.elements[i].value, form.elements[i].id);
             purchases.push({
@@ -98,10 +91,10 @@ function TransactForm({purcCategories, taxCategories, budgets}) {
                 price: form.elements[formIndex+2].value
             });
         }
-        //console.log(purchases)
-        console.log(budget)
-        // post transaction
-        //taxRates.forEach(tax => console.log(Object.keys(tax)[0]))
+        if (purchases.length < 1) {
+            alert("Must have at least one purchase");
+        }
+        
         api.post('/transactions/', {
             transact_date: dayjs(transactDate).format("YYYY-MM-DD"),
             user: user.user_id,
@@ -124,14 +117,16 @@ function TransactForm({purcCategories, taxCategories, budgets}) {
                     transact: transact.transact_id,
                     purc_category: parseInt(purchase.purc_category),
                 })
-            })
+            });
+            // probably await for all promises to finish then close form
+            handleCloseForm();
         }).catch(err => console.log(err))
         
         
     }
 
-    var purchaseFields = Object.keys(purchasePrices).map((field) => (
-        <Form.Group as={Row} key={field}>
+    var purchaseFields = purchasePrices.map((field) => (
+        <Form.Group as={Row} key={field.key}>
             <Col>
             <Form.Label>Purchase Category</Form.Label>
             <Form.Select>
@@ -144,13 +139,19 @@ function TransactForm({purcCategories, taxCategories, budgets}) {
             <Form.Control type="text" placeholder="Enter item name"/></Col>
             <Col>
             <Form.Label>Price</Form.Label>
-            <Form.Control onChange={e => onPriceChange(field, e.target.value)} 
+            <Form.Control onChange={e => onPriceChange(field.key, e.target.value)} 
             onKeyPress={(e) => !/^\d*(\.\d{0,2})?$/.test(e.key) && e.preventDefault()} defaultValue="0.00" type="number" step="0.01" min="0" placeholder="0.00"/>
             </Col>
             <Col><Form.Label>Delete</Form.Label><br></br>
-            <Button onClick={()=> {removePurchaseField(field)}}>-</Button></Col>
+            <Button onClick={()=> {removePurchaseField(field.key)}}>-</Button></Col>
         </Form.Group>
     ));
+
+    const calcTaxPrice = (taxId) => {
+        let tax = taxRates.find(tax => tax.taxId == taxId);
+        if (tax === undefined) { return null;}
+        return "$" + (parseFloat((tax.taxRate/100).toFixed(2)) * subtotal).toFixed(2);
+    }
     
 
     return (
@@ -186,13 +187,14 @@ function TransactForm({purcCategories, taxCategories, budgets}) {
                     <Row key={tax.tax_id}>
                     <Col>
                         <p>{tax.tax_name} ({tax.tax_rate}%)</p>
+                        <FormCheck onChange={e=>(onTaxChecked(tax.tax_id, tax.tax_rate, e.target.checked))}></FormCheck>
                     </Col>
                     <Col>
-                        <FormCheck onChange={e=>(onTaxChecked(tax.tax_id, tax.tax_rate, e.target.checked))}></FormCheck>
+                        <p>{calcTaxPrice(tax.tax_id)}</p>
                     </Col>
                     </Row>
                 ))
-            : <p>No tax categories found</p>
+            : <Row>No tax categories found</Row>
             }
         </Form.Group>
         
