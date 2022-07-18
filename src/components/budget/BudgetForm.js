@@ -5,7 +5,7 @@ import useAxios from "../utils/useAxios";
 import DatePicker from "react-datepicker";
 import dayjs from "dayjs";
 
-function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits}) {
+function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits, handleCloseForm}) {
     const {user} = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -59,9 +59,10 @@ function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits}) {
                 budget_id: res.data.budget_id, 
                 start_time: res.data.start_time,
                 end_time: res.data.end_time
-            }])
+            }]);
             
             form.reset();
+            handleCloseForm();
         }).catch(err => {
             console.log(err);
             setLoading(false);
@@ -71,8 +72,11 @@ function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits}) {
     }
     /*<Form.Control type="text" onKeyPress={(e) => !/^\d*(\.\d{0,2})?$/.test(e.key) && e.preventDefault()} placeholder="Spend limit"/>*/
     return ( 
-            <Card bg='dark' text='white' style={{ width: '18rem' }}>
+            <Card bg='dark' text='white'>
                 <Card.Body>
+                <Card.Title>
+                    Add Budget
+                </Card.Title>
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
                         <Form.Label>Enter a name for the budget</Form.Label>

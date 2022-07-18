@@ -1,9 +1,5 @@
-app {
-  text-align: center;
-}
-
 .header {
-  background-color: #282c34;
+  background-color: #1d1f24;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -12,6 +8,18 @@ app {
   color: white;
 }
 
+.app {
+  background-color: #282c34;
+}
+
 .App-link {
   color: #61dafb;
+}
+
+.dark-modal {
+  color: white;
+}
+
+.dark-modal .modal-content {
+  background-color: #212529;
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Card, Container, Modal, Row, Tab, Tabs } from "react-bootstrap";
+import { Button, Card, Col, Container, Modal, Row, Tab, Tabs } from "react-bootstrap";
 import TransactForm from "./TransactForm";
 import useAxios from "../utils/useAxios";
 import TransactSummary from "./TransactSummary";
@@ -122,8 +122,8 @@ function Transact() {
         return;
     }
 
-    return ( <Container>
-    
+    return ( 
+    <Container className="mx-3 my-3">
         <Row>
         <Tabs className="my-3">
             <Tab eventKey="transactHome" title="Summary">
@@ -131,13 +131,20 @@ function Transact() {
                 <TransactSummary budgets={budgets} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes}/>
             </Tab>
             <Tab eventKey="transactList" title="View">
+            <Row>
+                <Col><h3>Transactions</h3></Col>
+                <Col>
                 <Button onClick={handleShowForm}>Add transaction</Button>
-                <Modal backdrop="static" show={showForm} onHide={handleCloseForm} dialogClassName="modalForm">
+                </Col>
+            </Row>
+                
+                
+                <Modal backdrop="static" show={showForm} onHide={handleCloseForm} dialogClassName="modal-90w" className="dark-modal">
                 <Modal.Header closeButton>
                     <Modal.Title>Add transaction</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                <TransactForm handleCloseForm={handleCloseForm} budgets={budgets} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions}/>
+                <TransactForm handleCloseForm={handleCloseForm} setTransactions={setTransactions} budgets={budgets} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions}/>
                 </Modal.Body>
                 <Modal.Footer>
                 <Button variant="secondary" onClick={handleCloseForm}>
@@ -147,7 +154,6 @@ function Transact() {
                 
                 </Modal>
                 <Row>
-                    <h3>Transactions</h3>
                     {Object.keys(transactions).length !== 0 ? transactions.map((transact) => (
                                         <Card key={transact.transact_id} bg='dark'>
                                             <Card.Title>{transact.transact_date}</Card.Title>
@@ -162,8 +168,7 @@ function Transact() {
             </Tab>
         </Tabs>
         </Row>
-        
-    </Container> );
+    </Container>);
 }
 
 

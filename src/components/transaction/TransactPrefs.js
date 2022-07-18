@@ -4,9 +4,9 @@ import useAxios from "./../utils/useAxios"
 import AuthContext from "../auth/AuthContext";
 
 
-function TransactPrefs() {
+function TransactPrefs({purcCategories, setPurcCategories}) {
     const {user} = useContext(AuthContext);
-    const [purcCategories, setPurcCategories] = useState([]);
+    //const [purcCategories, setPurcCategories] = useState([]);
     const [taxCategories, setTaxCategories] = useState([]);
     const api = useAxios();
     
@@ -29,7 +29,7 @@ function TransactPrefs() {
     function getTaxCategories() {
         api.get('/taxcategory/')
         .then(res => {
-                setTaxCategories(res.data);
+            setTaxCategories(res.data);
         }).catch( err=>{
             console.log(err);
         });
@@ -43,23 +43,25 @@ function TransactPrefs() {
             purc_category_name:  form[0].value,
             user: user.user_id
         }).then(res => {
-            console.log(res.data)
+            //console.log(res.data);
+            setPurcCategories([...purcCategories, res.data]);
+            form.reset();
         }).catch(err => {
             console.log(err)
-        })
-        getPurcCategories();
+        });
     }
 
     const onTaxCtgyPrefAdd = (event) => {
         event.preventDefault();
         const form = event.currentTarget;
-        console.log(form[1].value);
         api.post('/taxcategory/', {
             tax_name:  form[0].value,
             user: user.user_id,
             tax_rate: form[1].value
         }).then(res => {
-            console.log(res.data)
+            //console.log(res.data);
+            setTaxCategories([...taxCategories, res.data]);
+            form.reset();
         }).catch(err => {
             console.log(err)
         });
@@ -72,8 +74,10 @@ function TransactPrefs() {
         const url = `/purchasecategory/${form[0].value}/`
         api.delete(url, {
             data: { purc_category_id: form[0].value }
-        })
-        getPurcCategories();
+        }).then(() => {
+            setPurcCategories(purcCategories.filter(ctgy => ctgy.purc_category_id.toString() !== form[0].value));
+            form.reset();
+        });
     }
 
     const onTaxCtgyDelete = (event) => {
@@ -82,7 +86,10 @@ function TransactPrefs() {
         const url = `/taxcategory/${form[0].value}/`
         api.delete(url, {
             data: { tax_id: form[0].value }
-        })
+        }).then(() => {
+            setTaxCategories(taxCategories.filter(tax => tax.tax_id.toString() !== form[0].value));
+            form.reset();
+        });
     }
 
     

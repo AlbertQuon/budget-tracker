@@ -31,8 +31,7 @@ function App() {
             
             <Route path="login/*" element={<Login/>}/>
             <Route path="register/*" element={<Register/>}/>
-
-            <Route path="preferences/*" element={<RequireAuth><TransactPrefs/></RequireAuth>}/>
+            
             <Route path="transactions/*" element={<RequireAuth><Transact/></RequireAuth>}/>
             <Route path="budget/*" element={<RequireAuth><Budget/></RequireAuth>}/> 
             

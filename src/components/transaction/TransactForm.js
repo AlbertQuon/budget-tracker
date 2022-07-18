@@ -119,6 +119,7 @@ function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm})
                 })
             });
             // probably await for all promises to finish then close form
+            // TODO: Add latest transaction to useState
             handleCloseForm();
         }).catch(err => console.log(err))
         

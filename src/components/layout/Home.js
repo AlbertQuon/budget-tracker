@@ -7,8 +7,8 @@ function Home() {
     const username = user ? user.username : null;
     return ( <Container>
         <Row>
-            <h2>Home</h2>
-            {user ? <p>Welcome {username}</p> : <p>Please log in</p>}
+            
+            {user ? <><h2>Home</h2><p>Welcome {username}</p></> : <p>Please log in</p>}
         </Row>
     </Container> );
 }
