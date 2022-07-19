@@ -18,7 +18,7 @@ function TransactSummary({purcCategories, taxCategories, transactions, budgets, 
         </h4>
         </Row>
         <Row>
-        <Accordion className="text-black">
+        <Accordion className="text-black bg-dark">
             {budgets.map((budget) => (
                 <Accordion.Item key={budget.budget_id} eventKey={budget.budget_id}>
                     <Accordion.Header>

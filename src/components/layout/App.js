@@ -4,7 +4,7 @@ import NavigBar from './NavigBar';
 import Home from './Home';
 import { HashRouter as Router, Route, Routes } from 'react-router-dom'
 import Container from 'react-bootstrap/Container';
-import TransactPrefs from '../transaction/TransactPrefs';
+import TransactPrefs from '../budget/TransactPrefs';
 import axios from 'axios';
 import Login from '../auth/Login';
 import Register from '../auth/Register';

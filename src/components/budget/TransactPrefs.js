@@ -1,6 +1,6 @@
 import { Container, Form, Button, Row, ListGroup, Col, InputGroup } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
-import useAxios from "./../utils/useAxios"
+import useAxios from "../utils/useAxios"
 import AuthContext from "../auth/AuthContext";
 
 

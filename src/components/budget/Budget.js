@@ -5,7 +5,7 @@ import useAxios from "../utils/useAxios";
 import DatePicker from "react-datepicker";
 import BudgetForm from "./BudgetForm";
 import dayjs from "dayjs";
-import TransactPrefs from "../transaction/TransactPrefs";
+import TransactPrefs from "./TransactPrefs";
 import '../../css/Budget.css'
 
 

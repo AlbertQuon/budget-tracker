@@ -4,6 +4,7 @@ import TransactForm from "./TransactForm";
 import useAxios from "../utils/useAxios";
 import TransactSummary from "./TransactSummary";
 import "../../css/Transact.css"
+import TransactList from "./TransactList";
 
 function Transact() {
     const [purcCategories, setPurcCategories] = useState([]);
@@ -77,7 +78,7 @@ function Transact() {
         api.delete(url, {
             data: {transact_id : id}
         })
-        .then(res => {
+        .then(() => {
             let newTransacts = transactions.filter((transact) => transact.transact_id !== id);
             setTransactions(newTransacts);
             //console.log(res);
@@ -95,35 +96,12 @@ function Transact() {
         return Promise.all(promises);
     }
 
-    const purchasesList = (transact_id) => {
-        if (purchases[transact_id] === undefined || !purchases) {
-            return <Card.Text>No purchases found</Card.Text>
-        }
-        const purcList = [];
-        purchases[transact_id].forEach((purc) => {
-            purcList.push(
-                <Card.Text>{purc.item_name}: ${purc.price}</Card.Text>
-            )
-        })
-
-        return purcList.length > 0 ? purcList : <Card.Text>No purchases found</Card.Text>
-    }
-
-    const transactBudget = (budget_id) => {
-        //console.log(budgets)
-        let budget = budgets.find((budget) => budget.budget_id === budget_id); // REMEMBER TO USE ===
-        if (budget) {
-            return (<Card.Text>{budget.budget_name}</Card.Text>)
-        }
-        return <Card.Text>Budget not found</Card.Text>
-    }
-
     const transactTaxList = (transact_id) => {
         return;
     }
 
     return ( 
-    <Container className="mx-3 my-3">
+    <Container className="px-4 my-3">
         <Row>
         <Tabs className="my-3">
             <Tab eventKey="transactHome" title="Summary">
@@ -139,7 +117,7 @@ function Transact() {
             </Row>
                 
                 
-                <Modal backdrop="static" show={showForm} onHide={handleCloseForm} dialogClassName="modal-90w" className="dark-modal">
+                <Modal backdrop="static" show={showForm} onHide={handleCloseForm} className="dark-modal">
                 <Modal.Header closeButton>
                     <Modal.Title>Add transaction</Modal.Title>
                 </Modal.Header>
@@ -154,16 +132,7 @@ function Transact() {
                 
                 </Modal>
                 <Row>
-                    {Object.keys(transactions).length !== 0 ? transactions.map((transact) => (
-                                        <Card key={transact.transact_id} bg='dark'>
-                                            <Card.Title>{transact.transact_date}</Card.Title>
-                                            <Card.Body>
-                                            <Card.Text>{transactBudget(transact.budget)}</Card.Text>
-                                            {purchasesList(transact.transact_id)}
-                                            </Card.Body>
-                                            
-                                        </Card>
-                                    )) : <h5>No transactions found</h5>}
+                    <TransactList budgets={budgets} purcCategories={purcCategories} purchases={purchases} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes}></TransactList>
                 </Row>
             </Tab>
         </Tabs>

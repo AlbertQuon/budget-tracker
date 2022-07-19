@@ -1,3 +1,12 @@
-.modal-transaction {
-    max-width: 80% !important; /*not ideal*/
+@media (min-width: 576px) {
+    .modal-dialog {
+        min-width: 50%;
+        width: 60%;
+        max-width: 70% !important;  /* not ideal */
+    }
+}
+
+.transactionItem {
+    border: 1px rgb(46, 46, 46) solid;
+    border-radius: 5px;
 }
