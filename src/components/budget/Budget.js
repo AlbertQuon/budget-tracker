@@ -18,6 +18,7 @@ function Budget() {
     const [onlyCurrentBudgets, setOnlyCurrentBudgets] = useState(false);
     const api = useAxios();
 
+    const [showBox, setShowBox] = useState(false);
     const [showForm, setShowForm] = useState(false);
     const handleShowForm = () => setShowForm(true);
     const handleCloseForm = () => setShowForm(false);
@@ -181,7 +182,7 @@ function Budget() {
                             <Card.Subtitle className=""><strong>{budget.start_time}</strong> - <strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
                             <Card.Text>Spend Limits</Card.Text>
                             {createSpendLimitList(budget.budget_id)}
-                            <Card.Text><Button onClick={() => onBudgetDelete(budget.budget_id)}>Delete</Button></Card.Text>
+                            <Card.Text><Button onClick={() => {if (window.confirm('Are you sure you wish to delete this budget?')) onBudgetDelete(budget.budget_id)}}>Delete</Button></Card.Text>
                         </Card.Body>
                     </Card>
                     </Col>
@@ -208,7 +209,6 @@ function Budget() {
                 <TransactPrefs purcCategories={purcCategories} setPurcCategories={setPurcCategories}/>
             </Tab>
         </Tabs>
-        
     </Container> );
 }
 

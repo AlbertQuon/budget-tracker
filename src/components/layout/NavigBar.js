@@ -12,21 +12,25 @@ function NavigBar() {
             <Container>
                 <Navbar.Brand><Nav.Link as={NavLink} className="text-white" end to="/">Budget Track</Nav.Link></Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
-                <Nav className="me-auto">
+                <Navbar.Collapse id="basic-navbar-nav" className="justify-content-start">
                 {user ? ( <>
-                    <Nav.Link as={NavLink} end to="/">Home</Nav.Link>
+                <Nav className="me-auto my-2 my-lg-0"
+                    style={{ maxHeight: '100px' }}
+                    navbarScroll>
+                <Nav.Link as={NavLink} end to="/">Home</Nav.Link>
                     <Nav.Link as={NavLink} to="budget/">Budget</Nav.Link>
                     <Nav.Link as={NavLink} to="transactions/">Transactions</Nav.Link>
-                    <Button onClick={logoutUser}>Logout</Button>
-                    </>
+                </Nav>
+                <Button onClick={logoutUser}>Logout</Button>
+                </>  
                 ) : 
-                (  <>
+                (  <Nav className="me-auto my-2 my-lg-0"
+                    style={{ maxHeight: '100px' }}
+                    navbarScroll>
                     <Nav.Link as={NavLink} to="login/">Login</Nav.Link>
                     <Nav.Link as={NavLink} to="register/">Register</Nav.Link>
-                    </>
+                    </Nav>
                 )}
-                </Nav>
                 </Navbar.Collapse>
                 
             </Container>

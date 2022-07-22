@@ -115,8 +115,6 @@ function Transact() {
                 <Button onClick={handleShowForm}>Add transaction</Button>
                 </Col>
             </Row>
-                
-                
                 <Modal backdrop="static" show={showForm} onHide={handleCloseForm} className="dark-modal">
                 <Modal.Header closeButton>
                     <Modal.Title>Add transaction</Modal.Title>

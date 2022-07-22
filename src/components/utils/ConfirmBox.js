@@ -1,6 +1,8 @@
-import { Container, Modal } from "react-bootstrap";
+import { useState } from "react";
+import { Button, Container, Modal } from "react-bootstrap";
 
-function ConfirmBox({promptText, callback}) {
+function ConfirmBox({promptText, onConfirm, onCancel}) {
+    const [showBox, setShowBox] = useState(false);
     return ( <Modal>
         <Modal.Header closeButton>
         <Modal.Title>Confirm</Modal.Title>
@@ -9,8 +11,8 @@ function ConfirmBox({promptText, callback}) {
             <p>{promptText}</p>
         </Modal.Body>
         <Modal.Footer>
-            <Button variant="secondary">No</Button>
-            <Button variant="primary">Save changes</Button>
+            <Button variant="secondary" onClick={() => setShowBox(false)}>No</Button>
+            <Button variant="primary" onClick={() => setShowBox(false)}>Confirm</Button>
         </Modal.Footer>
     </Modal> );
 }

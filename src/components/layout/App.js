@@ -32,9 +32,9 @@ function App() {
             <Route path="login/*" element={<Login/>}/>
             <Route path="register/*" element={<Register/>}/>
             
-            <Route path="transactions/*" element={<RequireAuth><Transact/></RequireAuth>}/>
-            <Route path="budget/*" element={<RequireAuth><Budget/></RequireAuth>}/> 
             
+            <Route path="budget/*" element={<RequireAuth><Budget/></RequireAuth>}/> 
+            <Route path="transactions/*" element={<RequireAuth><Transact/></RequireAuth>}/>
           </Routes>
         </Container>
         </AuthProvider>
