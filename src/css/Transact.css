@@ -1,4 +1,13 @@
+.transactForm-modal-dialog {
+    width: 50%;
+    max-width: 70%;
+    
+}
 
+.transactForm-modal-content {
+    background-color: rgb(46, 46, 46);
+    color: white;
+}
 
 .transactionItem {
     border: 1px rgb(46, 46, 46) solid;

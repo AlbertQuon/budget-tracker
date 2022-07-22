@@ -2,4 +2,9 @@
     width: 500%;
     max-width: 50%;
 }
+
+.dark-modal-content {
+    background-color: #1d1f24;
+    color:white;
+}
 /* use styles.<class> for classes without '-' */

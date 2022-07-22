@@ -23,3 +23,7 @@
 .dark-modal .modal-content {
   background-color: #212529;
 }
+
+.text-muted {
+  color:#bbbbbb;
+}

@@ -18,7 +18,9 @@ function Budget() {
     const [onlyCurrentBudgets, setOnlyCurrentBudgets] = useState(false);
     const api = useAxios();
 
-    const [showBox, setShowBox] = useState(false);
+    const [showDeleteBox, setShowDeleteBox] = useState(false);
+    const [pendingDeletionBudget, setPendingDeletionBudget] = useState(null);
+
     const [showForm, setShowForm] = useState(false);
     const handleShowForm = () => setShowForm(true);
     const handleCloseForm = () => setShowForm(false);
@@ -105,6 +107,7 @@ function Budget() {
         .then(() => {
             let newBudgets = budgets.filter((budget) => budget.budget_id !== id);
             setBudgets(newBudgets);
+            setShowDeleteBox(false);
             //console.log(res);
         }).catch(err => {
             console.log(err);
@@ -126,7 +129,7 @@ function Budget() {
                 for (let transact in purchases) {
                     if (purchases.hasOwnProperty(transact)) {
                         let purcCtgyPurchases = purchases[transact].filter(purc => purc.purc_category && purc.purc_category === limit.purc_category);
-                        console.log(purcCtgyPurchases);
+                        //console.log(purcCtgyPurchases);
                         purcCtgyPurchases.forEach((purc)=> purcCtgyTotal += parseFloat((purc.price/100).toFixed(2)));
                     }
                 }
@@ -152,6 +155,22 @@ function Budget() {
         }
         return null;
     }
+
+    const ConfirmDeleteBox = () => {
+        return ( 
+        <Modal backdrop="static" show={showDeleteBox} onHide={() => setShowDeleteBox(false)}>
+            <Modal.Header closeButton>
+            <Modal.Title>Confirmation</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p>Are you sure you want to delete this budget?</p>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowDeleteBox(false)}>No</Button>
+                <Button variant="primary" onClick={() => onBudgetDelete(pendingDeletionBudget)}>Confirm</Button>
+            </Modal.Footer>
+        </Modal> );
+    }    //  <Card.Text><Button onClick={() => {if (window.confirm('Are you sure you wish to delete this budget?')) onBudgetDelete(budget.budget_id)}}>Delete</Button></Card.Text>
    
     return ( 
     <Container className="mx-3 my-3">
@@ -161,8 +180,8 @@ function Budget() {
                 <Col xs={9} md={10}><h2>Budget</h2></Col>
                 <Col xs={3} md={2}><Button onClick={handleShowForm}>Add budget</Button></Col>
             </Row>
-            <Modal backdrop="static" show={showForm} onHide={handleCloseForm} dialogClassName="modal-budget" className="dark-modal">
-                    <Modal.Header closeButton></Modal.Header>
+            <Modal backdrop="static" show={showForm} onHide={handleCloseForm} dialogClassName="modal-budget" contentClassName="dark-modal-content" >
+                    <Modal.Header closeButton>Add budget</Modal.Header>
                     <Modal.Body>
                     <BudgetForm handleCloseForm={handleCloseForm} budgets={budgets} setBudgets={setBudgets} spendLimits={spendLimits} setSpendLimits={setSpendLimits}/>
                     </Modal.Body>    
@@ -172,6 +191,18 @@ function Budget() {
                     </Button>
                     </Modal.Footer>
             </Modal>
+            <Modal id="confirmDeleteBox" backdrop="static" show={showDeleteBox} contentClassName="dark-modal-content" onHide={() => setShowDeleteBox(false)}>
+                <Modal.Header closeButton>
+                <Modal.Title>Confirmation</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>Are you sure you want to delete this budget?</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowDeleteBox(false)}>No</Button>
+                    <Button variant="primary" onClick={() => onBudgetDelete(pendingDeletionBudget)}>Confirm</Button>
+                </Modal.Footer>
+            </Modal> 
             <Row><h3>Current budgets</h3></Row>
             <Row>
                 {budgets.filter((budget)=> (dayjs(budget.end_time).toDate() > Date.now())).map((budget)=>(
@@ -182,7 +213,7 @@ function Budget() {
                             <Card.Subtitle className=""><strong>{budget.start_time}</strong> - <strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
                             <Card.Text>Spend Limits</Card.Text>
                             {createSpendLimitList(budget.budget_id)}
-                            <Card.Text><Button onClick={() => {if (window.confirm('Are you sure you wish to delete this budget?')) onBudgetDelete(budget.budget_id)}}>Delete</Button></Card.Text>
+                            <Card.Text><Button onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
                         </Card.Body>
                     </Card>
                     </Col>

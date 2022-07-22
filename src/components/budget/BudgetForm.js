@@ -74,9 +74,6 @@ function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits, handleClo
     return ( 
             <Card bg='dark' text='white'>
                 <Card.Body>
-                <Card.Title>
-                    Add Budget
-                </Card.Title>
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
                         <Form.Label>Enter a name for the budget</Form.Label>
