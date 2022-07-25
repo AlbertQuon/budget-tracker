@@ -72,7 +72,7 @@ function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm})
             setTaxRates(taxRates => taxRates.filter(tax => tax.taxId !== taxId))
         }
     }
-
+    console.log(taxRates)
     const onFormSubmit = (event) => {
         event.preventDefault();
         var form = event.target;
@@ -105,7 +105,7 @@ function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm})
             taxRates.forEach(tax => {
                 api.post('/transactionTax/', {
                     transact: transact.transact_id,
-                    tax: Object.keys(tax)[0],
+                    tax: tax.taxId,
                     user: user.user_id,
                 })
             })
@@ -121,7 +121,7 @@ function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm})
             // probably await for all promises to finish then close form
             // TODO: Add latest transaction to useState
             handleCloseForm();
-        }).catch(err => console.log(err))
+        }).catch(err => {console.log(err); alert("Failed to submit"); event.target.reset();})
         
         
     }

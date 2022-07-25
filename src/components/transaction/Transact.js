@@ -106,7 +106,7 @@ function Transact() {
         <Tabs className="my-3">
             <Tab eventKey="transactHome" title="Summary">
                 <h3>Summary</h3>
-                <TransactSummary budgets={budgets} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes}/>
+                <TransactSummary budgets={budgets} purchases={purchases} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes}/>
             </Tab>
             <Tab eventKey="transactList" title="View">
             <Row>

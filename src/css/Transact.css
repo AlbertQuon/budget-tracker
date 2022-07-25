@@ -20,4 +20,19 @@
     color: white;
 }
 
+.accordion-button {
+    background-color: rgb(44, 44, 44);
+    color: white;
+    border-radius: 10px;
+}
+  
+.accordion-button:focus {
+    box-shadow: none;
+}
+
+.accordion-button:not(.collapsed) {
+    color: #212529;
+}
+
+
 /* use styles.<class> for classes without '-' */

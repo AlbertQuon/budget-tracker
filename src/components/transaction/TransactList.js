@@ -20,9 +20,8 @@ function TransactList({purcCategories, purchases, transactions, taxCategories, t
         purchases[transact_id].forEach((purc) => {
             // find object
             let ctgy = purcCategories.find(purcCtgy => purcCtgy.purc_category_id === purc.purc_category);
-            console.log(ctgy)
             purcList.push(
-                <p>{purc.item_name}: ${(purc.price/100).toFixed(2)} {ctgy ? '('+ctgy.purc_category_name+')' : ""}</p>
+                <p>{purc.item_name}: ${(purc.price/100).toFixed(2)} {ctgy ? '('+ctgy.purc_category_name+')' : "(N/A)"}</p>
             )
         });
 
@@ -34,19 +33,20 @@ function TransactList({purcCategories, purchases, transactions, taxCategories, t
         if (purchases[transact_id] === undefined || !purchases) {
             return taxTotal;
         }
-        //console.log(transactTaxes)
         let taxes = transactTaxes.filter(transactTax => transactTax.transact === transact_id);
         // loop through each tax category and add them
         taxCategories.forEach((taxCtgy) => {
-            if (taxes.find(tax => tax.tax === taxCtgy.tax_id) !== -1) {
+            if (taxes.findIndex(transactTax => transactTax.tax === taxCtgy.tax_id) !== -1) {
                 purchases[transact_id].forEach((purc) => {
                     taxTotal += purc.price/100 * (taxCtgy.tax_rate/100);
                 });
             } 
+            
         });
         
         return taxTotal.toFixed(2);
     }
+
 
     const calcSubtotal = (transact_id) => {
         var subtotal = 0.00;
@@ -69,10 +69,11 @@ function TransactList({purcCategories, purchases, transactions, taxCategories, t
         let taxes = transactTaxes.filter(transactTax => transactTax.transact === transact_id);
         // loop through each tax category and add them
         taxCategories.forEach((taxCtgy) => {
-            if (taxes.find(tax => tax.tax === taxCtgy.tax_id) !== -1) {
+            if (taxes.findIndex(tax => tax.tax === taxCtgy.tax_id) !== -1) {
                 purchases[transact_id].forEach((purc) => {
                     total += purc.price/100 * (taxCtgy.tax_rate/100);
                 });
+                
             } 
         });
 
