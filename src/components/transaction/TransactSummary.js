@@ -40,7 +40,7 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
 
     const calcTotalSpending = () => {
         // this is a method***
-        var total = 0;
+        let total = 0;
         for (let transact in purchases) {
             purchases[transact].forEach(purc => total += purc.price);
         }
@@ -48,11 +48,11 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
     }
 
     const calcPurcCtgySpending = (ctgy) => {
-        var total = 0;
+        let ctgyTotal = 0;
         for (let transact in purchases) {
-            purchases[transact].filter(purc=> purc.purc_category === ctgy).forEach(purc => total += purc.price);
+            purchases[transact].filter(purc=> purc.purc_category === ctgy).forEach(purc => ctgyTotal += purc.price);
         }
-        return (total/100).toFixed(2);
+        return (ctgyTotal/100).toFixed(2);
     }
 
     const calcTaxCtgySpending = (taxCtgy, taxRate) => {
@@ -85,7 +85,7 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
     }
    
     return ( 
-    <Container className="dark-container">
+    <Container className="">
         <Row>
             <h4>Past 30 days</h4>
         </Row>

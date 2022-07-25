@@ -72,7 +72,7 @@ function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm})
             setTaxRates(taxRates => taxRates.filter(tax => tax.taxId !== taxId))
         }
     }
-    console.log(taxRates)
+    
     const onFormSubmit = (event) => {
         event.preventDefault();
         var form = event.target;
@@ -149,7 +149,7 @@ function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm})
     ));
 
     const calcTaxPrice = (taxId) => {
-        let tax = taxRates.find(tax => tax.taxId == taxId);
+        let tax = taxRates.find(tax => tax.taxId === taxId);
         if (tax === undefined) { return null;}
         return "$" + (parseFloat((tax.taxRate/100).toFixed(2)) * subtotal).toFixed(2);
     }

@@ -158,7 +158,7 @@ function Budget() {
 
     const ConfirmDeleteBox = () => {
         return ( 
-        <Modal backdrop="static" show={showDeleteBox} onHide={() => setShowDeleteBox(false)}>
+        <Modal id="confirmDeleteBox" backdrop="static" show={showDeleteBox} contentClassName="dark-modal-content" onHide={() => setShowDeleteBox(false)}>
             <Modal.Header closeButton>
             <Modal.Title>Confirmation</Modal.Title>
             </Modal.Header>
@@ -173,10 +173,10 @@ function Budget() {
     }    //  <Card.Text><Button onClick={() => {if (window.confirm('Are you sure you wish to delete this budget?')) onBudgetDelete(budget.budget_id)}}>Delete</Button></Card.Text>
    
     return ( 
-    <Container className="mx-3 my-3">
+    <Container className="">
         <Tabs>
             <Tab eventKey="budgetView" title="Budgets">
-            <Row className="my-3">
+            <Row className="mt-3">
                 <Col xs={9} md={10}><h2>Budget</h2></Col>
                 <Col xs={3} md={2}><Button onClick={handleShowForm}>Add budget</Button></Col>
             </Row>
@@ -191,26 +191,16 @@ function Budget() {
                     </Button>
                     </Modal.Footer>
             </Modal>
-            <Modal id="confirmDeleteBox" backdrop="static" show={showDeleteBox} contentClassName="dark-modal-content" onHide={() => setShowDeleteBox(false)}>
-                <Modal.Header closeButton>
-                <Modal.Title>Confirmation</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>Are you sure you want to delete this budget?</p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowDeleteBox(false)}>No</Button>
-                    <Button variant="primary" onClick={() => onBudgetDelete(pendingDeletionBudget)}>Confirm</Button>
-                </Modal.Footer>
-            </Modal> 
-            <Row><h3>Current budgets</h3></Row>
+            {ConfirmDeleteBox()}
+            <Row className="my-2"><h3>Current budgets</h3></Row>
             <Row>
                 {budgets.filter((budget)=> (dayjs(budget.end_time).toDate() > Date.now())).map((budget)=>(
                     <Col xs={3} md={3}>
                     <Card className="text-white bg-dark" key={budget.budget_id} style={{ width: '18rem' }}>
                         <Card.Body>
                             <Card.Title>{budget.budget_name} {checkIfBudgetCurrent(budget.end_time)}</Card.Title>
-                            <Card.Subtitle className=""><strong>{budget.start_time}</strong> - <strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
+                            <Card.Subtitle className=""><strong>{budget.start_time}</strong></Card.Subtitle>
+                            <Card.Subtitle className="mb-1"><strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
                             <Card.Text>Spend Limits</Card.Text>
                             {createSpendLimitList(budget.budget_id)}
                             <Card.Text><Button onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
@@ -219,7 +209,7 @@ function Budget() {
                     </Col>
                 ))}
             </Row>
-            <Row><h3>Past budgets</h3></Row>
+            <Row className="my-2"><h3>Past budgets</h3></Row>
             <Row>
             {budgets.filter((budget)=> (dayjs(budget.end_time).toDate() <= Date.now())).map((budget)=>(
                     <Col xs={3} md={3}>

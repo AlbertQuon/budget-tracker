@@ -101,15 +101,14 @@ function Transact() {
     }
 
     return ( 
-    <Container className="px-4 my-3">
-        <Row>
-        <Tabs className="my-3">
+    <Container className="">
+        <Tabs>
             <Tab eventKey="transactHome" title="Summary">
-                <h3>Summary</h3>
+                <Row className="mt-3"><h3>Transaction Summary</h3></Row>
                 <TransactSummary budgets={budgets} purchases={purchases} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes}/>
             </Tab>
             <Tab eventKey="transactList" title="View">
-            <Row>
+            <Row className="mt-3">
                 <Col><h3>Transactions</h3></Col>
                 <Col>
                 <Button onClick={handleShowForm}>Add transaction</Button>
@@ -128,7 +127,6 @@ function Transact() {
                 </Row>
             </Tab>
         </Tabs>
-        </Row>
     </Container>);
 }
 

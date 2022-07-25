@@ -104,7 +104,7 @@ function TransactList({purcCategories, purchases, transactions, taxCategories, t
         const { activeEventKey } = useContext(AccordionContext);
         const isCurrentEventKey = activeEventKey === eventKey;
         return <Button onClick={onClickExpand} style={{ backgroundColor: isCurrentEventKey ? 'dark-grey' : 'grey' }}>
-            {isCurrentEventKey ? 'Hide purchases' : 'Show purchases'}
+            {isCurrentEventKey ? 'Hide' : 'Expand'}
             {children}
         </Button>
     }
@@ -115,29 +115,27 @@ function TransactList({purcCategories, purchases, transactions, taxCategories, t
                                         <Row className="transactionItem my-5 mx-2" key={transact.transact_id} bg='dark'>
                                             <Col className="m-2">
                                             <Row>
-                                            <Col>
                                             <h4>{transact.transact_date}</h4>
-                                            <h5>{transactBudget(transact.budget)}</h5>
-                                            </Col>
-                                            <Col>
-                                                <Button>Edit</Button>
-                                            </Col>
                                             </Row>
                                             <Row>
-                                            <Col>
-                                            <p>Subtotal: ${calcSubtotal(transact.transact_id)}</p>
-                                            <p>Taxes: {taxesList(transact.transact_id)}</p>
-                                            </Col>
-                                            <Col>
-                                                <p>Taxes: ${calcTaxTotal(transact.transact_id)}</p>
-                                                <p>Total: ${calcTotal(transact.transact_id)}</p>
-                                            </Col>
+                                            <Col><h5>{transactBudget(transact.budget)}</h5></Col>
+                                            <Col><p>Total: ${calcTotal(transact.transact_id)}</p></Col>
+                                            <Col><Button>Edit</Button></Col>
                                             </Row>
                                             <Row><Col>
                                                 <Accordion>
                                                 <CustomExpand eventKey={transact.transact_id}></CustomExpand>
                                                 <Accordion.Collapse eventKey={transact.transact_id}>
-                                                {purchasesList(transact.transact_id)}
+                                                    <Row className="mt-3 transactDetail">
+                                                        <Col>
+                                                        <p>Subtotal: ${calcSubtotal(transact.transact_id)}</p>
+                                                        </Col>
+                                                        <Col>
+                                                        <p>Taxes: ${calcTaxTotal(transact.transact_id)} ({taxesList(transact.transact_id)})</p>
+                                                        </Col>
+                                                        <strong>Purchases</strong>
+                                                        {purchasesList(transact.transact_id)}
+                                                    </Row>
                                                 </Accordion.Collapse>
                                                 </Accordion>
                                             </Col></Row>
