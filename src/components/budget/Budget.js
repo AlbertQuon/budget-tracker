@@ -127,7 +127,7 @@ function Budget() {
                 let purcCtgyTotal = 0;
                 
                 for (let transact in purchases) {
-                    if (purchases.hasOwnProperty(transact)) {
+                    if (purchases.hasOwnProperty(transact) && transactions.find((transaction) => transaction.transact_id.toString()===transact)?.budget === budget_id) {
                         let purcCtgyPurchases = purchases[transact].filter(purc => purc.purc_category && purc.purc_category === limit.purc_category);
                         //console.log(purcCtgyPurchases);
                         purcCtgyPurchases.forEach((purc)=> purcCtgyTotal += parseFloat((purc.price/100).toFixed(2)));
@@ -136,7 +136,7 @@ function Budget() {
                 limitsList.push(
                     <Card.Text key={limit.id}>
                     {purcCtgy.purc_category_name}: 
-                    ${purcCtgyTotal}/{(limit.spend_limit/100).toFixed(2)} </Card.Text>
+                    ${purcCtgyTotal.toFixed(2)}/{(limit.spend_limit/100).toFixed(2)} </Card.Text>
                 );
             } else {
                 //console.log(limit.purc_category)
@@ -180,17 +180,7 @@ function Budget() {
                 <Col xs={9} md={10}><h2>Budget</h2></Col>
                 <Col xs={3} md={2}><Button onClick={handleShowForm}>Add budget</Button></Col>
             </Row>
-            <Modal backdrop="static" show={showForm} onHide={handleCloseForm} dialogClassName="modal-budget" contentClassName="dark-modal-content" >
-                    <Modal.Header closeButton>Add budget</Modal.Header>
-                    <Modal.Body>
-                    <BudgetForm handleCloseForm={handleCloseForm} budgets={budgets} setBudgets={setBudgets} spendLimits={spendLimits} setSpendLimits={setSpendLimits}/>
-                    </Modal.Body>    
-                    <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseForm}>
-                        Close
-                    </Button>
-                    </Modal.Footer>
-            </Modal>
+            <BudgetForm showForm={showForm} handleCloseForm={handleCloseForm} budgets={budgets} setBudgets={setBudgets} spendLimits={spendLimits} setSpendLimits={setSpendLimits}/>
             {ConfirmDeleteBox()}
             <Row className="my-2"><h3>Current budgets</h3></Row>
             <Row>
@@ -219,7 +209,7 @@ function Budget() {
                             <Card.Subtitle className=""><strong>{budget.start_time}</strong> - <strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
                             <Card.Text>Spend Limits</Card.Text>
                             {createSpendLimitList(budget.budget_id)}
-                            <Card.Text><Button onClick={() => onBudgetDelete(budget.budget_id)}>Delete</Button></Card.Text>
+                            <Card.Text><Button onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
                         </Card.Body>
                     </Card>
                     </Col>

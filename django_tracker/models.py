@@ -166,7 +166,7 @@ class Purchases(models.Model):
     purc_id = models.AutoField(primary_key=True)
     item_name = models.CharField(max_length=64)
     price = models.IntegerField()
-    transact = models.OneToOneField('Transactions', models.DO_NOTHING)
+    transact = models.ForeignKey('Transactions', models.DO_NOTHING, db_column='transact_id')
     purc_category = models.ForeignKey(PurchaseCategory, models.DO_NOTHING, db_column='purc_category', blank=True, null=True)
 
     class Meta:
@@ -187,9 +187,10 @@ class TaxCategory(models.Model):
 
 
 class TransactTax(models.Model):
-    transact = models.OneToOneField('Transactions', models.DO_NOTHING, primary_key=True)
+    transact = models.ForeignKey('Transactions', models.DO_NOTHING, db_column='transact_id')
     tax = models.ForeignKey(TaxCategory, models.DO_NOTHING)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    id = models.AutoField(primary_key=True)
 
     class Meta:
         managed = False

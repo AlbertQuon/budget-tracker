@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from "react";
-import { Container, Row, Form, Card, Button, Spinner, Alert } from "react-bootstrap";
+import { Modal, Row, Form, Card, Button, Spinner, Alert } from "react-bootstrap";
 import AuthContext from "../auth/AuthContext";
 import useAxios from "../utils/useAxios";
 import DatePicker from "react-datepicker";
 import dayjs from "dayjs";
 
-function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits, handleCloseForm}) {
+function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits, handleCloseForm, showForm}) {
     const {user} = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -72,6 +72,9 @@ function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits, handleClo
     }
     /*<Form.Control type="text" onKeyPress={(e) => !/^\d*(\.\d{0,2})?$/.test(e.key) && e.preventDefault()} placeholder="Spend limit"/>*/
     return ( 
+        <Modal backdrop="static" show={showForm} onHide={handleCloseForm} dialogClassName="modal-budget" contentClassName="dark-modal-content" >
+                    <Modal.Header closeButton>Add budget</Modal.Header>
+                    <Modal.Body>
             <Card bg='dark' text='white'>
                 <Card.Body>
                 <Form onSubmit={handleSubmit}>
@@ -104,6 +107,13 @@ function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits, handleClo
                 </Card.Body>
                 {error.length > 0 ? <Alert variant="danger">{error}</Alert>: null}
             </Card>
+            </Modal.Body>    
+                    <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseForm}>
+                        Close
+                    </Button>
+                    </Modal.Footer>
+            </Modal>
      );
 }
 

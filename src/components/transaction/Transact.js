@@ -114,16 +114,9 @@ function Transact() {
                 <Button onClick={handleShowForm}>Add transaction</Button>
                 </Col>
             </Row>
-                <Modal backdrop="static" show={showForm} onHide={handleCloseForm} contentClassName="transactForm-modal-content" dialogClassName="transactForm-modal-dialog">
-                <Modal.Header closeButton>
-                    <Modal.Title>Add transaction</Modal.Title>
-                </Modal.Header>
-                <Modal.Body className="m-3">
-                <TransactForm handleCloseForm={handleCloseForm} setTransactions={setTransactions} budgets={budgets} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions}/>
-                </Modal.Body>
-                </Modal>
+                <TransactForm showForm={showForm} handleCloseForm={handleCloseForm} setTransactions={setTransactions} budgets={budgets} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions}/>
                 <Row>
-                    <TransactList budgets={budgets} purcCategories={purcCategories} purchases={purchases} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes}></TransactList>
+                    <TransactList budgets={budgets} purcCategories={purcCategories} purchases={purchases} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes} onTransactDelete={onTransactDelete}></TransactList>
                 </Row>
             </Tab>
         </Tabs>

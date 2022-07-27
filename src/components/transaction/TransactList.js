@@ -1,8 +1,17 @@
+import { useState } from "react";
 import { useContext } from "react";
-import { Accordion, AccordionContext, Button, Col, Row, useAccordionButton } from "react-bootstrap";
+import { Accordion, AccordionContext, Button, Col, Row, useAccordionButton, Modal } from "react-bootstrap";
 import '../../css/Transact.css'
+import TransactEditForm from "./TransactEditForm";
 
-function TransactList({purcCategories, purchases, transactions, taxCategories, transactTaxes, budgets}) {
+function TransactList({purcCategories, purchases, transactions, taxCategories, transactTaxes, budgets, onTransactDelete}) {
+
+    const [showEditForm, setShowEditForm] = useState(false);
+    const [editTransaction, setEditTransaction] = useState({});
+    const handleCloseEditForm = () => setShowEditForm(false);
+    const handleOpenEditForm = () => setShowEditForm(true);
+    const [showDeleteBox, setShowDeleteBox] = useState(false);
+
     const transactBudget = (budget_id) => {
         //console.log(budgets)
         let budget = budgets.find((budget) => budget.budget_id === budget_id); // REMEMBER TO USE ===
@@ -109,39 +118,57 @@ function TransactList({purcCategories, purchases, transactions, taxCategories, t
         </Button>
     }
 
+    const ConfirmDeleteBox = () => {
+        return ( 
+        <Modal id="confirmDeleteBox" backdrop="static" show={showDeleteBox} contentClassName="dark-modal-content" onHide={() => setShowDeleteBox(false)}>
+            <Modal.Header closeButton>
+            <Modal.Title>Confirmation</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p>Are you sure you want to delete this budget?</p>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => {setShowDeleteBox(false); }}>No</Button>
+                <Button variant="primary" onClick={() => {onTransactDelete(editTransaction.transact_id); setShowDeleteBox(false); }}>Confirm</Button>
+            </Modal.Footer>
+        </Modal> );
+    } 
+
     return ( 
     <div>
+        {ConfirmDeleteBox()}
+        <TransactEditForm transaction={editTransaction} showEditForm={showEditForm} handleCloseEditForm={handleCloseEditForm} handleOpenEditForm={handleOpenEditForm} onTransactDelete={onTransactDelete}
+        budgets={budgets} purcCategories={purcCategories} purchases={purchases} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes} />
+        <Row><Col><input type="text" placeholder="Search by budget..." ></input></Col></Row>
         {Object.keys(transactions).length !== 0 ? transactions.map((transact) => (
-                                        <Row className="transactionItem my-5 mx-2" key={transact.transact_id} bg='dark'>
-                                            <Col className="m-2">
-                                            <Row>
-                                            <h4>{transact.transact_date}</h4>
-                                            </Row>
-                                            <Row>
-                                            <Col><h5>{transactBudget(transact.budget)}</h5></Col>
-                                            <Col><p>Total: ${calcTotal(transact.transact_id)}</p></Col>
-                                            <Col><Button>Edit</Button></Col>
-                                            </Row>
-                                            <Row><Col>
-                                                <Accordion>
-                                                <CustomExpand eventKey={transact.transact_id}></CustomExpand>
-                                                <Accordion.Collapse eventKey={transact.transact_id}>
-                                                    <Row className="mt-3 transactDetail">
-                                                        <Col>
-                                                        <p>Subtotal: ${calcSubtotal(transact.transact_id)}</p>
-                                                        </Col>
-                                                        <Col>
-                                                        <p>Taxes: ${calcTaxTotal(transact.transact_id)} ({taxesList(transact.transact_id)})</p>
-                                                        </Col>
-                                                        <strong>Purchases</strong>
-                                                        {purchasesList(transact.transact_id)}
-                                                    </Row>
-                                                </Accordion.Collapse>
-                                                </Accordion>
-                                            </Col></Row>
-                                            </Col>
-                                        </Row>
-                                    )) : <h5>No transactions found</h5>}
+            <Row className="transactionItem my-1 mx-2" key={transact.transact_id} bg='dark'>
+                <Col className="m-2">
+                <Row>
+                <Col><h4>{transact.transact_date}</h4></Col>
+                <Col><h5>{transactBudget(transact.budget)}</h5></Col>
+                <Col><p>Total: ${calcTotal(transact.transact_id)}</p></Col>
+                <Col><Button onClick={()=> {setShowEditForm(true); setEditTransaction(transact);}}>Edit</Button><Button onClick={() => {setShowDeleteBox(true); setEditTransaction(transact);}}>Delete</Button></Col>
+                </Row>
+                <Row><Col>
+                    <Accordion>
+                    <CustomExpand eventKey={transact.transact_id}></CustomExpand>
+                    <Accordion.Collapse eventKey={transact.transact_id}>
+                        <Row className="mt-3 transactDetail">
+                            <Col>
+                            <p>Subtotal: ${calcSubtotal(transact.transact_id)}</p>
+                            </Col>
+                            <Col>
+                            <p>Taxes: ${calcTaxTotal(transact.transact_id)} ({taxesList(transact.transact_id)})</p>
+                            </Col>
+                            <strong>Purchases</strong>
+                            {purchasesList(transact.transact_id)}
+                        </Row>
+                    </Accordion.Collapse>
+                    </Accordion>
+                </Col></Row>
+                </Col>
+            </Row>
+        )) : <h5>No transactions found</h5>}
     </div>);
 }
 

@@ -1,11 +1,11 @@
 import { useState, useContext, useEffect } from "react";
-import { Container, Form, Card, Button, Row, Col, FormCheck } from "react-bootstrap";
+import { Modal, Form, Card, Button, Row, Col, FormCheck } from "react-bootstrap";
 import useAxios from "../utils/useAxios";
 import AuthContext from "../auth/AuthContext";
 import DatePicker from "react-datepicker";
 import dayjs from "dayjs";
 
-function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm}) {
+function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm, showForm}) {
 
     // * do not put components into state, use state data to render component (due to inconsistencies)
     const {user} = useContext(AuthContext);
@@ -129,21 +129,18 @@ function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm})
     var purchaseFields = purchasePrices.map((field) => (
         <Form.Group as={Row} key={field.key}>
             <Col>
-            <Form.Label>Purchase Category</Form.Label>
             <Form.Select>
             <option disabled selected value>Select a purchase category</option>
                 {purcCategories.map((ctgy) => (<option key={ctgy.purc_category_id}
                                 value={`${ctgy.purc_category_id}`}>{ctgy.purc_category_name}</option>))}
             </Form.Select></Col>
             <Col>
-            <Form.Label>Item Name</Form.Label>
             <Form.Control type="text" placeholder="Enter item name"/></Col>
             <Col>
-            <Form.Label>Price</Form.Label>
             <Form.Control onChange={e => onPriceChange(field.key, e.target.value)} 
             onKeyPress={(e) => !/^\d*(\.\d{0,2})?$/.test(e.key) && e.preventDefault()} defaultValue="0.00" type="number" step="0.01" min="0" placeholder="0.00"/>
             </Col>
-            <Col><Form.Label>Delete</Form.Label><br></br>
+            <Col>
             <Button onClick={()=> {removePurchaseField(field.key)}}>-</Button></Col>
         </Form.Group>
     ));
@@ -156,59 +153,72 @@ function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm})
     
 
     return (
-    <Form onSubmit={onFormSubmit}>
-        <Form.Group className="mb-3">
-            <Form.Label>Budget</Form.Label>
-            {budgets.length > 0 ? // e.target value is string
-                <Form.Select onChange={(e) => {setCurrentBudget(budgets[budgets.findIndex(b => b.budget_id===parseInt(e.target.value))])}}> 
-                <option disabled selected value>Select a budget</option>
-                {budgets.map((budget) => {
-                    if (Date.parse(budget.end_time) >= Date.now()) {
-                        return (<option key={budget.budget_id} value={budget.budget_id}>{budget.budget_name}
-                        </option>);
+    <Modal backdrop="static" show={showForm} onHide={handleCloseForm} contentClassName="transactForm-modal-content" dialogClassName="transactForm-modal-dialog">
+        <Modal.Header closeButton>
+            <Modal.Title>Add transaction</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="m-3">
+            <Form onSubmit={onFormSubmit}>
+                <Form.Group className="mb-3">
+                    <Form.Label>Budget</Form.Label>
+                    {budgets.length > 0 ? // e.target value is string
+                        <Form.Select onChange={(e) => {setCurrentBudget(budgets[budgets.findIndex(b => b.budget_id===parseInt(e.target.value))])}}> 
+                        <option disabled selected value>Select a budget</option>
+                        {budgets.map((budget) => {
+                            if (Date.parse(budget.end_time) >= Date.now()) {
+                                return (<option key={budget.budget_id} value={budget.budget_id}>{budget.budget_name}
+                                </option>);
+                            }
+                        })}
+                        </Form.Select> : <p><strong>No budgets found</strong></p>
                     }
-                })}
-                </Form.Select> : <p><strong>No budgets found</strong></p>
-            }
-        </Form.Group>
-        <DatePicker minDate={Date.parse(currentBudget.start_time)} maxDate={Date.now()} selected={transactDate} onChange={(date) => setTransactDate(date)}></DatePicker>
-        <Form.Group className="mb-3">
-            <Form.Label className="me-2">Purchases</Form.Label>
-            <Button onClick={addPurchaseField}>Add</Button>
-        </Form.Group>
-        {purchaseFields}
-        <Form.Group as={Row} className="my-3">   
-            <Col><p>Subtotal:</p></Col>
-            <Col><p>${subtotal.toFixed(2)}</p></Col>
-        </Form.Group>
-        <Form.Group className="mb-3">
-            <Form.Label className="me-2">Tax</Form.Label>
-            {taxCategories.length !== 0 ? 
-                taxCategories.map((tax) => (
-                    <Row key={tax.tax_id}>
-                    <Col>
-                        <p>{tax.tax_name} ({tax.tax_rate}%)</p>
-                        <FormCheck onChange={e=>(onTaxChecked(tax.tax_id, tax.tax_rate, e.target.checked))}></FormCheck>
-                    </Col>
-                    <Col>
-                        <p>{calcTaxPrice(tax.tax_id)}</p>
-                    </Col>
-                    </Row>
-                ))
-            : <Row>No tax categories found</Row>
-            }
-        </Form.Group>
-        
-        <Row>   
-            <Col><p>Total:</p></Col>
-            <Col><p>${total.toFixed(2)}</p></Col>
-        </Row>
-        
-        
-        <Button variant="primary" type="submit">
-            Submit
-        </Button>
-    </Form>
+                </Form.Group>
+                <DatePicker minDate={Date.parse(currentBudget.start_time)} maxDate={Date.now()} selected={transactDate} onChange={(date) => setTransactDate(date)}></DatePicker>
+                <Form.Group className="mb-3">
+                    <Form.Label className="me-2">Purchases</Form.Label>
+                    <Button onClick={addPurchaseField}>Add</Button>
+                </Form.Group>
+                <Form.Group as={Row}>
+                    <Col>Purchase Category</Col>
+                    <Col>Item Name</Col>
+                    <Col>Price</Col>
+                    <Col>Delete</Col>
+                </Form.Group>
+                {purchaseFields}
+                <Form.Group as={Row} className="my-3">   
+                    <Col><p>Subtotal:</p></Col>
+                    <Col><p>${subtotal.toFixed(2)}</p></Col>
+                </Form.Group>
+                <Form.Group className="mb-3">
+                    <Form.Label className="me-2">Tax</Form.Label>
+                    {taxCategories.length !== 0 ? 
+                        taxCategories.map((tax) => (
+                            <Row key={tax.tax_id}>
+                            <Col>
+                                <p>{tax.tax_name} ({tax.tax_rate}%)</p>
+                                <FormCheck onChange={e=>(onTaxChecked(tax.tax_id, tax.tax_rate, e.target.checked))}></FormCheck>
+                            </Col>
+                            <Col>
+                                <p>{calcTaxPrice(tax.tax_id)}</p>
+                            </Col>
+                            </Row>
+                        ))
+                    : <Row>No tax categories found</Row>
+                    }
+                </Form.Group>
+                
+                <Row>   
+                    <Col><p>Total:</p></Col>
+                    <Col><p>${total.toFixed(2)}</p></Col>
+                </Row>
+                
+                
+                <Button variant="primary" type="submit">
+                    Submit
+                </Button>
+            </Form>
+        </Modal.Body>
+    </Modal>
     );
 }
 
