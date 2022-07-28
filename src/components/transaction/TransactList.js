@@ -4,7 +4,7 @@ import { Accordion, AccordionContext, Button, Col, Row, useAccordionButton, Moda
 import '../../css/Transact.css'
 import TransactEditForm from "./TransactEditForm";
 
-function TransactList({purcCategories, purchases, transactions, taxCategories, transactTaxes, budgets, onTransactDelete}) {
+function TransactList({purcCategories, purchases, transactions, taxCategories, transactTaxes, budgets, onTransactDelete, fetchData}) {
 
     const [showEditForm, setShowEditForm] = useState(false);
     const [editTransaction, setEditTransaction] = useState({});
@@ -138,7 +138,7 @@ function TransactList({purcCategories, purchases, transactions, taxCategories, t
     <div>
         {ConfirmDeleteBox()}
         <TransactEditForm transaction={editTransaction} showEditForm={showEditForm} handleCloseEditForm={handleCloseEditForm} handleOpenEditForm={handleOpenEditForm} onTransactDelete={onTransactDelete}
-        budgets={budgets} purcCategories={purcCategories} purchases={purchases} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes} />
+        budgets={budgets} purcCategories={purcCategories} purchases={purchases} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes} fetchData={fetchData} />
         <Row><Col><input type="text" placeholder="Search by budget..." ></input></Col></Row>
         {Object.keys(transactions).length !== 0 ? transactions.map((transact) => (
             <Row className="transactionItem my-1 mx-2" key={transact.transact_id} bg='dark'>

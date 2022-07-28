@@ -20,7 +20,7 @@ function Transact() {
 
     // tab layout (summary, add, view all)
     const api = useAxios();
-    useEffect(() => {
+    const fetchData = () => {
         api.get('/purchasecategory/')
         .then(res => {
             //console.log(res.data)
@@ -69,7 +69,9 @@ function Transact() {
         }).catch(err => {
             console.log(err)
         });
-        
+    }
+    useEffect(() => {
+        fetchData();
     }, []);
 
     // API Requests
@@ -114,9 +116,9 @@ function Transact() {
                 <Button onClick={handleShowForm}>Add transaction</Button>
                 </Col>
             </Row>
-                <TransactForm showForm={showForm} handleCloseForm={handleCloseForm} setTransactions={setTransactions} budgets={budgets} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions}/>
+                <TransactForm fetchData={fetchData} showForm={showForm} handleCloseForm={handleCloseForm} setTransactions={setTransactions} budgets={budgets} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions}/>
                 <Row>
-                    <TransactList budgets={budgets} purcCategories={purcCategories} purchases={purchases} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes} onTransactDelete={onTransactDelete}></TransactList>
+                    <TransactList fetchData={fetchData} budgets={budgets} purcCategories={purcCategories} purchases={purchases} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes} onTransactDelete={onTransactDelete}></TransactList>
                 </Row>
             </Tab>
         </Tabs>

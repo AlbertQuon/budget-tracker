@@ -5,7 +5,7 @@ import AuthContext from "../auth/AuthContext";
 import DatePicker from "react-datepicker";
 import dayjs from "dayjs";
 
-function TransactEditForm({transactTaxes, transaction, purchases, purcCategories, taxCategories, budgets, handleCloseEditForm, showEditForm, onTransactDelete, handleOpenEditForm}) {
+function TransactEditForm({transactTaxes, transaction, purchases, purcCategories, taxCategories, budgets, handleCloseEditForm, showEditForm, onTransactDelete, handleOpenEditForm, fetchData}) {
 
     // * do not put components into state, use state data to render component (due to inconsistencies)
     const {user} = useContext(AuthContext);
@@ -158,55 +158,70 @@ function TransactEditForm({transactTaxes, transaction, purchases, purcCategories
         }).then(res => {
             // post transact tax
             let transact = res.data;
+
+            let addTaxRatePromises = [];
+            let deleteTaxRatePromises = [];
+
             taxRates.forEach(tax => {
                 if (!tax.hasOwnProperty('prevTaxId')) {
-                    api.post('/transactionTax/', {
+                    addTaxRatePromises.push(api.post('/transactionTax/', {
                         transact: transact.transact_id,
                         tax: tax.taxId,
                         user: user.user_id,
-                    }).catch(err => console.log(err));
-                    /*let url = `/transactionTax/${tax.prevTaxId}/`;
-                    api.patch(url, {
-                        transact: transact.transact_id,
-                        tax: tax.taxId,
-                        user: user.user_id,
-                    }).catch(err => console.log(err));*/
+                    }));
                 }
             });
+
+            toBeDeletedTaxes.forEach(tax => {
+                let url = `/transactionTax/${tax.prevTaxId}/`
+                deleteTaxRatePromises.push(api.delete(url, {data: {id: tax.prevTaxId}}).catch(err => console.log(err)));
+            })
+
+            let addTaxRateRes = Promise.all(addTaxRatePromises).catch(err => console.log(err));
+            let deleteTaxRateRes = Promise.all(deleteTaxRatePromises).catch(err => console.log(err));
+            
             // post purchases
+            let patchPurchasePromises = [];
+            let postPurchasePromises = [];
+            let deletePurchasePromises = [];
             formPurchases.forEach(purchase => { //if purchase has data
                 if ('purc_id' in purchase) {
                     let url = `/purchases/${purchase.purc_id}/`;
-                    api.patch(url, {
+                    patchPurchasePromises.push(api.patch(url, {
                         item_name: purchase.item_name,
                         price: parseFloat(parseFloat(purchase.price).toFixed(2))*100,
                         transact: transact.transact_id,
                         purc_category: parseInt(purchase.purc_category),
-                    }).catch(err => console.log(err));;
+                    }));
                 } else {
-                    api.post('/purchases/',{
+                    postPurchasePromises.push(api.post('/purchases/',{
                         item_name: purchase.item_name,
                         price: parseFloat(parseFloat(purchase.price).toFixed(2))*100,
                         transact: transact.transact_id,
                         purc_category: parseInt(purchase.purc_category),
-                    }).catch(err => console.log(err));;
+                    }));
                 }
             });
-            toBeDeletedTaxes.forEach(tax => {
-                let url = `/transactionTax/${tax.prevTaxId}/`
-                api.delete(url, {data: {id: tax.prevTaxId}}).catch(err => console.log(err));
-            })
-
+            
             toBeDeletedPurchases.forEach(purc => {
                 let url = `/purchases/${purc.purc_id}/`
-                api.delete(url, {data: {purc_id: purc.purc_id}}).catch(err => console.log(err));
-            })
-            handleCloseEditForm();
+                deletePurchasePromises.push(api.delete(url, {data: {purc_id: purc.purc_id}}));
+            });
+
+            let patchPurchaseRes = Promise.all(patchPurchasePromises).catch(err => console.log(err));
+            let postPurchaseRes = Promise.all(postPurchasePromises).catch(err => console.log(err));
+            let deletePurchaseRes = Promise.all(deletePurchasePromises).catch(err => console.log(err));
+
+            Promise.all([addTaxRateRes, deleteTaxRateRes, patchPurchaseRes, postPurchaseRes, deletePurchaseRes]).then(
+                () => {handleCloseEditForm(); fetchData();}
+            ).catch(err => {console.log(err); alert("failed to submit form");})
+            
         }).catch(err => {console.log(err); alert("Failed to submit"); event.target.reset();})
         
         
     }
 
+    // Components
     var purchaseFields = purchasePrices.map((field) => (
         <Form.Group as={Row} key={field.key}>
             <Col>

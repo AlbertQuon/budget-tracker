@@ -5,7 +5,7 @@ import useAxios from "../utils/useAxios";
 import DatePicker from "react-datepicker";
 import dayjs from "dayjs";
 
-function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits, handleCloseForm, showForm}) {
+function BudgetForm({budgets, setBudgets, handleCloseForm, showForm, fetchData}) {
     const {user} = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -29,30 +29,20 @@ function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits, handleClo
         
         setLoading(true);
 
-        var budgetId = 0;
-
         api.post('/budget/', {
             budget_name: form[0].value,
             start_time: dayjs(Date.now()).format("YYYY-MM-DD"),
             end_time: dayjs(form[1].value).format("YYYY-MM-DD"),
             user: user.user_id,
         }).then(res=> {
-            budgetId = res.data.budget_id;
+            let budgetPromises = [];
             //console.log(res.data);
             for (let i = 0; i < purcCategories.length; i++) {
-                api.post('/budgetLimits/', {
-                    budget: budgetId,
+                budgetPromises.push(api.post('/budgetLimits/', {
+                    budget: res.data.budget_id,
                     purc_category: purcCategories[i].purc_category_id,
                     spend_limit: parseFloat(parseFloat(form[i+2].value).toFixed(2))*100,
-                }).then(res=> {
-                    budgetId = res.data.budget_id;
-                    //console.log(res.data);
-                    setLoading(false);
-                }).catch(err => {
-                    console.log(err);
-                    setLoading(false);
-                    setError(err.response.statusText)
-                });
+                }));
             }
             setBudgets([...budgets, {
                 budget_name: res.data.budget_name,
@@ -60,9 +50,14 @@ function BudgetForm({budgets, setBudgets, spendLimits, setSpendLimits, handleClo
                 start_time: res.data.start_time,
                 end_time: res.data.end_time
             }]);
+
+            Promise.all(budgetPromises).then(() =>{
+                form.reset();
+                handleCloseForm();
+                setLoading(false);
+                fetchData().catch(console.error);
+            });
             
-            form.reset();
-            handleCloseForm();
         }).catch(err => {
             console.log(err);
             setLoading(false);

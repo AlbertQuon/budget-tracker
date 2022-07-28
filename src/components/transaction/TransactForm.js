@@ -5,7 +5,7 @@ import AuthContext from "../auth/AuthContext";
 import DatePicker from "react-datepicker";
 import dayjs from "dayjs";
 
-function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm, showForm}) {
+function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm, showForm, fetchData}) {
 
     // * do not put components into state, use state data to render component (due to inconsistencies)
     const {user} = useContext(AuthContext);
@@ -102,25 +102,31 @@ function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm, 
         }).then(res => {
             // post transact tax
             let transact = res.data;
+            let taxRatePromises = [];
+            let purchasesPromises = [];
+
             taxRates.forEach(tax => {
-                api.post('/transactionTax/', {
+                taxRatePromises.push(api.post('/transactionTax/', {
                     transact: transact.transact_id,
                     tax: tax.taxId,
                     user: user.user_id,
-                })
-            })
+                }));
+            });
             // post purchases
             purchases.forEach(purchase => {
-                api.post('/purchases/',{
+                purchasesPromises.push(api.post('/purchases/',{
                     item_name: purchase.item_name,
                     price: parseFloat(parseFloat(purchase.price).toFixed(2))*100,
                     transact: transact.transact_id,
                     purc_category: parseInt(purchase.purc_category),
-                })
+                }));
             });
-            // probably await for all promises to finish then close form
-            // TODO: Add latest transaction to useState
-            handleCloseForm();
+            let taxRateRes = Promise.all(taxRatePromises);
+            let purchasesRes = Promise.all(purchasesPromises);
+            Promise.all([taxRateRes, purchasesRes]).then(() => {
+                handleCloseForm();
+                fetchData();
+            });
         }).catch(err => {console.log(err); alert("Failed to submit"); event.target.reset();})
         
         

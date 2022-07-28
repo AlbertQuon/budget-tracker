@@ -1,4 +1,4 @@
-import { Container, Form, Button, Row, ListGroup, Col, InputGroup } from "react-bootstrap";
+import { Container, Form, Button, Row, Modal, Col, InputGroup } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
 import useAxios from "../utils/useAxios"
 import AuthContext from "../auth/AuthContext";
@@ -8,6 +8,9 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
     const {user} = useContext(AuthContext);
     //const [purcCategories, setPurcCategories] = useState([]);
     const [taxCategories, setTaxCategories] = useState([]);
+    const [showTaxDeleteBox, setShowTaxDeleteBox] = useState(false);
+    const [showPurcDeleteBox, setShowPurcDeleteBox] = useState(false);
+    const [formEvent, setFormEvent] = useState({});
     const api = useAxios();
     
     useEffect(() => {
@@ -59,7 +62,6 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
             user: user.user_id,
             tax_rate: form[1].value
         }).then(res => {
-            //console.log(res.data);
             setTaxCategories([...taxCategories, res.data]);
             form.reset();
         }).catch(err => {
@@ -69,32 +71,68 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
     
     // DELETE functions
     const onPurcCtgyDelete = (event) => {
-        event.preventDefault()
-        const form = event.currentTarget;
+        event.preventDefault();
+        const form = event.target;
         const url = `/purchasecategory/${form[0].value}/`
         api.delete(url, {
             data: { purc_category_id: form[0].value }
         }).then(() => {
             setPurcCategories(purcCategories.filter(ctgy => ctgy.purc_category_id.toString() !== form[0].value));
+            setShowPurcDeleteBox(false);
             form.reset();
         });
     }
 
     const onTaxCtgyDelete = (event) => {
-        event.preventDefault()
-        const form = event.currentTarget;
+        event.preventDefault();
+        const form = event.target;
         const url = `/taxcategory/${form[0].value}/`
         api.delete(url, {
             data: { tax_id: form[0].value }
         }).then(() => {
             setTaxCategories(taxCategories.filter(tax => tax.tax_id.toString() !== form[0].value));
+            setShowTaxDeleteBox(false);
             form.reset();
         });
     }
 
+    const ConfirmPurcDeleteBox = () => {
+        return ( 
+        <Modal id="confirmDeleteBox" backdrop="static" show={showPurcDeleteBox} contentClassName="dark-modal-content" onHide={() => setShowPurcDeleteBox(false)}>
+            <Modal.Header closeButton>
+            <Modal.Title>Confirmation</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p>Are you sure you want to delete this purchase category?</p>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={()=>{setFormEvent({});setShowPurcDeleteBox(false);}} >No</Button>
+                <Button variant="primary" onClick={()=>{onPurcCtgyDelete(formEvent);setShowPurcDeleteBox(false);}}>Confirm</Button>
+            </Modal.Footer>
+        </Modal> );
+    }  
+
+    const ConfirmTaxDeleteBox = () => {
+        return ( 
+        <Modal id="confirmDeleteBox" backdrop="static" show={showTaxDeleteBox} contentClassName="dark-modal-content" onHide={() => setShowTaxDeleteBox(false)}>
+            <Modal.Header closeButton>
+            <Modal.Title>Confirmation</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p>Are you sure you want to delete this tax category?</p>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={()=>{setFormEvent({});setShowTaxDeleteBox(false);}} >No</Button>
+                <Button variant="primary" onClick={()=>{onTaxCtgyDelete(formEvent);setShowTaxDeleteBox(false);}}>Confirm</Button>
+            </Modal.Footer>
+        </Modal> );
+    }  
+
     
     return ( 
     <Container>
+        {ConfirmPurcDeleteBox()}
+        {ConfirmTaxDeleteBox()}
         <Row className="my-4">
             <h3>Purchase Categories</h3>
             <Col>
@@ -112,7 +150,7 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
                 </Form>
             </Col>
             <Col>
-                <Form onSubmit={onPurcCtgyDelete}>
+                <Form onSubmit={(e) => {setShowPurcDeleteBox(true);setFormEvent(e);}}>
                     <Form.Group className="mb-3">
                         <Form.Label>Delete purchase category</Form.Label>
                         <Form.Select>
@@ -151,7 +189,7 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
                 </Form>
             </Col>
             <Col>
-                <Form onSubmit={onTaxCtgyDelete}>
+                <Form onSubmit={(e) => {setShowTaxDeleteBox(true);setFormEvent(e)}}>
                     <Form.Group className="mb-3">
                         <Form.Label>Delete tax category</Form.Label>
                         <Form.Select>
