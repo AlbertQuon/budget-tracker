@@ -1,7 +1,7 @@
 from . import models
 from . import serializers
 from rest_framework import generics
-
+from rest_framework import status
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -38,12 +38,26 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = serializers.RegisterSerializer
 
 
+class UpdateUserView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = serializers.UpdateUserSerializer
+    permission_classes = (IsAuthenticated,)
+    def get_object(self):
+        return self.request.user
+    #def update(self, request, *args, **kwargs):
+    #    serializer = self.serializer_class(request.user, data=request.data, partial=True,  context = {'request':request})
+    #    serializer.is_valid(raise_exception=True)
+    #    serializer.save()
+    #    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 @api_view(['GET'])
 def getRoutes(request):
     routes = [
         '/api/token/',
         '/api/register/',
-        '/api/token/refresh/'
+        '/api/token/refresh/',
+        '/api/updateUser/'
     ]
     return Response(routes)
 

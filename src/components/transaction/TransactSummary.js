@@ -74,7 +74,6 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
         }
         let budgetTotal = 0;
         var budgetTransactions = transactions.filter((transact)=> transact.budget === budget);
-        console.log(budgetTransactions)
         budgetTransactions.forEach((transact) => {
             if (purchases[transact.transact_id]) {
                 purchases[transact.transact_id].forEach((purc) => budgetTotal += purc.price / 100);

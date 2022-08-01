@@ -13,6 +13,8 @@ import Budget from '../budget/Budget';
 import RequireAuth from "../utils/RequireAuth"
 import NoMatch404 from './NoMatch404';
 import Transact from '../transaction/Transact';
+import VerifyAuth from '../utils/VerifyAuth';
+import UserSettings from '../auth/UserSettings';
 
 axios.defaults.xsrfCookieName = 'csrftoken'; 
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
@@ -29,10 +31,10 @@ function App() {
             <Route path="/" element={<Home/>}/>
             <Route path="*" element={<NoMatch404/>}/>
             
-            <Route path="login/*" element={<Login/>}/>
-            <Route path="register/*" element={<Register/>}/>
+            <Route path="login/*" element={<VerifyAuth><Login/></VerifyAuth>}/>
+            <Route path="register/*" element={<VerifyAuth><Register/></VerifyAuth>}/>
             
-            
+            <Route path="settings/*" element={<RequireAuth><UserSettings/></RequireAuth>}/>
             <Route path="budget/*" element={<RequireAuth><Budget/></RequireAuth>}/> 
             <Route path="transactions/*" element={<RequireAuth><Transact/></RequireAuth>}/>
           </Routes>

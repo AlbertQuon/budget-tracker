@@ -14,8 +14,7 @@ export const AuthProvider = ({children}) => {
 
     const [user, setUser] = useState( () => 
         localStorage.getItem("authTokens") ? 
-        jwt_decode(localStorage.getItem("authTokens")) : null
-    )
+        jwt_decode(localStorage.getItem("authTokens")) : null);
 
     const [loading, setLoading] = useState(true);
 
@@ -40,7 +39,7 @@ export const AuthProvider = ({children}) => {
             localStorage.setItem("authTokens", JSON.stringify(data));
             navigate("/");
         } else {
-            alert("Wrong password or username")
+            alert("Wrong password or username");
         }
     }
 
@@ -60,9 +59,34 @@ export const AuthProvider = ({children}) => {
         if (response.status === 201) {
             navigate("/login");
         } else {
-            alert("Something went wrong!")
+            alert("Something went wrong!");
         }
     }
+
+    const updateUser = async (newUsername, oldPassword, password, password2) => {
+        const response = await fetch("http://127.0.0.1:8000/api/updateUser/", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${authTokens?.access}`
+            },
+            body: JSON.stringify({
+                newUsername,
+                oldPassword,
+                password,
+                password2
+            }),
+        });
+
+        if (response.status === 200) { // update user
+            loginUser(newUsername, password).then(
+              ()=>{navigate("/settings/");}  
+            )
+        } else {
+            alert("Something went wrong!");
+        }
+    }
+
 
     const logoutUser = () => {
         setAuthTokens(null);
@@ -78,14 +102,15 @@ export const AuthProvider = ({children}) => {
         setAuthTokens,
         registerUser,
         loginUser,
-        logoutUser
+        logoutUser,
+        updateUser
     }
 
     useEffect( () => {
         if (authTokens) {
-            setUser(jwt_decode(authTokens.access))
+            setUser(jwt_decode(authTokens.access));
         }
-        setLoading(false)
+        setLoading(false);
     }, [authTokens, loading]);
 
     return (

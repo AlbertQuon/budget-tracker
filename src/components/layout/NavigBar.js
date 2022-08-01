@@ -20,6 +20,7 @@ function NavigBar() {
                 <Nav.Link as={NavLink} end to="/">Home</Nav.Link>
                     <Nav.Link as={NavLink} to="budget/">Budget</Nav.Link>
                     <Nav.Link as={NavLink} to="transactions/">Transactions</Nav.Link>
+                    <Nav.Link as={NavLink} to="settings/">Settings</Nav.Link>
                 </Nav>
                 <Button onClick={logoutUser}>Logout</Button>
                 </>  

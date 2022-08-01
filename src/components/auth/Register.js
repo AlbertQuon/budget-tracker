@@ -23,7 +23,7 @@ function Register() {
         }
         
     }
-
+    console.log(password === password2 && password.length > 7)
     return ( <Container>
         <Row>
             <h3>Register</h3>

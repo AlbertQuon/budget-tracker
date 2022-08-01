@@ -1,4 +1,5 @@
 from questionary import password
+from requests import request
 from rest_framework import serializers
 from . import models
 from django.contrib.auth.models import User
@@ -49,6 +50,41 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         return user
 
+
+class UpdateUserSerializer(serializers.ModelSerializer):
+    newUsername = serializers.CharField(write_only=True, required=True) 
+    oldPassword = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password2 = serializers.CharField(write_only=True, required=True)
+    
+
+    class Meta:
+        model = User
+        fields = ('id','newUsername','username','oldPassword','password','password2')
+        
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password": "Password fields don't match"})
+
+        if attrs['oldPassword'] == attrs['password']:
+            raise serializers.ValidationError({"oldPassword": "Entered the same password"})
+        return attrs
+    
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError({"old_password": "Old password is not correct"}) # TODO
+        return value
+    
+    def update(self, instance, validated_data):
+        instance.username = validated_data['newUsername']
+        instance.set_password(validated_data['password'])
+        
+        instance.save()
+        
+        return instance        
+    
+    
 
 class PurchaseCategorySerializer(serializers.ModelSerializer):
     class Meta:
