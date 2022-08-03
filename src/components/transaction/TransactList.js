@@ -113,7 +113,7 @@ function TransactList({purcCategories, purchases, transactions, taxCategories, t
         const { activeEventKey } = useContext(AccordionContext);
         const isCurrentEventKey = activeEventKey === eventKey;
         return <Button onClick={onClickExpand} style={{ backgroundColor: isCurrentEventKey ? 'dark-grey' : 'grey' }}>
-            {isCurrentEventKey ? 'Hide' : 'Expand'}
+            {isCurrentEventKey ? '-' : '+'}
             {children}
         </Button>
     }

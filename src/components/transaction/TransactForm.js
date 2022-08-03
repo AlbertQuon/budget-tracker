@@ -93,6 +93,7 @@ function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm, 
         }
         if (purchases.length < 1) {
             alert("Must have at least one purchase");
+            event.stopPropagation();
         }
         
         api.post('/transactions/', {

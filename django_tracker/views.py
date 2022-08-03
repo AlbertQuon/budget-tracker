@@ -15,18 +15,9 @@ from rest_framework import permissions
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import AllowAny, IsAuthenticated
-#from knox.views import LoginView as KnoxLoginView
-
 
 http_method_names = ['get', 'head']
-# @api_view(['GET'])
-# def current_user(request):
-#     """
-#     Determine the current user by their token, and return their data
-#     """
-    
-#     serializer = UserSerializer(request.user)
-#     return Response(serializer.data)
+
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = serializers.MyTokenObtainPairSerializer
@@ -44,11 +35,6 @@ class UpdateUserView(generics.UpdateAPIView):
     permission_classes = (IsAuthenticated,)
     def get_object(self):
         return self.request.user
-    #def update(self, request, *args, **kwargs):
-    #    serializer = self.serializer_class(request.user, data=request.data, partial=True,  context = {'request':request})
-    #    serializer.is_valid(raise_exception=True)
-    #    serializer.save()
-    #    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -62,19 +48,7 @@ def getRoutes(request):
     return Response(routes)
 
 
-# class LoginView(KnoxLoginView):
-#     permission_classes = (permissions.AllowAny,)
-
-#     def post(self, request, format=None):
-#         serializer = AuthTokenSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.validated_data['user']
-#         login(request, user)
-#         return super(LoginView, self).post(request, format=None)
-
-
 class PurchaseCategoryListView(generics.ListCreateAPIView):
-    #queryset=models.PurchaseCategory.objects.all()
     serializer_class = serializers.PurchaseCategorySerializer
     
     def get_queryset(self):
@@ -93,7 +67,6 @@ class AuthUserView(generics.CreateAPIView):
 
 
 class TaxCategoryListView(generics.ListCreateAPIView):
-    #queryset = models.TaxCategory.objects.all()
     serializer_class = serializers.TaxCategorySerializer
     def get_queryset(self):
         user = self.request.user.id
@@ -106,7 +79,6 @@ class TaxCategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class TransactTaxListView(generics.ListCreateAPIView):
-    #queryset = models.TransactTax.objects.all()
     serializer_class = serializers.TransactTaxSerializer
     filter_backends=(filters.DjangoFilterBackend,)
     filterset_fields=('tax', 'transact')
@@ -140,8 +112,6 @@ class PurchasesListView(generics.ListCreateAPIView):
         user = self.request.user.id
         transactions = models.Transactions.objects.filter(user=user)
         return models.Purchases.objects.filter(transact__in=transactions)
-    #filter_backends=(filters.DjangoFilterBackend,)
-    #filterset_fields=('purc_category', 'transact')
 
 
 class PurchasesDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -150,7 +120,6 @@ class PurchasesDetailView(generics.RetrieveUpdateDestroyAPIView):
     
 
 class BudgetListView(generics.ListCreateAPIView):
-    #queryset = models.Budget.objects.all()
     serializer_class = serializers.BudgetSerializer
     def get_queryset(self):
         user = self.request.user.id
@@ -163,7 +132,6 @@ class BudgetDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class BudgetLimitListView(generics.ListCreateAPIView):
-    #queryset = models.BudgetLimits.objects.all()
     serializer_class = serializers.BudgetLimitSerializer
     def get_queryset(self):
         user = self.request.user.id
@@ -171,37 +139,10 @@ class BudgetLimitListView(generics.ListCreateAPIView):
         purc_categories = models.PurchaseCategory.objects.filter(user=user)
         queryset = models.BudgetLimits.objects.filter(budget__in=budgets).filter(purc_category__in=purc_categories)
         return queryset
-    #filter_backends=(filters.DjangoFilterBackend,)
-    #filterset_fields=('budget', 'purc_category')
 
 
 class BudgetLimitDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.BudgetLimits.objects.all()
     serializer_class = serializers.BudgetLimitSerializer
-
-
-    
-# class AddPurchaseCategory(ListAPIView):
-#     queryset=PurchaseCategory.objects.all()
-#     serializer_class = serializers.PurchaseCategorySerializer
-    
-#     def post(self, request, format=None):
-#         self.http_method_names.append("GET")
-
-#         serializer = serializers.PurchaseCategorySerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_20)
-
-# class GetPurchaseCategory(CreateAPIView):
-#     #queryset=PurchaseCategory.objects.all()
-#     #serializer_class = PurchaseCategorySerializer
-
-#     def get(self, request, format=None):
-#         categories = PurchaseCategory.objects.all()
-#         serializer = serializers.PurchaseCategorySerializer(categories, many=True)
-#         return Response(serializer.data)
-
 
    

@@ -34,7 +34,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id','username','password','password2')
-        #extra_kwargs={'password':{'write-only':True}}
     
     def validate(self, attrs):
         if attrs['password'] != attrs['password2']:
@@ -42,8 +41,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         return attrs
     
     def create(self, validated_data):
-        #user = User.objects.create_user(validated_data['username'], validated_data['email'], validated_data['password'])
-        #return user
         user = User.objects.create(username=validated_data['username'])
         user.set_password(validated_data['password'])
         user.save()
@@ -73,7 +70,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
     def validate_oldPassword(self, value):
         user = self.context['request'].user
         if not user.check_password(value):
-            raise serializers.ValidationError({"oldPassword": "Old password is not correct"}) # TODO
+            raise serializers.ValidationError({"oldPassword": "Old password is not correct"}) 
         return value
     
     def update(self, instance, validated_data):
@@ -127,16 +124,6 @@ class BudgetLimitSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = models.BudgetLimits
 
-
-# class LoginSerializer(serializers.Serializer):
-#     username = serializers.CharField()
-#     password = serializers.CharField()
-    
-#     def validate(self, data):
-#         user = authenticate(**data)
-#         if user and user.is_active:
-#             return user
-#         return serializers.ValidationError('Incorrect Credentials Passed')
 
 
 
