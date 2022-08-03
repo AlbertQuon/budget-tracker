@@ -52,23 +52,22 @@ function Transact() {
             //console.log(res.data)
             let transactList = res.data;
             setTransactions(transactList);
-            fetchPurchases(transactList).then((purchasesRes)=>{
-                let purchasesData = {};
-                purchasesRes.forEach((res)=>{
-                    let purchase = res.data;
-                    if (purchase.length > 0) {
-                        if (purchasesData[purchase[0].transact] === undefined) {
-                            purchasesData[purchase[0].transact]= purchase;
-                        } else {
-                            purchasesData[purchase[0].transact].push(purchase[0]);
-                        }
-                    }
-                });
-                setPurchases(purchasesData);
-            });
         }).catch(err => {
             console.log(err)
         });
+        api.get('/purchases/')
+        .then(res => {
+            let purchases = res.data;
+            let purchasesData = {};
+            purchases.forEach(purc => {
+                if (!purchasesData.hasOwnProperty(purc.transact)) {
+                    purchasesData[purc.transact] = [purc];
+                } else {
+                    purchasesData[purc.transact].push(purc);
+                }
+            });
+            setPurchases(purchasesData);
+        }).catch(err => {console.log(err)})
     }
     useEffect(() => {
         fetchData();

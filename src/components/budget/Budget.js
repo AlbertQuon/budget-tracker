@@ -25,79 +25,55 @@ function Budget() {
     const handleShowForm = () => setShowForm(true);
     const handleCloseForm = () => setShowForm(false);
 
-    const fetchData = async () => {
-        try{
-            let budgetRes = await api.get('/budget/');
-            setBudgets(budgetRes.data);
-            let purcCategoryRes = await api.get('/purchasecategory/');
-            setPurcCategories(purcCategoryRes.data);
-            fetchSpendLimits(budgetRes.data, purcCategoryRes.data).then(spendLimitsRes => {
-                let spendLimitsData = {}
-                spendLimitsRes.forEach((res)=> {
-                    let limits = res.data; // however limits have size one
-                    if (limits.length > 0) {
-                        if (spendLimitsData[limits[0].budget] === undefined) {
-                            spendLimitsData[limits[0].budget] = limits;
-                        } else {
-                            spendLimitsData[limits[0].budget].push(limits[0]);
-                        }
-                    }
-                });
-                setSpendLimits(spendLimitsData);
+    const fetchData = () => {
+        api.get('/budget/')
+        .then(res => {
+            setBudgets(res.data);
+        }).catch(err => {
+            console.log(err);
+        });
+        api.get('/purchasecategory/')
+        .then(res => {
+            setPurcCategories(res.data);
+        }).catch(err => {
+            console.log(err);
+        });
+        api.get('/budgetLimits/').then(res=> {
+            let limits = res.data;
+            let spendLimitsData = {}
+            limits.forEach(limit => {
+                if (!spendLimitsData.hasOwnProperty(limit.budget)) {
+                    spendLimitsData[limit.budget] = [limit];
+                } else {
+                    spendLimitsData[limit.budget].push(limit);
+                }
             });
-            api.get('/transactions/')
-            .then(res => {
-                //console.log(res.data)
-                let transactList = res.data;
-                setTransactions(transactList);
-                fetchPurchases(transactList).then((purchasesRes)=>{
-                    let purchasesData = {};
-                    purchasesRes.forEach((res)=>{
-                        let purchase = res.data;
-                        if (purchase.length > 0) {
-                            if (purchasesData[purchase[0].transact] === undefined) {
-                                purchasesData[purchase[0].transact]= purchase;
-                            } else {
-                                purchasesData[purchase[0].transact].push(purchase[0]);
-                            }
-                        }
-                    });
-                    setPurchases(purchasesData);
-                });
-            }).catch(err => {
-        console.log(err)
-    });} catch (err) {
-            console.error(err)
-        }
+            setSpendLimits(spendLimitsData);
+        });
+    
+        api.get('/transactions/')
+        .then(res => {
+            setTransactions(res.data);
+        }).catch(err => {console.log(err)});
+
+        api.get('/purchases/')
+        .then(res => {
+            let purchases = res.data;
+            let purchasesData = {};
+            purchases.forEach(purc => {
+                if (!purchasesData.hasOwnProperty(purc.transact)) {
+                    purchasesData[purc.transact] = [purc];
+                } else {
+                    purchasesData[purc.transact].push(purc);
+                }
+            });
+            setPurchases(purchasesData);
+        });
     }
 
     useEffect(() => {
-
-        fetchData().catch(console.error);
-        
+        fetchData();
     }, []);
-
-    
-    
-    function fetchPurchases(transactList) {
-        let promises = [];
-        for (let i = 0; i < transactList.length; i++) {
-            let url = `/purchases/?transact=${transactList[i].transact_id}`;
-            promises.push(api.get(url));
-        }
-        return Promise.all(promises);
-    }
-
-    function fetchSpendLimits(budgetList, purcCategoryList) {
-        let promises = []
-        for (let i = 0; i < budgetList.length; i++) {
-            for (let j = 0; j < purcCategoryList.length; j++) {
-                let url = `/budgetLimits/?budget=${budgetList[i].budget_id}&purc_category=${purcCategoryList[j].purc_category_id}`;
-                promises.push(api.get(url));
-            }
-        }
-        return Promise.all(promises);
-    }
 
     const onBudgetDelete = (id) => {
         const url = `/budget/${id}/`
@@ -181,7 +157,7 @@ function Budget() {
                 <Col xs={9} md={10}><h2>Budget</h2></Col>
                 <Col xs={3} md={2}><Button onClick={handleShowForm}>Add budget</Button></Col>
             </Row>
-            <BudgetForm fetchData={fetchData} showForm={showForm} handleCloseForm={handleCloseForm} budgets={budgets} setBudgets={setBudgets} spendLimits={spendLimits} setSpendLimits={setSpendLimits}/>
+            <BudgetForm fetchData={fetchData} showForm={showForm} purcCategories={purcCategories} handleCloseForm={handleCloseForm} budgets={budgets} setBudgets={setBudgets} spendLimits={spendLimits} setSpendLimits={setSpendLimits}/>
             {ConfirmDeleteBox()}
             <Row className="my-2"><h3>Current budgets</h3></Row>
             <Row>

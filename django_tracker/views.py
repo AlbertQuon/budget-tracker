@@ -136,8 +136,12 @@ class TransactionsDetailView(generics.RetrieveUpdateDestroyAPIView):
 class PurchasesListView(generics.ListCreateAPIView):
     queryset = models.Purchases.objects.all()
     serializer_class = serializers.PurchasesSerializer
-    filter_backends=(filters.DjangoFilterBackend,)
-    filterset_fields=('purc_category', 'transact')
+    def get_queryset(self):
+        user = self.request.user.id
+        transactions = models.Transactions.objects.filter(user=user)
+        return models.Purchases.objects.filter(transact__in=transactions)
+    #filter_backends=(filters.DjangoFilterBackend,)
+    #filterset_fields=('purc_category', 'transact')
 
 
 class PurchasesDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -159,10 +163,16 @@ class BudgetDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class BudgetLimitListView(generics.ListCreateAPIView):
-    queryset = models.BudgetLimits.objects.all()
+    #queryset = models.BudgetLimits.objects.all()
     serializer_class = serializers.BudgetLimitSerializer
-    filter_backends=(filters.DjangoFilterBackend,)
-    filterset_fields=('budget', 'purc_category')
+    def get_queryset(self):
+        user = self.request.user.id
+        budgets = models.Budget.objects.filter(user=user)
+        purc_categories = models.PurchaseCategory.objects.filter(user=user)
+        queryset = models.BudgetLimits.objects.filter(budget__in=budgets).filter(purc_category__in=purc_categories)
+        return queryset
+    #filter_backends=(filters.DjangoFilterBackend,)
+    #filterset_fields=('budget', 'purc_category')
 
 
 class BudgetLimitDetailView(generics.RetrieveUpdateDestroyAPIView):

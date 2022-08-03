@@ -14,20 +14,8 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
     const api = useAxios();
     
     useEffect(() => {
-        getPurcCategories();
         getTaxCategories();
     }, [])
-
-    // GET Functions
-    function getPurcCategories() {
-        api.get('/purchasecategory/')
-        .then(res => {
-            //console.log(res.data)
-            setPurcCategories(res.data);
-        }).catch(err => {
-            console.log(err);
-        });
-    }
 
     function getTaxCategories() {
         api.get('/taxcategory/')

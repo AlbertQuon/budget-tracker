@@ -5,23 +5,12 @@ import useAxios from "../utils/useAxios";
 import DatePicker from "react-datepicker";
 import dayjs from "dayjs";
 
-function BudgetForm({budgets, setBudgets, handleCloseForm, showForm, fetchData}) {
+function BudgetForm({budgets, setBudgets, handleCloseForm, showForm, fetchData, purcCategories}) {
     const {user} = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const [purcCategories, setPurcCategories] = useState([]);
     const [endDate, setEndDate] = useState(new Date());
     const api = useAxios();
-
-    useEffect(() => {
-        api.get('/purchasecategory/')
-        .then(res => {
-            //console.log(res.data)
-            setPurcCategories(res.data)
-        }).catch(err => {
-            console.log(err)
-        })
-    }, [])
 
     const handleSubmit = (event) => {
         event.preventDefault();
