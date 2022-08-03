@@ -70,10 +70,10 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"oldPassword": "Entered the same password"})
         return attrs
     
-    def validate_old_password(self, value):
+    def validate_oldPassword(self, value):
         user = self.context['request'].user
         if not user.check_password(value):
-            raise serializers.ValidationError({"old_password": "Old password is not correct"}) # TODO
+            raise serializers.ValidationError({"oldPassword": "Old password is not correct"}) # TODO
         return value
     
     def update(self, instance, validated_data):
