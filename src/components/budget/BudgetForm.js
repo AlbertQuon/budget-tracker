@@ -7,19 +7,11 @@ import useAxios from "../utils/useAxios";
 import DatePicker from "react-datepicker";
 import dayjs from "dayjs";
 
-function BudgetForm({budgets, setBudgets, handleCloseForm, showForm, fetchData, purcCategories}) {
+function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchData, purcCategories}) {
     const {user} = useContext(AuthContext);
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const [endDate, setEndDate] = useState(new Date());
-    const api = useAxios();
 
     const handleFormSubmit = (values, actions) => {
-        //event.preventDefault();
-        //const form = event.target;
-        console.log(values, actions);
-
-        //setLoading(true);
         api.post('/budget/', {
             budget_name: values.budgetName,
             start_time: dayjs(Date.now()).format("YYYY-MM-DD"),
@@ -27,7 +19,6 @@ function BudgetForm({budgets, setBudgets, handleCloseForm, showForm, fetchData, 
             user: user.user_id,
         }).then(res=> {
             let budgetPromises = [];
-            //console.log(res.data);
             for (let i = 0; i < purcCategories.length; i++) {
                 budgetPromises.push(api.post('/budgetLimits/', {
                     budget: res.data.budget_id,
@@ -45,14 +36,12 @@ function BudgetForm({budgets, setBudgets, handleCloseForm, showForm, fetchData, 
             return Promise.all(budgetPromises).then(() =>{
                 actions.resetForm();
                 handleCloseForm();
-                setLoading(false);
-                fetchData().catch(console.error);
+                fetchData();
             });
             
         }).catch(err => {
             console.log(err);
-            setLoading(false);
-            setError(err.response.statusText)
+            setError(err);
         });
         
     }
@@ -67,7 +56,7 @@ function BudgetForm({budgets, setBudgets, handleCloseForm, showForm, fetchData, 
         const [field,, {setValue}] = useField(props); // ignoring errors
         return (
             <DatePicker {...field} {...props} 
-                minDate={Date.now()} selected={(field.value && new Date(field.value)) || null} onChange={(date) => {setEndDate(date); setValue(date);}}
+                minDate={Date.now()} selected={(field.value && new Date(field.value)) || null} onChange={(date) => {setValue(date);}}
             />
         )
     }
@@ -81,7 +70,7 @@ function BudgetForm({budgets, setBudgets, handleCloseForm, showForm, fetchData, 
                 <Card.Body>
                 <Formik
                     validationSchema={validSchema}
-                    initialValues={{budgetDate: endDate, budgetLimits: Array(purcCategories.length).fill(0), budgetName: ""}}
+                    initialValues={{budgetDate: Date.now(), budgetLimits: Array(purcCategories.length).fill(0), budgetName: ""}}
                     onSubmit={(values, actions) => handleFormSubmit(values, actions)}
                 >
                     {({handleSubmit, handleChange, handleBlur, values, touched, isValid, errors, isSubmitting}) => (

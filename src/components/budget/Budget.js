@@ -157,7 +157,7 @@ function Budget() {
                 <Col xs={9} md={10}><h2>Budget</h2></Col>
                 <Col xs={3} md={2}><Button onClick={handleShowForm}>Add budget</Button></Col>
             </Row>
-            <BudgetForm fetchData={fetchData} showForm={showForm} purcCategories={purcCategories} handleCloseForm={handleCloseForm} budgets={budgets} setBudgets={setBudgets} spendLimits={spendLimits} setSpendLimits={setSpendLimits}/>
+            <BudgetForm api={api} fetchData={fetchData} showForm={showForm} purcCategories={purcCategories} handleCloseForm={handleCloseForm} budgets={budgets} setBudgets={setBudgets} spendLimits={spendLimits} setSpendLimits={setSpendLimits}/>
             {ConfirmDeleteBox()}
             <Row className="my-2"><h3>Current budgets</h3></Row>
             <Row>
