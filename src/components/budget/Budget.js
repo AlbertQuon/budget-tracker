@@ -84,7 +84,6 @@ function Budget() {
             let newBudgets = budgets.filter((budget) => budget.budget_id !== id);
             setBudgets(newBudgets);
             setShowDeleteBox(false);
-            //console.log(res);
         }).catch(err => {
             console.log(err);
         });
@@ -96,7 +95,6 @@ function Budget() {
             return <Card.Text>No spend limits found</Card.Text>;
         }
         const limitsList = []
-        //console.log(spendLimits)
         spendLimits[budget_id].forEach((limit)=>{
             let purcCtgy = purcCategories.find(ctgy => ctgy.purc_category_id === limit.purc_category);
             if (purcCtgy !== undefined) {
@@ -105,7 +103,6 @@ function Budget() {
                 for (let transact in purchases) {
                     if (purchases.hasOwnProperty(transact) && transactions.find((transaction) => transaction.transact_id.toString()===transact)?.budget === budget_id) {
                         let purcCtgyPurchases = purchases[transact].filter(purc => purc.purc_category && purc.purc_category === limit.purc_category);
-                        //console.log(purcCtgyPurchases);
                         purcCtgyPurchases.forEach((purc)=> purcCtgyTotal += parseFloat((purc.price/100).toFixed(2)));
                     }
                 }
@@ -114,22 +111,10 @@ function Budget() {
                     {purcCtgy.purc_category_name}: 
                     ${purcCtgyTotal.toFixed(2)}/{(limit.spend_limit/100).toFixed(2)} </Card.Text>
                 );
-            } else {
-                //console.log(limit.purc_category)
-                //console.log(purcCategories)
             }
-            //console.log(limit)
         });
         
         return limitsList.length > 0 ? limitsList : <Card.Text>No spend limits found</Card.Text>;
-    }
-
-    const checkIfBudgetCurrent = (end_time) => {
-        let date = dayjs(end_time).toDate();
-        if(date > Date.now()) {
-            return <Badge bg="info">Active</Badge>
-        }
-        return null;
     }
 
     const ConfirmDeleteBox = () => {
@@ -147,7 +132,7 @@ function Budget() {
                 <Button variant="primary" onClick={() => onBudgetDelete(pendingDeletionBudget)}>Confirm</Button>
             </Modal.Footer>
         </Modal> );
-    }    //  <Card.Text><Button onClick={() => {if (window.confirm('Are you sure you wish to delete this budget?')) onBudgetDelete(budget.budget_id)}}>Delete</Button></Card.Text>
+    }
    
     return ( 
     <Container className="">
@@ -161,11 +146,11 @@ function Budget() {
             {ConfirmDeleteBox()}
             <Row className="my-2"><h3>Current budgets</h3></Row>
             <Row>
-                {budgets.filter((budget)=> (dayjs(budget.end_time).toDate() > Date.now())).map((budget)=>(
-                    <Col xs={3} md={3}>
+                {budgets.filter((budget)=> (dayjs(budget.end_time).diff(dayjs(),'day') >= 0)).map((budget, index)=>(
+                    <Col xs={3} md={3} key={index}>
                     <Card className="text-white bg-dark" key={budget.budget_id} style={{ width: '18rem' }}>
                         <Card.Body>
-                            <Card.Title>{budget.budget_name} {checkIfBudgetCurrent(budget.end_time)}</Card.Title>
+                            <Card.Title>{budget.budget_name} <Badge bg="info">Active</Badge></Card.Title>
                             <Card.Subtitle className=""><strong>{budget.start_time}</strong></Card.Subtitle>
                             <Card.Subtitle className="mb-1"><strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
                             <Card.Text>Spend Limits</Card.Text>
@@ -178,11 +163,11 @@ function Budget() {
             </Row>
             <Row className="my-2"><h3>Past budgets</h3></Row>
             <Row>
-            {budgets.filter((budget)=> (dayjs(budget.end_time).toDate() <= Date.now())).map((budget)=>(
-                    <Col xs={3} md={3}>
+            {budgets.filter((budget)=> (dayjs(budget.end_time).diff(dayjs(),'day') <= -1)).map((budget, index)=>(
+                    <Col xs={3} md={3} key={index}>
                     <Card className="text-white bg-dark" key={budget.budget_id} style={{ width: '18rem' }}>
                         <Card.Body>
-                            <Card.Title>{budget.budget_name} {checkIfBudgetCurrent(budget.end_time)}</Card.Title>
+                            <Card.Title>{budget.budget_name}</Card.Title>
                             <Card.Subtitle className=""><strong>{budget.start_time}</strong> - <strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
                             <Card.Text>Spend Limits</Card.Text>
                             {createSpendLimitList(budget.budget_id)}

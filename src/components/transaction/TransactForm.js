@@ -170,9 +170,9 @@ function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm, 
                     <Form.Label>Budget</Form.Label>
                     {budgets.length > 0 ? // e.target value is string
                         <Form.Select onChange={(e) => {setCurrentBudget(budgets[budgets.findIndex(b => b.budget_id===parseInt(e.target.value))])}}> 
-                        <option disabled selected value>Select a budget</option>
+                        <option disabled value>Select a budget</option>
                         {budgets.map((budget) => {
-                            if (Date.parse(budget.end_time) >= Date.now()) {
+                            if (dayjs(budget.end_time).diff(dayjs(), 'day') >= 0) {
                                 return (<option key={budget.budget_id} value={budget.budget_id}>{budget.budget_name}
                                 </option>);
                             }

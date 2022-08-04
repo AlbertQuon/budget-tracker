@@ -18,19 +18,17 @@ function Transact() {
     const handleShowForm = () => setShowForm(true);
     const handleCloseForm = () => setShowForm(false);
 
-    // tab layout (summary, add, view all)
+    // tab layout (summary, add + view all)
     const api = useAxios();
     const fetchData = () => {
         api.get('/purchasecategory/')
         .then(res => {
-            //console.log(res.data)
             setPurcCategories(res.data);
         }).catch(err => {
             console.log(err);
         });
         api.get('/taxcategory/')
         .then(res => {
-            //console.log(res.data)
             setTaxCategories(res.data);
         }).catch(err => {
             console.log(err);
@@ -86,19 +84,6 @@ function Transact() {
         }).catch(err => {
             console.log(err);
         });
-    }
-
-    function fetchPurchases(transactList) {
-        let promises = [];
-        for (let i = 0; i < transactList.length; i++) {
-            let url = `/purchases/?transact=${transactList[i].transact_id}`;
-            promises.push(api.get(url));
-        }
-        return Promise.all(promises);
-    }
-
-    const transactTaxList = (transact_id) => {
-        return;
     }
 
     return ( 
