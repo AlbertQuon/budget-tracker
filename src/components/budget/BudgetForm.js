@@ -1,11 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { Modal, Row, Form, Card, Button, Spinner, Alert } from "react-bootstrap";
-import { Formik, useField, FieldArray, Field } from 'formik';
+import { Formik, useField, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import AuthContext from "../auth/AuthContext";
-import useAxios from "../utils/useAxios";
-import DatePicker from "react-datepicker";
 import dayjs from "dayjs";
+import { DatePickerField } from "../utils/DatePickerField";
 
 function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchData, purcCategories}) {
     const {user} = useContext(AuthContext);
@@ -52,14 +51,6 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
         budgetLimits: Yup.array().of(Yup.number().required().positive()).required()
     });
 
-    const DatePickerField = ({...props}) => {
-        const [field,, {setValue}] = useField(props); // ignoring errors
-        return (
-            <DatePicker {...field} {...props} 
-                minDate={Date.now()} selected={(field.value && new Date(field.value)) || null} onChange={(date) => {setValue(date);}}
-            />
-        )
-    }
     // DO NOT FORGET HANDLE CHANGE ATTRIBUTE
     /*<Form.Control type="text" onKeyPress={(e) => !/^\d*(\.\d{0,2})?$/.test(e.key) && e.preventDefault()} placeholder="Spend limit"/>*/
     return ( 
