@@ -109,7 +109,7 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
             <Card className="summaryCard-dark">
             <Card.Body>
                 <Card.Title>Taxes</Card.Title>
-                {taxCategories.map((tax)=><Card.Text>{tax.tax_name}: ${calcTaxCtgySpending(tax.tax_id, tax.tax_rate)}</Card.Text>)}
+                {taxCategories.map((tax, index)=><Card.Text key={index}>{tax.tax_name}: ${calcTaxCtgySpending(tax.tax_id, tax.tax_rate)}</Card.Text>)}
             </Card.Body>
             </Card> 
             </Col>
