@@ -1,11 +1,16 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { Modal, Form, Card, Button, Row, Col, FormCheck } from "react-bootstrap";
 import useAxios from "../utils/useAxios";
 import AuthContext from "../auth/AuthContext";
 import DatePicker from "react-datepicker";
 import dayjs from "dayjs";
+import { Formik, useField, FieldArray } from 'formik';
+import * as Yup from 'yup';
+import { DatePickerField } from "../utils/DatePickerField";
+import { useCallback } from "react";
+import { ref } from "yup";
 
-function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm, showForm, fetchData}) {
+function TransactForm({api, purcCategories, taxCategories, budgets, handleCloseForm, showForm, fetchData}) {
 
     // * do not put components into state, use state data to render component (due to inconsistencies)
     const {user} = useContext(AuthContext);
@@ -16,148 +21,93 @@ function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm, 
     const [taxRates, setTaxRates] = useState([]);
     const [transactDate, setTransactDate] = useState(Date.now());
     const [total, setTotal] = useState(0.00);
-    const [currentBudget, setCurrentBudget] = useState({});
-    const api = useAxios();
-
-    useEffect(() => {
-        if (budgets.length > 0) {
-            setCurrentBudget(budgets[0]);
-        }
-    }, [])
-    useEffect(() => {
-        /* update subtotal*/
-        let newSubtotal = parseFloat(0.00);
-        for (let purcPrice in purchasePrices) {
-            newSubtotal += parseFloat(purchasePrices[purcPrice].price);
-        }
-        setSubtotal(newSubtotal);
-        /* update total */
-        let newTotal = parseFloat(0.00);
-        taxRates.forEach(tax => {
-            newTotal += newSubtotal*parseFloat((tax.taxRate/100).toFixed(2));
-        })
-        setTotal(newTotal+newSubtotal);
-        }, [purchasePrices, taxRates]);
-
-    const addPurchaseField = () => {
-        let key = purchaseCounter.toString();
-        
-        setPurchaseCounter(purchaseCounter => purchaseCounter+1);
-        setPurchasePrices(purchasePrices => ([...purchasePrices, {key: key, price: 0.00}]));
-    }
-
-    const removePurchaseField = (key) => {
-        setPurchasePrices(purchasePrices.filter(purc => purc.key !== key));
-    }
-
-    const onPriceChange = (key, value) => {
-        let price = parseFloat(parseFloat(value).toFixed(2));
-        let index = purchasePrices.findIndex(price => price.key === key);
-        if (index !== -1) {
-            setPurchasePrices(purchasePrices => 
-                purchasePrices.slice(0, index).concat([{key:key, price: price}]).concat(purchasePrices.slice(index+1)))
-        } 
-    }
-
-    const onTaxChecked = (taxId, taxRate, isChecked) => { 
-        // use slice, due to splice mutating the state and not updating the reference
-        // taxId is int, object.keys is string
-        if (isChecked) {
-            setTaxRates(taxRates => [...taxRates, {taxId: taxId, taxRate: taxRate}]);
-        } else {
-            /*let index = taxRates.findIndex(tax => Object.keys(tax)[0] === taxId.toString()); 
-            if (index !== -1) {
-                setTaxRates(taxRates => taxRates.slice(0,index).concat(taxRates.slice(index+1)));
-            } */
-            setTaxRates(taxRates => taxRates.filter(tax => tax.taxId !== taxId))
-        }
-    }
+    const [currentBudget, setCurrentBudget] = useState(null);
+    const [formValues, setFormValues] = useState(null);
     
-    const onFormSubmit = (event) => {
-        event.preventDefault();
-        var form = event.target;
-        /*Array.from(form.elements).forEach((input) => {
-            //console.log("input", input.type, input.value, input.id);
-        });*/
-        var budget = form[0].value;
+    const formRef = useCallback(node=> {
+        if (node !== null) {
+            //console.log(node.values)
+            let newSubtotal = parseFloat(0.00);
+            let newTotal = parseFloat(0.00);
 
-        var purchases = [];
-        for (let i = 0; i < purchasePrices.length; i++) {
-            let formIndex = 3 + 4*i;
-            //console.log("input", form.elements[i].type, form.elements[i].value, form.elements[i].id);
-            purchases.push({
-                purc_category: form.elements[formIndex].value,
-                item_name: form.elements[formIndex+1].value,
-                price: form.elements[formIndex+2].value
-            });
+            /* update subtotal*/
+            let purchasesValues = node.values.purchases ? node.values.purchases : [];
+            purchasesValues.forEach(purc => {if (typeof purc.price === 'number') {newSubtotal+= purc.price}});
+            
+            /* update total */
+            let taxRateValues = node.values.taxRates ? node.values.taxRates : [];
+            for (let i = 0; i < taxRateValues.length; i++) {
+                if (taxRateValues[i]) {
+                    newTotal += newSubtotal*parseFloat((taxCategories[i].tax_rate/100).toFixed(2));
+                }
+            }
+            if (!isNaN(newSubtotal)) {
+                setSubtotal(newSubtotal);
+                setTotal(newTotal+newSubtotal);
+            }
         }
-        if (purchases.length < 1) {
-            alert("Must have at least one purchase");
-            event.stopPropagation();
-        }
+    }, [taxCategories])
+
+    const onFormSubmit = (values, actions) => {
+
+        let budgetValue = values.budget;
+        let purchasesValues = values.purchases;
+        let transactDateValue = values.transactDate;
+        let taxRateValues = values.taxRates;
         
         api.post('/transactions/', {
-            transact_date: dayjs(transactDate).format("YYYY-MM-DD"),
+            transact_date: dayjs(transactDateValue).format("YYYY-MM-DD"),
             user: user.user_id,
-            budget: budget
+            budget: budgetValue
         }).then(res => {
             // post transact tax
             let transact = res.data;
             let taxRatePromises = [];
             let purchasesPromises = [];
 
-            taxRates.forEach(tax => {
-                taxRatePromises.push(api.post('/transactionTax/', {
-                    transact: transact.transact_id,
-                    tax: tax.taxId,
-                    user: user.user_id,
-                }));
+            taxRateValues.forEach((tax, index) => {
+                if (tax) {
+                    taxRatePromises.push(api.post('/transactionTax/', {
+                        transact: transact.transact_id,
+                        tax: taxCategories[index].tax_id,
+                        user: user.user_id,
+                    }));
+                }
             });
             // post purchases
-            purchases.forEach(purchase => {
+            purchasesValues.forEach(purchase => {
                 purchasesPromises.push(api.post('/purchases/',{
-                    item_name: purchase.item_name,
+                    item_name: purchase.itemName,
                     price: parseFloat(parseFloat(purchase.price).toFixed(2))*100,
                     transact: transact.transact_id,
-                    purc_category: parseInt(purchase.purc_category),
+                    purc_category: parseInt(purchase.purcCategory),
                 }));
             });
             let taxRateRes = Promise.all(taxRatePromises);
             let purchasesRes = Promise.all(purchasesPromises);
-            Promise.all([taxRateRes, purchasesRes]).then(() => {
+            return Promise.all([taxRateRes, purchasesRes]).then(() => {
                 handleCloseForm();
+                //actions.resetForm();
                 fetchData();
             });
-        }).catch(err => {console.log(err); alert("Failed to submit"); event.target.reset();})
-        
+        }).catch(err => {console.log(err); alert("Failed to submit");})
         
     }
 
-    var purchaseFields = purchasePrices.map((field) => (
-        <Form.Group as={Row} key={field.key}>
-            <Col>
-            <Form.Select>
-            <option disabled selected value>Select a purchase category</option>
-                {purcCategories.map((ctgy) => (<option key={ctgy.purc_category_id}
-                                value={`${ctgy.purc_category_id}`}>{ctgy.purc_category_name}</option>))}
-            </Form.Select></Col>
-            <Col>
-            <Form.Control type="text" placeholder="Enter item name"/></Col>
-            <Col>
-            <Form.Control onChange={e => onPriceChange(field.key, e.target.value)} 
-            onKeyPress={(e) => !/^\d*(\.\d{0,2})?$/.test(e.key) && e.preventDefault()} defaultValue="0.00" type="number" step="0.01" min="0" placeholder="0.00"/>
-            </Col>
-            <Col>
-            <Button onClick={()=> {removePurchaseField(field.key)}}>-</Button></Col>
-        </Form.Group>
-    ));
-
-    const calcTaxPrice = (taxId) => {
-        let tax = taxRates.find(tax => tax.taxId === taxId);
-        if (tax === undefined) { return null;}
-        return "$" + (parseFloat((tax.taxRate/100).toFixed(2)) * subtotal).toFixed(2);
+    const calcTaxPrice = (taxRate) => {
+        return "$" + (parseFloat((taxRate/100).toFixed(2)) * subtotal).toFixed(2);
     }
     
+    const validSchema = Yup.object().shape({
+        budget: Yup.number().required("Please select a budget"),
+        transactDate: Yup.date().required(),
+        purchases: Yup.array().of(Yup.object().shape({
+            purcCategory: Yup.number().required("Select a purchase category"),
+            itemName: Yup.string().required("Enter an item name"),
+            price: Yup.number().positive("Enter a valid price").required("Please enter a price")
+        })).min(1).required(),
+        taxRates: Yup.array().of(Yup.bool())
+    })
 
     return (
     <Modal backdrop="static" show={showForm} onHide={handleCloseForm} contentClassName="transactForm-modal-content" dialogClassName="transactForm-modal-dialog">
@@ -165,58 +115,124 @@ function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm, 
             <Modal.Title>Add transaction</Modal.Title>
         </Modal.Header>
         <Modal.Body className="m-3">
-            <Form onSubmit={onFormSubmit}>
+            <Formik
+                validationSchema={validSchema}
+                onSubmit={(values, actions) => onFormSubmit(values, actions)}
+                initialValues={{budget: budgets[0]?.budget_id, purchases: []}}
+                innerRef={formRef}
+            >
+            {({handleSubmit, handleChange, handleBlur, values, touched, setFieldValue, errors}) => (
+                <Form noValidate onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
                     <Form.Label>Budget</Form.Label>
                     {budgets.length > 0 ? // e.target value is string
-                        <Form.Select onChange={(e) => {setCurrentBudget(budgets[budgets.findIndex(b => b.budget_id===parseInt(e.target.value))])}}> 
-                        <option disabled value>Select a budget</option>
-                        {budgets.map((budget) => {
-                            if (dayjs(budget.end_time).diff(dayjs(), 'day') >= 0) {
-                                return (<option key={budget.budget_id} value={budget.budget_id}>{budget.budget_name}
-                                </option>);
-                            }
+                        <Form.Select name="budget" onChange={selectedOption => {
+                            //let event = {target: {name:"budget", value: selectedOption}}; 
+                           // handleChange(event);
+                            //console.log(event);
+                            handleChange("budget")(selectedOption.target.value)
+                            }}
+                            onBlur={()=>handleBlur({target: {name: "budget"}})}
+                            isValid={!errors.budget}
+                            isInvalid={!!errors.budget}
+                            > 
+                            <option disabled value>Select a budget</option>
+                            {budgets.map((budget) => {
+                                if (dayjs(budget.end_time).diff(dayjs(), 'day') >= 0) {
+                                    return (<option key={budget.budget_id} value={budget.budget_id}>{budget.budget_name}
+                                    </option>);
+                                }
                         })}
                         </Form.Select> : <p><strong>No budgets found</strong></p>
                     }
+                    {errors.budget ? <p className="text-danger">{errors.budget}</p> : null}
                 </Form.Group>
-                <DatePicker minDate={Date.parse(currentBudget.start_time)} maxDate={Date.now()} selected={transactDate} onChange={(date) => setTransactDate(date)}></DatePicker>
-                <Form.Group className="mb-3">
-                    <Form.Label className="me-2">Purchases</Form.Label>
-                    <Button onClick={addPurchaseField}>Add</Button>
-                </Form.Group>
-                <Form.Group as={Row}>
-                    <Col>Purchase Category</Col>
-                    <Col>Item Name</Col>
-                    <Col>Price</Col>
-                    <Col>Delete</Col>
-                </Form.Group>
-                {purchaseFields}
+                <DatePickerField name="transactDate" onChange={handleChange} onBlur={handleBlur} 
+                    minDate={dayjs(budgets.find(budget => budget.budget_id === values.budget).start_time).toDate()} maxDate={Date.now()}/>
+                {errors.transactDate ? <p className="text-danger">{errors.transactDate}</p> : null}
+                <FieldArray name="purchases">
+                    {(arrayHelpers) => {
+                        return (
+                        <div>
+                        <Form.Group className="mb-3">
+                            <Form.Label className="me-2">Purchases</Form.Label>
+                            <Button onClick={() => arrayHelpers.push('')}>Add</Button>
+                        </Form.Group>
+                        <Form.Group as={Row}>
+                            <Col xs={4}>Purchase Category</Col>
+                            <Col xs={4}>Item Name</Col>
+                            <Col xs={2}>Price</Col>
+                            <Col xs={2}>Delete</Col>
+                        </Form.Group>
+                            {values.purchases && values.purchases.length > 0 ? (
+                                <div>{values.purchases.map((purc, index)=> (
+                                <Row key={index}>
+                                    <Col xs={4}>
+                                    <Form.Select name={`purchases.${index}.purcCategory`} onChange={selectedOption => 
+                                        {handleChange(`purchases.${index}.purcCategory`)(selectedOption.target.value);}}
+                                        isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.purcCategory} 
+                                        isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.purcCategory) || values.purchases[index].purcCategory !== ""}
+                                        onBlur={()=>handleBlur({target: {name: `purchases.${index}.purcCategory`}})}>
+                                        <option selected value="">Select a purchase category</option>
+                                        {purcCategories?.map((ctgy, index) => (<option key={index}
+                                                        value={`${ctgy.purc_category_id}`}>{ctgy.purc_category_name}</option>))}
+                                    </Form.Select>
+                                    </Col>
+                                    <Col xs={4}><Form.Control
+                                        isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.itemName} 
+                                        isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.itemName) || touched.hasOwnProperty("purchases") && touched.purchases[index]?.itemName}
+                                        name={`purchases.${index}.itemName`} type="text" onChange={handleChange} onBlur={handleBlur}/></Col>
+                                    <Col xs={2}><Form.Control 
+                                        isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.price} 
+                                        isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.price) || touched.hasOwnProperty("purchases") && touched.purchases[index]?.price}
+                                        name={`purchases.${index}.price`} type="number" onChange={handleChange} onBlur={handleBlur}/></Col>
+                                    <Col xs={2}><Button onClick={() => arrayHelpers.remove(index)}>-</Button></Col>
+                                    <Form.Control.Feedback>{errors.hasOwnProperty("purchases") && errors.purchases[index] ? "errors": null}</Form.Control.Feedback>
+                                </Row>
+                            ))}</div>
+                            ) : (null)}
+                            {typeof errors.purchases === 'string' ? <p>{errors.purchases}</p>: null}
+                        </div>
+                        );
+                    }}
+                </FieldArray>
                 <Form.Group as={Row} className="my-3">   
-                    <Col><p>Subtotal:</p></Col>
-                    <Col><p>${subtotal.toFixed(2)}</p></Col>
+                    <Col xs={10}><p>Subtotal:</p></Col>
+                    <Col xs={2}><p>${subtotal.toFixed(2)}</p></Col>
                 </Form.Group>
                 <Form.Group className="mb-3">
                     <Form.Label className="me-2">Tax</Form.Label>
-                    {taxCategories.length !== 0 ? 
-                        taxCategories.map((tax) => (
-                            <Row key={tax.tax_id}>
-                            <Col>
-                                <p>{tax.tax_name} ({tax.tax_rate}%)</p>
-                                <FormCheck onChange={e=>(onTaxChecked(tax.tax_id, tax.tax_rate, e.target.checked))}></FormCheck>
-                            </Col>
-                            <Col>
-                                <p>{calcTaxPrice(tax.tax_id)}</p>
-                            </Col>
-                            </Row>
-                        ))
-                    : <Row>No tax categories found</Row>
-                    }
+                    <FieldArray name="taxRates">
+                    {(arrayHelpers) => {
+                        return(
+                            <div>
+                            {taxCategories.length !== 0 ? 
+                                taxCategories.map((tax, index) => (
+                                    <Row key={index}>
+                                    <Col xs={8}>
+                                        <p>{tax.tax_name} ({tax.tax_rate}%)</p>
+                                    </Col>
+                                    <Col xs={2}>
+                                        <Form.Check name={`taxRates.${index}`} onChange={e => setFieldValue(`taxRates.${index}`, e.target.checked)} onBlur={handleBlur} 
+                                            feedback={errors.taxRates ? errors.taxRates[index] : null} feedbackType="invalid"/>
+                                    </Col>
+                                    <Col xs={2}>
+                                        <p>{values.taxRates && values.taxRates[index] ? calcTaxPrice(tax.tax_rate) : null}</p>
+                                    </Col>
+                                    </Row>
+                                ))
+                            : <Row>No tax categories found</Row>
+                            }
+                            </div>
+                        )
+                    }}
+                    </FieldArray>
+                    
                 </Form.Group>
                 
                 <Row>   
-                    <Col><p>Total:</p></Col>
-                    <Col><p>${total.toFixed(2)}</p></Col>
+                    <Col xs={10}><p>Total:</p></Col>
+                    <Col xs={2}><strong>${total.toFixed(2)}</strong></Col>
                 </Row>
                 
                 
@@ -224,6 +240,10 @@ function TransactForm({purcCategories, taxCategories, budgets, handleCloseForm, 
                     Submit
                 </Button>
             </Form>
+            )}
+            
+            </Formik>
+            
         </Modal.Body>
     </Modal>
     );

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Modal, Row, Form, Card, Button, Spinner, Alert } from "react-bootstrap";
+import { Modal, Row, Form, Card, Button, Spinner, Alert, Col } from "react-bootstrap";
 import { Formik, useField, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import AuthContext from "../auth/AuthContext";
@@ -13,8 +13,9 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
     const handleFormSubmit = (values, actions) => {
         api.post('/budget/', {
             budget_name: values.budgetName,
-            start_time: dayjs(Date.now()).format("YYYY-MM-DD"),
-            end_time: dayjs(values.budgetDate).format("YYYY-MM-DD"),
+            start_time: values.budgetStartDate && dayjs(Date.now()).diff(values.budgetStartDate) !== 0 ? 
+                dayjs(values.budgetStartDate).format("YYYY-MM-DD") : dayjs(Date.now()).format("YYYY-MM-DD"),
+            end_time: dayjs(values.budgetEndDate).format("YYYY-MM-DD"),
             user: user.user_id,
         }).then(res=> {
             let budgetPromises = [];
@@ -33,7 +34,7 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
             }]);
 
             return Promise.all(budgetPromises).then(() =>{
-                actions.resetForm();
+                //actions.resetForm();
                 handleCloseForm();
                 fetchData();
             });
@@ -47,8 +48,9 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
 
     const validSchema = Yup.object().shape({
         budgetName: Yup.string().required("Name required"),
-        budgetDate: Yup.string().required("Date required"),
-        budgetLimits: Yup.array().of(Yup.number().required().positive()).required()
+        budgetStartDate: Yup.date("Please enter a date").nullable(),
+        budgetEndDate: Yup.date().required("Date required"),
+        budgetLimits: Yup.array().of(Yup.number("Spend limit must be a number").required("Spend limit is required").positive("Should be positive")).required()
     });
 
     // DO NOT FORGET HANDLE CHANGE ATTRIBUTE
@@ -61,7 +63,7 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                 <Card.Body>
                 <Formik
                     validationSchema={validSchema}
-                    initialValues={{budgetDate: Date.now(), budgetLimits: Array(purcCategories.length).fill(0), budgetName: ""}}
+                    initialValues={{budgetStartDate: null, budgetEndDate: dayjs().toDate(), budgetLimits: Array(purcCategories.length).fill(0), budgetName: ""}}
                     onSubmit={(values, actions) => handleFormSubmit(values, actions)}
                 >
                     {({handleSubmit, handleChange, handleBlur, values, touched, isValid, errors, isSubmitting}) => (
@@ -73,10 +75,17 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                                 type="text" placeholder="Enter a name"></Form.Control>
                             <Form.Control.Feedback type="invalid">{errors.budgetName}</Form.Control.Feedback>
                         </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Select budget end date</Form.Label>
-                            <DatePickerField onChange={handleChange} onBlur={handleBlur} name="budgetDate"/>
-                            {errors.budgetDate? <p className="text-danger">{errors.budgetDate}</p> : null}
+                        <Form.Group className="mb-3" as={Row}>
+                            <Col>
+                                <Form.Label>Select budget end date</Form.Label>
+                                <DatePickerField minDate={Date.now()} onChange={handleChange} onBlur={handleBlur} name="budgetEndDate"/>
+                                {errors.budgetEndDate? <p className="text-danger">{errors.budgetEndDate}</p> : null}
+                            </Col>
+                            <Col>
+                                <Form.Label>Select budget start date (optional)</Form.Label>
+                                <DatePickerField onChange={handleChange} onBlur={handleBlur} name="budgetStartDate"/>
+                                {errors.budgetStartDate? <p className="text-danger">{errors.budgetStartDate}</p> : null}
+                            </Col>
                         </Form.Group>
                         <Form.Group className="py-3">
                             <Form.Label><strong>Purchase limits</strong></Form.Label>
