@@ -1,14 +1,11 @@
 import { useState, useContext, useEffect, useRef } from "react";
 import { Modal, Form, Card, Button, Row, Col, FormCheck } from "react-bootstrap";
-import useAxios from "../utils/useAxios";
 import AuthContext from "../auth/AuthContext";
-import DatePicker from "react-datepicker";
 import dayjs from "dayjs";
 import { Formik, useField, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import { DatePickerField } from "../utils/DatePickerField";
 import { useCallback } from "react";
-import { ref } from "yup";
 
 function TransactForm({api, purcCategories, taxCategories, budgets, handleCloseForm, showForm, fetchData}) {
 

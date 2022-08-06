@@ -102,7 +102,7 @@ function Transact() {
             </Row>
                 <TransactForm api={api} fetchData={fetchData} showForm={showForm} handleCloseForm={handleCloseForm} setTransactions={setTransactions} budgets={budgets} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions}/>
                 <Row>
-                    <TransactList fetchData={fetchData} budgets={budgets} purcCategories={purcCategories} purchases={purchases} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes} onTransactDelete={onTransactDelete}></TransactList>
+                    <TransactList api={api} fetchData={fetchData} budgets={budgets} purcCategories={purcCategories} purchases={purchases} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes} onTransactDelete={onTransactDelete}></TransactList>
                 </Row>
             </Tab>
         </Tabs>

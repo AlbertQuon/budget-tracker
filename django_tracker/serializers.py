@@ -80,8 +80,34 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         instance.save()
         
         return instance        
+
+
+class UpdateUsernameSerializer(serializers.ModelSerializer):
+    newUsername = serializers.CharField(write_only=True, required=True) 
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     
+    class Meta:
+        model = User
+        fields = ('id','newUsername','username','password')
+        
+    def validate_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError({"password": "Password is not correct"}) 
+        return value
     
+    def validate_username(self, value):
+        user = self.context['request'].user
+        if user.username == value:
+            raise serializers.ValidationError({"username": "Same username was entered"}) 
+        return value
+    
+    def update(self, instance, validated_data):
+        instance.username = validated_data['newUsername']
+        instance.save()
+        
+        return instance   
+
 
 class PurchaseCategorySerializer(serializers.ModelSerializer):
     class Meta:

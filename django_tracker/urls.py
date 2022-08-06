@@ -24,6 +24,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/', views.RegisterView.as_view(), name='auth_register'),
     path('updateUser/', views.UpdateUserView.as_view(), name='update_user'),
+    path('updateUsername/', views.UpdateUsernameView.as_view(), name='update_username'),
     path('', views.getRoutes)
     #path(r'login/', views.LoginView.as_view(), name='knox_login'),
     #path(r'logout/', knox_views.LogoutView.as_view(), name='knox_logout'),

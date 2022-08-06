@@ -4,8 +4,10 @@ import useAxios from "../utils/useAxios";
 import AuthContext from "../auth/AuthContext";
 import DatePicker from "react-datepicker";
 import dayjs from "dayjs";
+import { Formik, useField, FieldArray } from 'formik';
+import * as Yup from 'yup';
 
-function TransactEditForm({transactTaxes, transaction, purchases, purcCategories, taxCategories, budgets, handleCloseEditForm, showEditForm, onTransactDelete, handleOpenEditForm, fetchData}) {
+function TransactEditForm({api, transactTaxes, transaction, purchases, purcCategories, taxCategories, budgets, handleCloseEditForm, showEditForm, onTransactDelete, handleOpenEditForm, fetchData}) {
 
     // * do not put components into state, use state data to render component (due to inconsistencies)
     const {user} = useContext(AuthContext);
@@ -20,7 +22,6 @@ function TransactEditForm({transactTaxes, transaction, purchases, purcCategories
     
     const [toBeDeletedPurchases, setToBeDeletedPurchases] = useState([]);
     const [toBeDeletedTaxes, setToBeDeletedTaxes] = useState([]);
-    const api = useAxios();
     
     useEffect(() => {
         if (showEditForm) {
@@ -277,10 +278,10 @@ function TransactEditForm({transactTaxes, transaction, purchases, purcCategories
                         <Button onClick={addPurchaseField}>Add</Button>
                     </Form.Group>
                     <Form.Group as={Row}>
-                        <Col>Purchase Category</Col>
-                        <Col>Item Name</Col>
-                        <Col>Price</Col>
-                        <Col>Delete</Col>
+                        <Col xs={4}>Purchase Category</Col>
+                        <Col xs={4}>Item Name</Col>
+                        <Col xs={2}>Price</Col>
+                        <Col xs={2}>Delete</Col>
                     </Form.Group>
                     {purchaseFields}
                     <Form.Group as={Row} className="my-3">   
@@ -307,8 +308,8 @@ function TransactEditForm({transactTaxes, transaction, purchases, purcCategories
                     </Form.Group>
                     
                     <Row>   
-                        <Col><p>Total:</p></Col>
-                        <Col><p>${total.toFixed(2)}</p></Col>
+                        <Col xs={10}><p>Total:</p></Col>
+                        <Col xs={2}><p>${total.toFixed(2)}</p></Col>
                     </Row>
                     
                     

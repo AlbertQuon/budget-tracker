@@ -37,6 +37,14 @@ class UpdateUserView(generics.UpdateAPIView):
         return self.request.user
 
 
+class UpdateUsernameView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = serializers.UpdateUsernameSerializer
+    permission_classes = (IsAuthenticated,)
+    def get_object(self):
+        return self.request.user
+
+
 @api_view(['GET'])
 def getRoutes(request):
     routes = [

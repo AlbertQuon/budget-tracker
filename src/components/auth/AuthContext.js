@@ -21,7 +21,7 @@ export const AuthProvider = ({children}) => {
     const navigate = useNavigate();
 
     const loginUser = async (username, password) => {
-        const response = await fetch("http://127.0.0.1:8000/api/token/", {
+        const response = await fetch(`${baseURL}/token/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -44,7 +44,7 @@ export const AuthProvider = ({children}) => {
     }
 
     const registerUser = async (username, password, password2) => {
-        const response = await fetch("http://127.0.0.1:8000/api/register/", {
+        const response = await fetch(`${baseURL}/register/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -64,7 +64,7 @@ export const AuthProvider = ({children}) => {
     }
 
     const updateUser = async (newUsername, oldPassword, password, password2) => {
-        const response = await fetch("http://127.0.0.1:8000/api/updateUser/", {
+        let response = await fetch(`${baseURL}/updateUser/`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -77,14 +77,111 @@ export const AuthProvider = ({children}) => {
                 password2
             }),
         });
-
+        if (response.status === 401) {
+            let refreshRes = await fetch(`${baseURL}/token/refresh/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${authTokens?.access}`
+                }, 
+                body: JSON.stringify({
+                    refresh: authTokens?.refresh
+                })
+            });
+            const data = await refreshRes.json();
+            if (refreshRes.status === 200) {
+                localStorage.setItem("authTokens", JSON.stringify(data));
+                setAuthTokens(data);
+                setUser(jwt_decode(data.access));
+                let retryRes = await fetch(`${baseURL}/updateUser/`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${data.access}`
+                    },
+                    body: JSON.stringify({
+                        newUsername,
+                        oldPassword,
+                        password,
+                        password2
+                    }),
+                })
+                let retryResData = await retryRes.json()
+                if (retryRes.status === 200) { // update user
+                    loginUser(newUsername, password).then(
+                        ()=>{navigate("/settings/");}  
+                    );
+                }
+                return retryResData;
+            
+            }
+            
+        }
+        let data = await response.json();
         if (response.status === 200) { // update user
             loginUser(newUsername, password).then(
               ()=>{navigate("/settings/");}  
-            )
-        } else {
-            alert("Something went wrong!");
+            );
         }
+        return data;
+    }
+
+    const updateUsername = async (newUsername, password) => {
+        let response = await fetch(`${baseURL}/updateUsername/`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${authTokens?.access}`
+            },
+            body: JSON.stringify({
+                newUsername,
+                password,
+            }),
+        });
+        if (response.status === 401) {
+            let refreshRes = await fetch(`${baseURL}/token/refresh/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${authTokens?.access}`
+                }, 
+                body: JSON.stringify({
+                    refresh: authTokens?.refresh
+                })
+            });
+            const data = await refreshRes.json();
+            if (refreshRes.status === 200) {
+                localStorage.setItem("authTokens", JSON.stringify(data));
+                setAuthTokens(data);
+                setUser(jwt_decode(data.access));
+                let retryRes = await fetch(`${baseURL}/updateUsername/`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${data.access}`
+                    },
+                    body: JSON.stringify({
+                        newUsername,
+                        password,
+                    }),
+                })
+                let retryResData = await retryRes.json()
+                if (retryRes.status === 200) { // updated user
+                    loginUser(newUsername, password).then(
+                        ()=>{navigate("/settings/");}  
+                    );
+                }
+                return retryResData;
+            }
+        }
+        let data = await response.json();
+        if (response.status === 200) { // update user
+            loginUser(newUsername, password).then(
+              ()=>{navigate("/settings/");}  
+            );
+        }
+        console.log(data)
+        return data;
     }
 
 
@@ -103,7 +200,8 @@ export const AuthProvider = ({children}) => {
         registerUser,
         loginUser,
         logoutUser,
-        updateUser
+        updateUser,
+        updateUsername
     }
 
     useEffect( () => {

@@ -2,56 +2,112 @@ import { useContext, useState } from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import useAxios from "../utils/useAxios";
 import AuthContext from "./AuthContext";
+import { Formik, useField, FieldArray } from 'formik';
+import * as Yup from 'yup';
 
 function UserSettings() {
 
-    const {user, updateUser} = useContext(AuthContext);
-    const [username, setUsername] = useState(user.username);
-    const [oldPassword, setOldPassword] = useState("");
-    const [password, setPassword] = useState("");
-    const [password2, setPassword2] = useState("");
-    const [wrongPassword, setWrongPassword] = useState(false);
-    const [validated, setValidated] = useState(false);
+    const {user, updateUser, updateUsername} = useContext(AuthContext);
+    const [formResponse, setFormResponse] = useState("");
+    const [success, setSuccess] = useState(false);
 
-    const onFormSubmit = (event) => {
-        event.preventDefault();
-        var form = event.currentTarget;
-        if (password !== password2 || !form.checkValidity()) {
-            setWrongPassword(true);
-            event.stopPropagation();
+    const onFormSubmit = (values, actions) => {
+        if (values.password.length > 0) {
+            updateUser(values.username, values.oldPassword, values.password, values.password2).then(res => {
+                if (res?.username === values.username) {
+                    setSuccess(true);
+                    setFormResponse(" Success!")
+                } else {
+                    setSuccess(false);
+                    if (res && res.oldPassword) {
+                        if (res.oldPassword?.oldPassword) { // internal validation error
+                            setFormResponse(res?.oldPassword.oldPassword)
+                        } else {
+                            setFormResponse(res?.oldPassword) // django password validation error
+                        }
+                    } else {
+                        setFormResponse("Failed to update")
+                    }
+                }
+                actions.isSubmitting = false;
+            }).catch(err => {console.log(err); setFormResponse("Failed to update")});
         } else {
-            setWrongPassword(false);
-            updateUser(username, oldPassword, password, password2);
-            setValidated(true);
+            updateUsername(values.username, values.oldPassword).then(res => {
+                if (res?.username === values.username) {
+                    setSuccess(true);
+                    setFormResponse(" Success!")
+                } else {
+                    setSuccess(false);
+                    if (res.password?.password) { // internal validation error
+                        setFormResponse(res?.password.password)
+                    } else {
+                        setFormResponse(res?.password) // django password validation error
+                    }
+                }
+                actions.isSubmitting = false;
+            }).catch(err => {console.log(err); setFormResponse("Failed to update");});
         }
+        
     }
+
+    const validSchema = Yup.object().shape({
+        username: Yup.string().required("Please enter a username"),
+        oldPassword: Yup.string().required("Please enter your current password").min(8, "Password is too short - should be 8 characters minimum"),
+        password: Yup.string().min(8, "Password is too short - should be 8 characters minimum"),
+        password2: Yup.string().min(8, "Password is too short - should be 8 characters minimum").oneOf([Yup.ref('password'), null], "Passwords must match")
+    })
   
     return ( <Container className="my-3">
     <Row>
         <Col>
             <h4>User settings</h4>
-            <Form noValidate validated={validated} onSubmit={onFormSubmit}>
+            <Formik
+                initialValues={{username: user.username, password: "", password2: ""}}
+                onSubmit={(values, actions) => onFormSubmit(values, actions)}
+                validationSchema={validSchema}
+            >    
+                {({handleChange, handleBlur, values, errors, touched, handleSubmit}) => (
+                    <Form noValidate onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
-                        <Form.Label required>Username</Form.Label>
-                        <Form.Control type="text" placeholder="Enter a purchase category" isValid={username.length > 0} onChange={e => setUsername(e.target.value)} defaultValue={user.username} />
+                        <Form.Label>Username</Form.Label>
+                        <Form.Control name="username" type="text" placeholder="Enter username" isValid={!errors.username} isInvalid={!!errors.username}
+                            value={values.username} onChange={handleChange} onBlur={handleBlur} />
+                        <Form.Control.Feedback type="invalid">{errors.username ? errors.username : null}</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label>Password</Form.Label>
-                        <Form.Control required type="password" isValid={oldPassword !== password2 !== password && oldPassword.length > 7} onChange={e => setOldPassword(e.target.value)} placeholder="Enter current password" />
+                        <Form.Control name="oldPassword" type="password" isInvalid={!!errors.oldPassword} onChange={handleChange} 
+                            onBlur={handleBlur} placeholder="Enter current password" />
+                        <Form.Control.Feedback type="invalid">{errors.oldPassword ? errors.oldPassword : null}</Form.Control.Feedback>
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Control className="mb-2" required isInvalid={password.length < 7} isValid={password === password2 && password.length > 7} onChange={e => setPassword(e.target.value)} type="password" placeholder="Enter new password" />
-                        <Form.Control className="mb-2" required isInvalid={password2.length < 7} isValid={password === password2 && password2.length > 7} onChange={e => setPassword2(e.target.value)} type="password" placeholder="Reenter new password" />
+                        <Form.Label>New Password</Form.Label>
+                        <Form.Control name="password" className="mb-2" isInvalid={!!errors.password} isValid={touched.password && !errors.password} onBlur={handleBlur} 
+                            onChange={handleChange} type="password" placeholder="Enter new password" />
+                        <Form.Control.Feedback type="invalid">{errors.password ? errors.password : null}</Form.Control.Feedback>
+                        <Form.Control name="password2" className="mb-2" isInvalid={!!errors.password2} isValid={touched.password2 &&!errors.password2} onBlur={handleBlur} 
+                            onChange={handleChange} type="password" placeholder="Confirm new password" />
+                        <Form.Control.Feedback type="invalid">{errors.password2 ? errors.password2 : null}</Form.Control.Feedback>
                         <Form.Text id="passwordHelpBlock" className="text-white">
                             Your new password must be 8-20 characters long, contain letters and numbers, and
                             must not contain spaces, special characters, or emoji.
                         </Form.Text>
+                        <br></br>
+                        <Form.Text id="passwordHelpBlock" className="text-warning">
+                            If you only wish to update your username, leave these fields blank.
+                        </Form.Text>
                     </Form.Group>
-                    <Form.Text className="text-info" id="wrongMatchPassword">{wrongPassword ? "Passwords do not match!" : ""}</Form.Text>
                     <Button variant="dark" type="submit">
                         Save
                     </Button>
-                </Form>
+                    <Form.Text id="passwordHelpBlock" className={success ? "text-success" :"text-warning"}>
+                        {formResponse?.length > 0 ? formResponse : ""}
+                    </Form.Text>
+                    </Form>
+                )}
+                
+            </Formik>
+            
         </Col>
     </Row>
     </Container> );
