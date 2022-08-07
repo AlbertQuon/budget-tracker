@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { useContext } from "react";
-import { Accordion, AccordionContext, Button, Col, Row, useAccordionButton, Modal } from "react-bootstrap";
+import { useEffect, useContext, useState } from "react";
+import { Accordion, AccordionContext, Button, Col, Row, useAccordionButton, Modal, Form } from "react-bootstrap";
 import '../../css/Transact.css'
 import TransactEditForm from "./TransactEditForm";
 
@@ -11,6 +10,15 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
     const handleCloseEditForm = () => setShowEditForm(false);
     const handleOpenEditForm = () => setShowEditForm(true);
     const [showDeleteBox, setShowDeleteBox] = useState(false);
+    const [budgetFilter, setBudgetFilter] = useState("");
+    const [filteredTransactions, setFilteredTransactions] = useState(transactions);
+
+    useEffect(()=>{
+        setFilteredTransactions(transactions
+            .filter(transact => 
+            budgets.find(budget => transact.budget === budget.budget_id).budget_name.includes(budgetFilter))
+        );
+    }, [budgetFilter])
 
     const transactBudget = (budget_id) => {
         //console.log(budgets)
@@ -139,8 +147,8 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
         {ConfirmDeleteBox()}
         <TransactEditForm api={api} transaction={editTransaction} showEditForm={showEditForm} handleCloseEditForm={handleCloseEditForm} handleOpenEditForm={handleOpenEditForm} onTransactDelete={onTransactDelete}
             budgets={budgets} purcCategories={purcCategories} purchases={purchases} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes} fetchData={fetchData} />
-        <Row><Col><input type="text" placeholder="Search by budget..." ></input></Col></Row>
-        {Object.keys(transactions).length !== 0 ? transactions.map((transact) => (
+        <Row><Col xs={6}><Form.Control type="text" placeholder="Search by budget..." onChange={e=>setBudgetFilter(e.target.value)} ></Form.Control></Col></Row>
+        {Object.keys(transactions).length !== 0 ? filteredTransactions.map((transact) => (
             <Row className="transactionItem my-1 mx-2" key={transact.transact_id} bg='dark'>
                 <Col className="m-2">
                 <Row>

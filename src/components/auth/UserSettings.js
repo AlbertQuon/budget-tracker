@@ -94,7 +94,7 @@ function UserSettings() {
                         </Form.Text>
                         <br></br>
                         <Form.Text id="passwordHelpBlock" className="text-warning">
-                            If you only wish to update your username, leave these fields blank.
+                            If you only wish to update your username, leave the new password fields blank.
                         </Form.Text>
                     </Form.Group>
                     <Button variant="dark" type="submit">

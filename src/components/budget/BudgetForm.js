@@ -65,6 +65,7 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                     validationSchema={validSchema}
                     initialValues={{budgetStartDate: null, budgetEndDate: dayjs().toDate(), budgetLimits: Array(purcCategories.length).fill(0), budgetName: ""}}
                     onSubmit={(values, actions) => handleFormSubmit(values, actions)}
+                    enableReinitialize
                 >
                     {({handleSubmit, handleChange, handleBlur, values, touched, isValid, errors, isSubmitting}) => (
                         <Form noValidate onSubmit={handleSubmit}>
