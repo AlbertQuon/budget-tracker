@@ -100,7 +100,7 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
         const taxList = [];
         let taxes = transactTaxes.filter(transactTax => transactTax.transact === transact_id);
         taxCategories.forEach((taxCtgy) => {
-            if (taxes.find(tax => tax.tax === taxCtgy.tax_id) !== -1) {
+            if (taxes.findIndex(tax => tax.tax === taxCtgy.tax_id) !== -1) {
                 taxList.push(taxCtgy.tax_name);
             } 
         });
