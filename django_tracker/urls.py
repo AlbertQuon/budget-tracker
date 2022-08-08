@@ -20,6 +20,7 @@ urlpatterns = [
     path('budget/<int:pk>/', views.BudgetDetailView.as_view()),
     path('budgetLimits/', views.BudgetLimitListView.as_view()),
     path('budgetLimits/<int:pk>/', views.BudgetLimitDetailView.as_view()),
+    path('budgetIncomes/', views.BudgetIncomeView.as_view()),
     path('token/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/', views.RegisterView.as_view(), name='auth_register'),

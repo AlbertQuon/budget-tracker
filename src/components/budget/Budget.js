@@ -13,8 +13,9 @@ function Budget() {
     const [budgets, setBudgets] = useState([]);
     const [purcCategories, setPurcCategories] = useState([]);
     const [transactions, setTransactions] = useState([]);
-    const [purchases, setPurchases] = useState([]);
+    const [purchases, setPurchases] = useState({});
     const [spendLimits, setSpendLimits] = useState({});
+    const [incomes, setIncomes] = useState({});
     const [onlyCurrentBudgets, setOnlyCurrentBudgets] = useState(false);
     const api = useAxios();
 
@@ -69,6 +70,20 @@ function Budget() {
             });
             setPurchases(purchasesData);
         });
+
+        api.get('/budgetIncomes/')
+        .then(res => {
+            let incomesData = res.data;
+            let tempIncomesData = {};
+            incomesData.forEach(income => {
+                if (!tempIncomesData.hasOwnProperty(income.budget)) {
+                    tempIncomesData[income.budget] = [income];
+                } else {
+                    tempIncomesData[income.budget].push(income);
+                }
+            });
+            setIncomes(tempIncomesData);
+        })
     }
 
     useEffect(() => {
@@ -94,7 +109,7 @@ function Budget() {
         if (Object.keys(spendLimits).length === 0 || spendLimits[budget_id] === undefined || !purcCategories) {
             return <Card.Text>No spend limits found</Card.Text>;
         }
-        const limitsList = []
+        const limitsList = [];
         spendLimits[budget_id].forEach((limit)=>{
             let purcCtgy = purcCategories.find(ctgy => ctgy.purc_category_id === limit.purc_category);
             if (purcCtgy !== undefined) {
@@ -115,6 +130,19 @@ function Budget() {
         });
         
         return limitsList.length > 0 ? limitsList : <Card.Text>No spend limits found</Card.Text>;
+    }
+
+    const createIncomeList = (budget_id) => {
+        if (Object.keys(incomes).length === 0 || incomes[budget_id] === undefined) {
+            return <Card.Text>No incomes found</Card.Text>;
+        }
+        const incomesList = [];
+
+        incomes[budget_id].forEach((income) => {
+
+        });
+
+        return incomesList.length > 0 ? incomesList : <Card.Text>No incomes found</Card.Text>;
     }
 
     const ConfirmDeleteBox = () => {

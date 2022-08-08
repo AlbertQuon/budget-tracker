@@ -153,4 +153,11 @@ class BudgetLimitDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.BudgetLimits.objects.all()
     serializer_class = serializers.BudgetLimitSerializer
 
-   
+
+class BudgetIncomeView(generics.ListCreateAPIView):
+    serializer_class = serializers.BudgetIncomeSerializer
+    def get_queryset(self):
+        user = self.request.user.id
+        budgets = models.Budget.objects.filter(user=user)
+        queryset = models.BudgetIncomes.objects.filter(budget__in=budgets)
+        return queryset

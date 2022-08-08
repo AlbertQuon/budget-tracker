@@ -151,5 +151,8 @@ class BudgetLimitSerializer(serializers.ModelSerializer):
         model = models.BudgetLimits
 
 
-
+class BudgetIncomeSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = '__all__'
+        model = models.BudgetIncomes
 

@@ -92,6 +92,17 @@ class Budget(models.Model):
         db_table = 'budget'
 
 
+class BudgetIncomes(models.Model):
+    income_id = models.AutoField(primary_key=True)
+    income_name = models.CharField(max_length=100)
+    budget = models.ForeignKey(Budget, models.DO_NOTHING)
+    income_amount = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'budget_incomes'
+
+
 class BudgetLimits(models.Model):
     budget = models.ForeignKey(Budget, models.DO_NOTHING, db_index=True)
     purc_category = models.ForeignKey('PurchaseCategory', models.DO_NOTHING, db_index=True)

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useCallback, useState } from "react";
 import { Modal, Row, Form, Card, Button, Spinner, Alert, Col } from "react-bootstrap";
 import { Formik, useField, FieldArray } from 'formik';
 import * as Yup from 'yup';
@@ -9,6 +9,18 @@ import { DatePickerField } from "../utils/DatePickerField";
 function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchData, purcCategories}) {
     const {user} = useContext(AuthContext);
     const [error, setError] = useState("");
+    const [totalIncome, setTotalIncome] = useState(0);
+
+    const formRef = useCallback(node=> {
+        if (node !== null) {
+            let newTotal = parseFloat(0.00);
+            let incomesValues = node.values.budgetIncomes ? node.values.budgetIncomes : [];
+            incomesValues.forEach(income => {
+                newTotal += income.incomeAmount ? income.incomeAmount : 0;
+            })
+            setTotalIncome(newTotal);
+        }
+    }, [])
 
     const handleFormSubmit = (values, actions) => {
         api.post('/budget/', {
@@ -19,6 +31,7 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
             user: user.user_id,
         }).then(res=> {
             let budgetPromises = [];
+            let incomesPromises = [];
             for (let i = 0; i < purcCategories.length; i++) {
                 budgetPromises.push(api.post('/budgetLimits/', {
                     budget: res.data.budget_id,
@@ -26,6 +39,15 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                     spend_limit: parseFloat(parseFloat(values.budgetLimits[i]).toFixed(2))*100,
                 }));
             }
+            
+            values.budgetIncomes.forEach(income => (
+                incomesPromises.push(api.post('/budgetIncomes/', {
+                    budget: res.data.budget_id,
+                    income_name: income.incomeName,
+                    income_amount: parseFloat(parseFloat(income.incomeAmount).toFixed(2))*100
+                }))
+            ));
+
             setBudgets([...budgets, {
                 budget_name: res.data.budget_name,
                 budget_id: res.data.budget_id, 
@@ -48,6 +70,10 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
 
     const validSchema = Yup.object().shape({
         budgetName: Yup.string().required("Name required"),
+        budgetIncomes: Yup.array().of(Yup.object().shape({
+            incomeName: Yup.string().required("Please add a name for the income"),
+            incomeAmount: Yup.number("Please enter a number").required().moreThan(0, "Income can not be negative").min(0)
+        })).min(1, "One income required"),
         budgetStartDate: Yup.date("Please enter a date").nullable(),
         budgetEndDate: Yup.date().required("Date required"),
         budgetLimits: Yup.array().of(Yup.number("Spend limit must be a number").required("Spend limit is required").positive("Should be positive")).required()
@@ -63,9 +89,9 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                 <Card.Body>
                 <Formik
                     validationSchema={validSchema}
-                    initialValues={{budgetStartDate: null, budgetEndDate: dayjs().toDate(), budgetLimits: Array(purcCategories.length).fill(0), budgetName: ""}}
+                    initialValues={{budgetStartDate: null, budgetIncomes: [{incomeName: "", incomeAmount: 0}], budgetEndDate: dayjs().toDate(), budgetLimits: Array(purcCategories.length).fill(0), budgetName: ""}}
                     onSubmit={(values, actions) => handleFormSubmit(values, actions)}
-                    enableReinitialize
+                    innerRef={formRef}
                 >
                     {({handleSubmit, handleChange, handleBlur, values, touched, isValid, errors, isSubmitting}) => (
                         <Form noValidate onSubmit={handleSubmit}>
@@ -76,6 +102,54 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                                 type="text" placeholder="Enter a name"></Form.Control>
                             <Form.Control.Feedback type="invalid">{errors.budgetName}</Form.Control.Feedback>
                         </Form.Group>
+                        
+                        <FieldArray name="budgetIncomes" className="my-3">
+                        {(arrayHelpers) => {
+                            return (
+                                <Form.Group className="mb-3" as={Row}>
+                                <Row className="mb-3"> 
+                                <Col xs={3}><Form.Label>Predicted Incomes</Form.Label></Col>
+                                <Col><Button onClick={() => arrayHelpers.push('')}>Add</Button></Col>    
+                                </Row>
+                                <Row className="mb-3">
+                                {values.budgetIncomes && values.budgetIncomes.length > 0 ? 
+                                    values.budgetIncomes.map((budgetIncome, index) => (
+                                        <Form.Group key={index} as={Row}>
+                                            <Form.Label></Form.Label>
+                                            <Col xs={6}>
+                                            <Form.Control type="text"
+                                                name={`budgetIncomes.${index}.incomeName`} placeholder="Income Name"
+                                                onChange={handleChange} onBlur={handleBlur}
+                                                isValid={(errors.hasOwnProperty("budgetIncomes") && !errors.budgetIncomes[index]?.incomeName) 
+                                                    || touched.hasOwnProperty("budgetIncomes") && touched.budgetIncomes[index]?.incomeName}
+                                                isInvalid={errors.hasOwnProperty("budgetIncomes") && !!errors.budgetIncomes[index]?.incomeName} 
+                                                />
+                                            </Col>
+                                            <Col xs={4}>
+                                            <Form.Control type="number"
+                                                name={`budgetIncomes.${index}.incomeAmount`} placeholder="Income Amount"
+                                                onChange={handleChange} onBlur={handleBlur}
+                                                isValid={(errors.hasOwnProperty("budgetIncomes") && !errors.budgetIncomes[index]?.incomeAmount) 
+                                                    || touched.hasOwnProperty("budgetIncomes") && touched.budgetIncomes[index]?.incomeAmount}
+                                                isInvalid={errors.hasOwnProperty("budgetIncomes") && !!errors.budgetIncomes[index]?.incomeAmount} 
+                                                value={values.budgetIncomes[index].incomeAmount}
+                                                />
+                                            </Col>
+                                            <Col xs={2}>
+                                                <Button onClick={() => arrayHelpers.remove(index)}>-</Button>
+                                            </Col>
+                                        </Form.Group>
+                                    )) : <p><em>No incomes set</em></p>
+                                }
+                                </Row>
+                                <Row className="mb-3">
+                                    <Col><Form.Text className="text-white">Total income</Form.Text></Col>
+                                    <Col><Form.Text className="text-white">${totalIncome.toFixed(2)}</Form.Text></Col>
+                                </Row>
+                                </Form.Group>
+                            );
+                        }}
+                        </FieldArray>
                         <Form.Group className="mb-3" as={Row}>
                             <Col>
                                 <Form.Label>Select budget end date</Form.Label>
