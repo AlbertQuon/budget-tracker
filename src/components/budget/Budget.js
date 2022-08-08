@@ -206,7 +206,9 @@ function Budget() {
                         <Card.Body>
                             <Card.Title>{budget.budget_name}</Card.Title>
                             <Card.Subtitle className=""><strong>{budget.start_time}</strong> - <strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
-                            <Card.Text>Spend Limits</Card.Text>
+                            <Card.Text><strong>Income</strong></Card.Text>
+                            {createIncomeList(budget.budget_id)}
+                            <Card.Text><strong>Spend Limits</strong></Card.Text>
                             {createSpendLimitList(budget.budget_id)}
                             <Card.Text><Button onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
                         </Card.Body>

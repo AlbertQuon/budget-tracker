@@ -14,10 +14,15 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
     const [filteredTransactions, setFilteredTransactions] = useState(transactions);
 
     useEffect(()=>{
-        setFilteredTransactions(transactions
-            .filter(transact => 
-            budgets.find(budget => transact.budget === budget.budget_id).budget_name.includes(budgetFilter))
-        );
+        if (budgetFilter.length > 0) {
+            setFilteredTransactions(transactions
+                .filter(transact => 
+                budgets.find(budget => transact.budget === budget.budget_id).budget_name.includes(budgetFilter))
+            );
+        } else {
+            setFilteredTransactions(transactions);
+        }
+        
     }, [budgetFilter])
 
     const transactBudget = (budget_id) => {
