@@ -137,10 +137,17 @@ function Budget() {
             return <Card.Text>No incomes found</Card.Text>;
         }
         const incomesList = [];
+        let totalIncome = 0;
 
-        incomes[budget_id].forEach((income) => {
-
+        incomes[budget_id].forEach((income, index) => {
+            totalIncome += income.income_amount;
+            incomesList.push(
+            <Card.Text key={index}>
+                {income.income_name}: ${(income.income_amount/100).toFixed(2)}
+            </Card.Text>)
         });
+
+        incomesList.push(<Card.Text>Total predicted income: ${totalIncome}</Card.Text>)
 
         return incomesList.length > 0 ? incomesList : <Card.Text>No incomes found</Card.Text>;
     }
@@ -181,7 +188,9 @@ function Budget() {
                             <Card.Title>{budget.budget_name} <Badge bg="info">Active</Badge></Card.Title>
                             <Card.Subtitle className=""><strong>{budget.start_time}</strong></Card.Subtitle>
                             <Card.Subtitle className="mb-1"><strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
-                            <Card.Text>Spend Limits</Card.Text>
+                            <Card.Text><strong>Income</strong></Card.Text>
+                            {createIncomeList(budget.budget_id)}
+                            <Card.Text><strong>Spend Limits</strong></Card.Text>
                             {createSpendLimitList(budget.budget_id)}
                             <Card.Text><Button onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
                         </Card.Body>
