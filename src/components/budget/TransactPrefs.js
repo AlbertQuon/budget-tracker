@@ -128,7 +128,7 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
                     <Form.Group className="mb-3">
                         <Form.Label>Add purchase category</Form.Label>
                         <Form.Control type="text" placeholder="Enter a purchase category" />
-                        <Form.Text className="text-muted">
+                        <Form.Text className="text-white">
                         Add categories to sort your purchases and budget limits
                         </Form.Text>
                     </Form.Group>
@@ -161,7 +161,7 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
                     <Form.Group className="mb-3">
                         <Form.Label>Tax Category Name</Form.Label>
                         <Form.Control type="text" placeholder="Enter a tax category" />
-                        <Form.Text className="text-muted">
+                        <Form.Text className="text-white">
                         Add taxes to keep track within your purchases
                         </Form.Text>
                     </Form.Group>

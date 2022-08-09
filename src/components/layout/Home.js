@@ -18,11 +18,9 @@ function Home() {
                     Create or view your budgets. 
                 </Card.Text>
                 <Card.Text>
-                    Manage purchase categories and tax categories to start adding transactions.
+                    Add and manage purchase categories and tax categories to add transactions.
                 </Card.Text>
                 <Button as={Link} to="/budget">Visit budgets</Button>
-                
-                
             </Card>
             <Card className="bg-dark my-3 py-3 px-2">
                 <Card.Title>Transactions</Card.Title>
