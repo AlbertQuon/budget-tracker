@@ -11,7 +11,7 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
     const handleOpenEditForm = () => setShowEditForm(true);
     const [showDeleteBox, setShowDeleteBox] = useState(false);
     const [budgetFilter, setBudgetFilter] = useState("");
-    const [filteredTransactions, setFilteredTransactions] = useState(transactions);
+    const [filteredTransactions, setFilteredTransactions] = useState([]);
 
     useEffect(()=>{
         if (budgetFilter.length > 0) {
@@ -23,7 +23,7 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
             setFilteredTransactions(transactions);
         }
         
-    }, [budgetFilter])
+    }, [budgetFilter, transactions])
 
     const transactBudget = (budget_id) => {
         //console.log(budgets)
@@ -153,7 +153,7 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
         <TransactEditForm api={api} transaction={editTransaction} showEditForm={showEditForm} handleCloseEditForm={handleCloseEditForm} handleOpenEditForm={handleOpenEditForm} onTransactDelete={onTransactDelete}
             budgets={budgets} purcCategories={purcCategories} purchases={purchases} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes} fetchData={fetchData} />
         <Row><Col xs={6}><Form.Control type="text" placeholder="Search by budget..." onChange={e=>setBudgetFilter(e.target.value)} ></Form.Control></Col></Row>
-        {Object.keys(transactions).length !== 0 ? filteredTransactions.map((transact) => (
+        {Object.keys(filteredTransactions).length !== 0 ? filteredTransactions.map((transact) => (
             <Row className="transactionItem my-1 mx-2" key={transact.transact_id} bg='dark'>
                 <Col className="m-2">
                 <Row>

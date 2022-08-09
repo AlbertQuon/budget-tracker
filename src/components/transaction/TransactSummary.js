@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Container, Row, Card, Accordion, Col } from "react-bootstrap";
+import SpendingChart from './SpendingChart.js'
 import dayjs from "dayjs";
 
 function TransactSummary({purcCategories, purchases, taxCategories, transactions, budgets, transactTaxes}) {
@@ -88,6 +89,18 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
         <Row>
             <h4>Past 30 days</h4>
         </Row>
+        <Row className="py-4">
+            <SpendingChart
+                purchases={purchases}
+                purcCategories={purcCategories}
+                taxCategories={taxCategories}
+                transactions={transactions}
+                budgets={budgets}
+                transactTaxes={transactTaxes}
+                calcPurcCtgySpending={calcPurcCtgySpending}
+                calcTaxCtgySpending={calcTaxCtgySpending}
+            />
+        </Row>
         <Row>
             <Col xs={4}>
             <Card className="summaryCard-dark">
@@ -101,7 +114,7 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
             <Card className="summaryCard-dark">
             <Card.Body>
                 <Card.Title>Spending by Category</Card.Title>
-                {purcCategories.map((ctgy)=><Card.Text>{ctgy.purc_category_name}: ${calcPurcCtgySpending(ctgy.purc_category_id)}</Card.Text>)}
+                {purcCategories.map((ctgy, index)=><Card.Text key={index}>{ctgy.purc_category_name}: ${calcPurcCtgySpending(ctgy.purc_category_id)}</Card.Text>)}
             </Card.Body>
             </Card> 
             </Col>
@@ -119,8 +132,8 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
         </Row>
         <Row>
         <Accordion flush className="accordion-round">
-            {budgets.map((budget) => (
-                <Accordion.Item className="bg-dark text-white" key={budget.budget_id} eventKey={budget.budget_id}>
+            {budgets.map((budget, index) => (
+                <Accordion.Item className="bg-dark text-white" key={index} eventKey={budget.budget_id}>
                     <Accordion.Header className="bg-dark text-white">
                         {budget.budget_name}
                     </Accordion.Header>
