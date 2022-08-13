@@ -124,10 +124,10 @@ function TransactForm({api, purcCategories, taxCategories, budgets, handleCloseF
                     <Form.Label>Budget</Form.Label>
                     {budgets.length > 0 ? // e.target value is string
                         <Form.Select name="budget" onChange={selectedOption => {
-                            //let event = {target: {name:"budget", value: selectedOption}}; 
-                           // handleChange(event);
-                            //console.log(event);
-                            handleChange("budget")(selectedOption.target.value)
+                            let event = {target: {name:"budget", value: parseInt(selectedOption.target.value)}}; 
+                            handleChange(event);
+                            //console.log(selectedOption);
+                            //handleChange("budget")(parseInt(selectedOption.target.value))
                             }}
                             onBlur={()=>handleBlur({target: {name: "budget"}})}
                             isValid={!errors.budget}
