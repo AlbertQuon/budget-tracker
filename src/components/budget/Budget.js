@@ -2,7 +2,7 @@ import { useContext, useEffect, useState, useRef } from "react";
 import { Container, Row, Form, Card, Button, Col, Badge, Modal, ModalBody, Tab, Tabs } from "react-bootstrap";
 import AuthContext from "../auth/AuthContext";
 import useAxios from "../utils/useAxios";
-import DatePicker from "react-datepicker";
+import BudgetDetails from "./BudgetDetails";
 import BudgetForm from "./BudgetForm";
 import dayjs from "dayjs";
 import TransactPrefs from "./TransactPrefs";
@@ -25,6 +25,11 @@ function Budget() {
     const [showForm, setShowForm] = useState(false);
     const handleShowForm = () => setShowForm(true);
     const handleCloseForm = () => setShowForm(false);
+
+    const [showBudgetDetail, setShowBudgetDetail] = useState(false);
+    const handleShowDetails = () => setShowBudgetDetail(true);
+    const handleCloseDetails = () => setShowBudgetDetail(false);
+    const [detailedBudget, setDetailedBudget] = useState(null);
 
     const fetchData = () => {
         api.get('/budget/')
@@ -140,18 +145,20 @@ function Budget() {
         let totalIncome = 0;
 
         incomes[budget_id].forEach((income, index) => {
-            totalIncome += income.income_amount;
+            totalIncome += income.income_amount/100;
             incomesList.push(
             <Card.Text key={index}>
                 {income.income_name}: ${(income.income_amount/100).toFixed(2)}
             </Card.Text>)
         });
 
-        incomesList.push(<Card.Text>Total predicted income: ${totalIncome}</Card.Text>)
+        incomesList.push(<Card.Text>Total predicted income: ${totalIncome.toFixed(2)}</Card.Text>)
 
         return incomesList.length > 0 ? incomesList : <Card.Text>No incomes found</Card.Text>;
     }
 
+
+    // Components
     const ConfirmDeleteBox = () => {
         return ( 
         <Modal id="confirmDeleteBox" backdrop="static" show={showDeleteBox} contentClassName="dark-modal-content" onHide={() => setShowDeleteBox(false)}>
@@ -168,6 +175,37 @@ function Budget() {
             </Modal.Footer>
         </Modal> );
     }
+
+    // Child data
+    const detailedBudgetPurchases = () => {
+        if (detailedBudget) {
+            let budgetPurchases = [];
+            transactions.filter(transact => transact.budget === detailedBudget.budget_id)
+            .sort(
+                function(a,b){
+                    return dayjs(a.transact_date).diff(dayjs(b.transact_date));
+                })
+            .forEach(transact => {purchases[transact.transact_id].forEach(purc => budgetPurchases.push({...purc, date: transact.transact_date}));}
+            );
+            return budgetPurchases;
+        }
+        return [];
+    }
+
+    const detailedBudgetIncome = () => {
+        if (detailedBudget) {
+            return incomes[detailedBudget.budget_id] ? incomes[detailedBudget.budget_id] : [];
+        }
+        return [];
+    }
+
+    const detailedBudgetSpendLimits = () => {
+        if (detailedBudget) {
+            return spendLimits[detailedBudget.budget_id] ? spendLimits[detailedBudget.budget_id] : [];
+        }
+        return [];
+    }
+
    
     return ( 
     <Container className="">
@@ -177,7 +215,10 @@ function Budget() {
                 <Col xs={9} md={10}><h2>Budget</h2></Col>
                 <Col xs={3} md={2}><Button onClick={handleShowForm}>Add budget</Button></Col>
             </Row>
-            <BudgetForm api={api} fetchData={fetchData} showForm={showForm} purcCategories={purcCategories} handleCloseForm={handleCloseForm} budgets={budgets} setBudgets={setBudgets} spendLimits={spendLimits} setSpendLimits={setSpendLimits}/>
+            <BudgetForm api={api} fetchData={fetchData} showForm={showForm} purcCategories={purcCategories} handleCloseForm={handleCloseForm} 
+                budgets={budgets} setBudgets={setBudgets} spendLimits={spendLimits} setSpendLimits={setSpendLimits}/>
+            <BudgetDetails purcCategories={purcCategories} purchases={detailedBudgetPurchases()} incomes={detailedBudgetIncome()} 
+                budget={detailedBudget} spendLimits={detailedBudgetSpendLimits()} showBudgetDetail={showBudgetDetail} handleCloseDetails={handleCloseDetails}/>
             {ConfirmDeleteBox()}
             <Row className="my-2"><h3>Current budgets</h3></Row>
             <Row>
@@ -185,7 +226,7 @@ function Budget() {
                     <Col xs={3} md={3} key={index}>
                     <Card className="text-white bg-dark" key={budget.budget_id} style={{ width: '18rem' }}>
                         <Card.Body>
-                            <Card.Title>{budget.budget_name} <Badge bg="info">Active</Badge></Card.Title>
+                            <Card.Title>{budget.budget_name} <Badge bg="info">Active</Badge><Button className="mx-2" onClick={() => {setDetailedBudget(budget); handleShowDetails();}}>+</Button></Card.Title>
                             <Card.Subtitle className=""><strong>{budget.start_time}</strong></Card.Subtitle>
                             <Card.Subtitle className="mb-1"><strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
                             <Card.Text><strong>Income</strong></Card.Text>
@@ -204,7 +245,7 @@ function Budget() {
                     <Col xs={3} md={3} key={index}>
                     <Card className="text-white bg-dark" key={budget.budget_id} style={{ width: '18rem' }}>
                         <Card.Body>
-                            <Card.Title>{budget.budget_name}</Card.Title>
+                            <Card.Title>{budget.budget_name} <Button className="mx-2" onClick={() => {setDetailedBudget(budget); handleShowDetails();}}>+</Button></Card.Title>
                             <Card.Subtitle className=""><strong>{budget.start_time}</strong> - <strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
                             <Card.Text><strong>Income</strong></Card.Text>
                             {createIncomeList(budget.budget_id)}

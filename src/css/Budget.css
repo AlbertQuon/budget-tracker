@@ -1,6 +1,11 @@
 .modal-budget {
-    width: 40%;
-    max-width: 50%;
+    width: 40vw;
+    max-width: 50vw;
+}
+
+.modal-budget-details {
+    width: 70vw;
+    max-width: 80vw;
 }
 
 .dark-modal-content {
