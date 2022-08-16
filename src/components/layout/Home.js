@@ -41,8 +41,12 @@ function Home() {
                 <Button className="custom-btn" as={Link} to='/transactions/'>Visit transactions</Button>
             </Card>
             </div> : 
-            
-            <p>Please log in or register</p>}
+            <Container className="m-3">
+                <h2>Welcome to Budgeter!</h2>
+                <h5>A simple budgeting app.</h5>
+                <p>Please log in or register to use.</p>
+            </Container>
+           }
         </Row>
     </Container> );
 }

@@ -1,4 +1,4 @@
-import { Container, Form, Button, Row } from "react-bootstrap";
+import { Container, Form, Button, Row, FloatingLabel } from "react-bootstrap";
 import AuthContext from "./AuthContext";
 import { useContext } from "react";
 
@@ -14,22 +14,32 @@ function Login() {
     }
 
     return ( 
-    <Container>
-        <Row>
+    <Container className="my-2">
+        <Row className="my-2">
             <h3>Login</h3>
         </Row>
         <Row>
         <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
-                <Form.Label>Username</Form.Label>
-                <Form.Control id="username" type="text" placeholder="Enter username" />
+                <FloatingLabel
+                    controlId="username"
+                    label="Username"
+                    className="mb-3 text-dark"
+                >
+                <Form.Control required id="username" type="text" placeholder="Enter username" />
+                </FloatingLabel>
             </Form.Group>
 
             <Form.Group className="mb-3">
-                <Form.Label>Password</Form.Label>
-                <Form.Control id="password" type="password" placeholder="Password" />
+                <FloatingLabel
+                    controlId="password"
+                    label="Password"
+                    className="mb-3 text-dark"
+                >
+                <Form.Control required id="password" type="password" placeholder="Password" />
+                </FloatingLabel>
             </Form.Group>
-            <Button variant="primary" type="submit">
+            <Button className="custom-btn" type="submit">
                 Login
             </Button>
         </Form>
