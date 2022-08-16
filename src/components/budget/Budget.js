@@ -7,7 +7,7 @@ import BudgetForm from "./BudgetForm";
 import dayjs from "dayjs";
 import TransactPrefs from "./TransactPrefs";
 import '../../css/Budget.css'
-
+import GraphIcon from './../../images/graph-icon-w.png'
 
 function Budget() {
     const [budgets, setBudgets] = useState([]);
@@ -213,7 +213,7 @@ function Budget() {
             <Tab className="" eventKey="budgetView" title="Budgets">
                 <Row className="my-3">
                     <Col><h3>Current budgets</h3></Col>
-                    <Col xs={3} md={2}><Button onClick={handleShowForm}>Add budget</Button></Col>
+                    <Col xs={3} md={2}><Button className="custom-btn" onClick={handleShowForm}>Add budget</Button></Col>
                 </Row>
                 <Row className="mt-3">
                     
@@ -229,14 +229,20 @@ function Budget() {
                         <Col xs={3} md={3} key={index}>
                         <Card className="text-white bg-dark" key={budget.budget_id} style={{ width: '18rem' }}>
                             <Card.Body>
-                                <Card.Title>{budget.budget_name} <Badge bg="info">Active</Badge><Button className="mx-2" onClick={() => {setDetailedBudget(budget); handleShowDetails();}}>+</Button></Card.Title>
+                                <Card.Title>
+                                    {budget.budget_name} 
+                                    <Badge bg="info mx-2">Active</Badge>
+                                    <Button className="mx-2 custom-btn" onClick={() => {setDetailedBudget(budget); handleShowDetails();}}>
+                                        <img src={GraphIcon} className='my-1' style={{'width':'1.25em', 'height': '1.25em', 'padding':'auto'}}/>
+                                    </Button>
+                                </Card.Title>
                                 <Card.Subtitle className=""><strong>{budget.start_time}</strong></Card.Subtitle>
                                 <Card.Subtitle className="mb-1"><strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
                                 <Card.Text><strong>Income</strong></Card.Text>
                                 {createIncomeList(budget.budget_id)}
                                 <Card.Text><strong>Spend Limits</strong></Card.Text>
                                 {createSpendLimitList(budget.budget_id)}
-                                <Card.Text><Button onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
+                                <Card.Text><Button className="custom-btn-negative" onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
                             </Card.Body>
                         </Card>
                         </Col>
@@ -248,13 +254,18 @@ function Budget() {
                         <Col xs={3} md={3} key={index}>
                         <Card className="text-white bg-dark" key={budget.budget_id} style={{ width: '18rem' }}>
                             <Card.Body>
-                                <Card.Title>{budget.budget_name} <Button className="mx-2" onClick={() => {setDetailedBudget(budget); handleShowDetails();}}>+</Button></Card.Title>
+                                <Card.Title>
+                                    {budget.budget_name} 
+                                    <Button className="mx-2 custom-btn" onClick={() => {setDetailedBudget(budget); handleShowDetails();}}>
+                                        <img src={GraphIcon} className='my-1' style={{'width':'1.25em', 'height': '1.25em', 'padding':'auto'}}/>
+                                    </Button>
+                                </Card.Title>
                                 <Card.Subtitle className=""><strong>{budget.start_time}</strong> - <strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
                                 <Card.Text><strong>Income</strong></Card.Text>
                                 {createIncomeList(budget.budget_id)}
                                 <Card.Text><strong>Spend Limits</strong></Card.Text>
                                 {createSpendLimitList(budget.budget_id)}
-                                <Card.Text><Button onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
+                                <Card.Text><Button className="custom-btn-negative" onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
                             </Card.Body>
                         </Card>
                         </Col>

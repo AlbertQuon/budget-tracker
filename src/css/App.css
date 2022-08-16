@@ -31,25 +31,39 @@
 .custom-btn {
   background-color: #0097a1;
   border-color: #0097a1;
-  border-width: 3px;
+  border-width: 2px;
 }
 
 .custom-btn:hover {
   background-color: #017177;
   border-color: #d5f6fa;
-  border-width: 3px;
+  border-width: 2px;
+}
+
+.custom-btn:focus {
+  background-color: #0097a1;
+  border-color: #0097a1;
+  border-width: 2px;
+  box-shadow: 0px 0px;
+}
+
+.custom-btn:active {
+  background-color: #0097a1;
+  border-color: #0097a1;
+  border-width: 2px;
+  box-shadow: 0px 0px;
 }
 
 .custom-btn-negative {
   background-color: #5a6d6e;
   border-color: #5a6d6e;
-  border-width: 3px;
+  border-width: 2px;
 }
 
 .custom-btn-negative:hover {
   background-color: #4d7072;
   border-color: #d5f6fa;
-  border-width: 3px;
+  border-width: 2px;
 }
 
 .tab-headers {
