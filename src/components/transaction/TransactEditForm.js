@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect, useCallback } from "react";
-import { Modal, Form, Card, Button, Row, Col, FormCheck } from "react-bootstrap";
+import { Modal, Form, Card, Button, Row, Col, FormCheck, CloseButton } from "react-bootstrap";
 import useAxios from "../utils/useAxios";
 import AuthContext from "../auth/AuthContext";
 import { DatePickerField } from "../utils/DatePickerField";
@@ -184,8 +184,9 @@ function TransactEditForm({api, transactTaxes, transaction, purchases, purcCateg
     return (
         <div>
             <Modal backdrop="static" show={showEditForm} onHide={handleCloseEditForm} contentClassName="transactForm-modal-content" dialogClassName="transactForm-modal-dialog">
-            <Modal.Header closeButton>
+            <Modal.Header>
                 <Modal.Title>Edit transaction</Modal.Title>
+                <CloseButton onClick={handleCloseEditForm} variant='white'/>
             </Modal.Header>
             <Modal.Body className="m-3">
                 <Formik

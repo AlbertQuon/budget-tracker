@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { useEffect, useContext, useState } from "react";
-import { Accordion, AccordionContext, Button, Col, Row, useAccordionButton, Modal, Form } from "react-bootstrap";
+import { Accordion, AccordionContext, Button, Col, Row, useAccordionButton, Modal, Form, CloseButton } from "react-bootstrap";
 import '../../css/Transact.css'
 import TransactEditForm from "./TransactEditForm";
 
@@ -163,8 +163,9 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
     const ConfirmDeleteBox = () => {
         return ( 
         <Modal id="confirmDeleteBox" backdrop="static" show={showDeleteBox} contentClassName="dark-modal-content" onHide={() => setShowDeleteBox(false)}>
-            <Modal.Header closeButton>
-            <Modal.Title>Confirmation</Modal.Title>
+            <Modal.Header>
+                <Modal.Title>Confirmation</Modal.Title>
+                <CloseButton onClick={() => setShowDeleteBox(false)} variant='white'/>
             </Modal.Header>
             <Modal.Body>
                 <p>Are you sure you want to delete this budget?</p>

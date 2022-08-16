@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Container, Row, Col, Button, Modal, Form } from "react-bootstrap";
+import { Container, Row, Col, Button, Modal, Form, CloseButton } from "react-bootstrap";
 import BudgetChart from "./BudgetChart";
 import dayjs from "dayjs";
 import { useEffect } from "react";
@@ -42,8 +42,9 @@ function BudgetDetails({budget, showBudgetDetail, handleCloseDetails, spendLimit
     
     return ( 
     <Modal onHide={handleCloseDetails} show={showBudgetDetail} dialogClassName="modal-budget-details" contentClassName="dark-modal-content">
-        <Modal.Header closeButton>
+        <Modal.Header>
             {budget?.budget_name}
+            <CloseButton onClick={handleCloseDetails} variant="white" />
         </Modal.Header>
         <Modal.Body>
             <Container>
@@ -80,7 +81,7 @@ function BudgetDetails({budget, showBudgetDetail, handleCloseDetails, spendLimit
             
         </Modal.Body>
         <Modal.Footer>
-            <Button onClick={handleCloseDetails}>Close</Button>
+            <Button className="custom-btn-negative" onClick={handleCloseDetails}>Close</Button>
         </Modal.Footer>
     </Modal> );
 }

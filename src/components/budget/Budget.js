@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState, useRef } from "react";
-import { Container, Row, Form, Card, Button, Col, Badge, Modal, ModalBody, Tab, Tabs } from "react-bootstrap";
+import { Container, Row, Form, Card, Button, Col, Badge, Modal, ModalBody, Tab, Tabs, CloseButton } from "react-bootstrap";
 import AuthContext from "../auth/AuthContext";
 import useAxios from "../utils/useAxios";
 import BudgetDetails from "./BudgetDetails";
@@ -162,8 +162,9 @@ function Budget() {
     const ConfirmDeleteBox = () => {
         return ( 
         <Modal id="confirmDeleteBox" backdrop="static" show={showDeleteBox} contentClassName="dark-modal-content" onHide={() => setShowDeleteBox(false)}>
-            <Modal.Header closeButton>
-            <Modal.Title>Confirmation</Modal.Title>
+            <Modal.Header>
+                <Modal.Title>Confirmation</Modal.Title>
+                <CloseButton variant='white' onClick={() => setShowDeleteBox(false)}/>
             </Modal.Header>
             <Modal.Body>
                 <p>Are you sure you want to delete this budget?</p>

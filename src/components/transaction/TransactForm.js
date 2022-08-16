@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect, useRef } from "react";
-import { Modal, Form, Card, Button, Row, Col, FormCheck } from "react-bootstrap";
+import { Modal, Form, Card, Button, Row, Col, CloseButton } from "react-bootstrap";
 import AuthContext from "../auth/AuthContext";
 import dayjs from "dayjs";
 import { Formik, useField, FieldArray } from 'formik';
@@ -108,8 +108,9 @@ function TransactForm({api, purcCategories, taxCategories, budgets, handleCloseF
 
     return (
     <Modal backdrop="static" show={showForm} onHide={handleCloseForm} contentClassName="transactForm-modal-content" dialogClassName="transactForm-modal-dialog">
-        <Modal.Header closeButton>
+        <Modal.Header>
             <Modal.Title>Add transaction</Modal.Title>
+            <CloseButton onClick={handleCloseForm} variant="white" />
         </Modal.Header>
         <Modal.Body className="m-3">
             <Formik

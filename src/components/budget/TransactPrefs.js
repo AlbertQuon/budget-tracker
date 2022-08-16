@@ -1,4 +1,4 @@
-import { Container, Form, Button, Row, Modal, Col, InputGroup } from "react-bootstrap";
+import { Container, Form, Button, Row, Modal, Col, InputGroup, CloseButton } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
 import useAxios from "../utils/useAxios"
 import AuthContext from "../auth/AuthContext";
@@ -87,8 +87,9 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
     const ConfirmPurcDeleteBox = () => {
         return ( 
         <Modal id="confirmDeleteBox" backdrop="static" show={showPurcDeleteBox} contentClassName="dark-modal-content" onHide={() => setShowPurcDeleteBox(false)}>
-            <Modal.Header closeButton>
-            <Modal.Title>Confirmation</Modal.Title>
+            <Modal.Header>
+                <Modal.Title>Confirmation</Modal.Title>
+                <CloseButton variant="white" onClick={() => setShowPurcDeleteBox(false)} />
             </Modal.Header>
             <Modal.Body>
                 <p>Are you sure you want to delete this purchase category?</p>
@@ -103,8 +104,9 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
     const ConfirmTaxDeleteBox = () => {
         return ( 
         <Modal id="confirmDeleteBox" backdrop="static" show={showTaxDeleteBox} contentClassName="dark-modal-content" onHide={() => setShowTaxDeleteBox(false)}>
-            <Modal.Header closeButton>
-            <Modal.Title>Confirmation</Modal.Title>
+            <Modal.Header>
+                <Modal.Title>Confirmation</Modal.Title>
+                <CloseButton onClick={() => setShowTaxDeleteBox(false)} variant="white" />
             </Modal.Header>
             <Modal.Body>
                 <p>Are you sure you want to delete this tax category?</p>
@@ -132,25 +134,25 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
                         Add categories to sort your purchases and budget limits
                         </Form.Text>
                     </Form.Group>
-                    <Button variant="dark" type="submit">
+                    <Button className="custom-btn"  type="submit">
                         Add category
                     </Button>
                 </Form>
             </Col>
             <Col>
                 <Form onSubmit={(e) => {setShowPurcDeleteBox(true);setFormEvent(e);}}>
-                    <Form.Group className="mb-3">
+                    <Form.Group className="mb-2">
                         <Form.Label>Delete purchase category</Form.Label>
                         <Form.Select>
-                        {purcCategories.map((ctgy) => (
+                            {purcCategories.map((ctgy) => (
                                 <option key={ctgy.purc_category_id}
                                 value={`${ctgy.purc_category_id}`}>{ctgy.purc_category_name}</option>
                             ))}
                         </Form.Select>
-                        <Button variant="dark" type="submit">
-                            Delete purchase category
-                        </Button>
                     </Form.Group>
+                    <Button className="custom-btn-negative" type="submit">
+                            Delete purchase category
+                    </Button>
                 </Form>
             </Col>
         </Row>
@@ -171,25 +173,25 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
                         <InputGroup.Text id="inputGroupPrepend">%</InputGroup.Text>
                     </InputGroup>  
                     </Form.Group>
-                    <Button variant="dark" type="submit">
+                    <Button className="custom-btn" type="submit">
                         Add tax category
                     </Button>
                 </Form>
             </Col>
             <Col>
                 <Form onSubmit={(e) => {setShowTaxDeleteBox(true);setFormEvent(e)}}>
-                    <Form.Group className="mb-3">
+                    <Form.Group className="mb-2">
                         <Form.Label>Delete tax category</Form.Label>
                         <Form.Select>
-                        {taxCategories.map((tax) => (
+                            {taxCategories.map((tax) => (
                                 <option key={tax.tax_id}
                                 value={`${tax.tax_id}`}>{tax.tax_name}</option>
                             ))}
                         </Form.Select>
-                        <Button variant="dark" type="submit">
-                            Delete tax category
-                        </Button>
                     </Form.Group>
+                    <Button className="custom-btn-negative" type="submit">
+                        Delete tax category
+                    </Button>
                 </Form>
             </Col>
         </Row>

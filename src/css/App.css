@@ -15,7 +15,7 @@
 .App-link {
   color: #61dafb;
 }
-
+/* Modal */
 .dark-modal {
   color: white;
 }
@@ -24,10 +24,7 @@
   background-color: #212529;
 }
 
-.text-muted {
-  color:#bbbbbb;
-}
-
+/* Custom button */
 .custom-btn {
   background-color: #0097a1;
   border-color: #0097a1;
@@ -66,6 +63,21 @@
   border-width: 2px;
 }
 
+.custom-btn-negative:active {
+  background-color: #4d7072;
+  border-color: #d5f6fa;
+  border-width: 2px;
+  box-shadow: 0px 0px;
+}
+
+.custom-btn-negative:focus {
+  background-color: #4d7072;
+  border-color: #d5f6fa;
+  border-width: 2px;
+  box-shadow: 0px 0px;
+}
+
+/* Tabs */
 .tab-headers {
   color: black;
   border: 0;
@@ -76,14 +88,14 @@
   border-radius: 0;
   border: 0;
   font-size: 1.1em;
-  border-bottom: 2px rgba(160, 160, 160, 0) solid;
+  border-bottom: 2px rgba(160, 252, 255, 0.151) solid;
 }
 
 .tab-headers .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
   color: rgb(253, 253, 253);
   border-radius: 0;
   font-size: 1.1em;
-  border-bottom: 2px #0097a1 solid;
+  border-bottom: 2px #01becc solid;
   background-color: #1d1f24;
   font-weight: 700;
 }
@@ -96,4 +108,5 @@
   border-radius: 0;
   border-bottom: 2px #57bbc2 solid;
   background-color: #1d1f24;
+  text-decoration: underline;
 }
