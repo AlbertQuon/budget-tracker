@@ -88,7 +88,7 @@ function Transact() {
 
     return ( 
     <Container className="">
-        <Tabs>
+        <Tabs className="tab-headers" justify>
             <Tab eventKey="transactHome" title="Summary">
                 <Row className="mt-3"><h3>Transaction Summary</h3></Row>
                 <TransactSummary budgets={budgets} purchases={purchases} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes}/>

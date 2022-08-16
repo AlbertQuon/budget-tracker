@@ -209,54 +209,57 @@ function Budget() {
    
     return ( 
     <Container className="">
-        <Tabs>
-            <Tab eventKey="budgetView" title="Budgets">
-            <Row className="mt-3">
-                <Col xs={9} md={10}><h2>Budget</h2></Col>
-                <Col xs={3} md={2}><Button onClick={handleShowForm}>Add budget</Button></Col>
-            </Row>
-            <BudgetForm api={api} fetchData={fetchData} showForm={showForm} purcCategories={purcCategories} handleCloseForm={handleCloseForm} 
-                budgets={budgets} setBudgets={setBudgets} spendLimits={spendLimits} setSpendLimits={setSpendLimits}/>
-            <BudgetDetails purcCategories={purcCategories} purchases={detailedBudgetPurchases()} incomes={detailedBudgetIncome()} 
-                budget={detailedBudget} spendLimits={detailedBudgetSpendLimits()} showBudgetDetail={showBudgetDetail} handleCloseDetails={handleCloseDetails}/>
-            {ConfirmDeleteBox()}
-            <Row className="my-2"><h3>Current budgets</h3></Row>
-            <Row>
-                {budgets.filter((budget)=> (dayjs(budget.end_time).diff(dayjs(),'day') >= 0)).map((budget, index)=>(
-                    <Col xs={3} md={3} key={index}>
-                    <Card className="text-white bg-dark" key={budget.budget_id} style={{ width: '18rem' }}>
-                        <Card.Body>
-                            <Card.Title>{budget.budget_name} <Badge bg="info">Active</Badge><Button className="mx-2" onClick={() => {setDetailedBudget(budget); handleShowDetails();}}>+</Button></Card.Title>
-                            <Card.Subtitle className=""><strong>{budget.start_time}</strong></Card.Subtitle>
-                            <Card.Subtitle className="mb-1"><strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
-                            <Card.Text><strong>Income</strong></Card.Text>
-                            {createIncomeList(budget.budget_id)}
-                            <Card.Text><strong>Spend Limits</strong></Card.Text>
-                            {createSpendLimitList(budget.budget_id)}
-                            <Card.Text><Button onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
-                        </Card.Body>
-                    </Card>
-                    </Col>
-                ))}
-            </Row>
-            <Row className="my-2"><h3>Past budgets</h3></Row>
-            <Row>
-            {budgets.filter((budget)=> (dayjs(budget.end_time).diff(dayjs(),'day') <= -1)).map((budget, index)=>(
-                    <Col xs={3} md={3} key={index}>
-                    <Card className="text-white bg-dark" key={budget.budget_id} style={{ width: '18rem' }}>
-                        <Card.Body>
-                            <Card.Title>{budget.budget_name} <Button className="mx-2" onClick={() => {setDetailedBudget(budget); handleShowDetails();}}>+</Button></Card.Title>
-                            <Card.Subtitle className=""><strong>{budget.start_time}</strong> - <strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
-                            <Card.Text><strong>Income</strong></Card.Text>
-                            {createIncomeList(budget.budget_id)}
-                            <Card.Text><strong>Spend Limits</strong></Card.Text>
-                            {createSpendLimitList(budget.budget_id)}
-                            <Card.Text><Button onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
-                        </Card.Body>
-                    </Card>
-                    </Col>
-                ))}
-            </Row>
+        <Tabs className="tab-headers" justify>
+            <Tab className="" eventKey="budgetView" title="Budgets">
+                <Row className="my-3">
+                    <Col><h3>Current budgets</h3></Col>
+                    <Col xs={3} md={2}><Button onClick={handleShowForm}>Add budget</Button></Col>
+                </Row>
+                <Row className="mt-3">
+                    
+                </Row>
+                <BudgetForm api={api} fetchData={fetchData} showForm={showForm} purcCategories={purcCategories} handleCloseForm={handleCloseForm} 
+                    budgets={budgets} setBudgets={setBudgets} spendLimits={spendLimits} setSpendLimits={setSpendLimits}/>
+                <BudgetDetails purcCategories={purcCategories} purchases={detailedBudgetPurchases()} incomes={detailedBudgetIncome()} 
+                    budget={detailedBudget} spendLimits={detailedBudgetSpendLimits()} showBudgetDetail={showBudgetDetail} handleCloseDetails={handleCloseDetails}/>
+                {ConfirmDeleteBox()}
+                
+                <Row>
+                    {budgets.filter((budget)=> (dayjs(budget.end_time).diff(dayjs(),'day') >= 0)).map((budget, index)=>(
+                        <Col xs={3} md={3} key={index}>
+                        <Card className="text-white bg-dark" key={budget.budget_id} style={{ width: '18rem' }}>
+                            <Card.Body>
+                                <Card.Title>{budget.budget_name} <Badge bg="info">Active</Badge><Button className="mx-2" onClick={() => {setDetailedBudget(budget); handleShowDetails();}}>+</Button></Card.Title>
+                                <Card.Subtitle className=""><strong>{budget.start_time}</strong></Card.Subtitle>
+                                <Card.Subtitle className="mb-1"><strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
+                                <Card.Text><strong>Income</strong></Card.Text>
+                                {createIncomeList(budget.budget_id)}
+                                <Card.Text><strong>Spend Limits</strong></Card.Text>
+                                {createSpendLimitList(budget.budget_id)}
+                                <Card.Text><Button onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
+                            </Card.Body>
+                        </Card>
+                        </Col>
+                    ))}
+                </Row>
+                <Row className="my-2"><h3>Past budgets</h3></Row>
+                <Row>
+                {budgets.filter((budget)=> (dayjs(budget.end_time).diff(dayjs(),'day') <= -1)).map((budget, index)=>(
+                        <Col xs={3} md={3} key={index}>
+                        <Card className="text-white bg-dark" key={budget.budget_id} style={{ width: '18rem' }}>
+                            <Card.Body>
+                                <Card.Title>{budget.budget_name} <Button className="mx-2" onClick={() => {setDetailedBudget(budget); handleShowDetails();}}>+</Button></Card.Title>
+                                <Card.Subtitle className=""><strong>{budget.start_time}</strong> - <strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
+                                <Card.Text><strong>Income</strong></Card.Text>
+                                {createIncomeList(budget.budget_id)}
+                                <Card.Text><strong>Spend Limits</strong></Card.Text>
+                                {createSpendLimitList(budget.budget_id)}
+                                <Card.Text><Button onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
+                            </Card.Body>
+                        </Card>
+                        </Col>
+                    ))}
+                </Row>
             </Tab>
             <Tab eventKey="transactPrefs" title="Categories">
                 <TransactPrefs purcCategories={purcCategories} setPurcCategories={setPurcCategories}/>

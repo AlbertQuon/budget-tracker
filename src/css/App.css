@@ -27,3 +27,59 @@
 .text-muted {
   color:#bbbbbb;
 }
+
+.custom-btn {
+  background-color: #0097a1;
+  border-color: #0097a1;
+  border-width: 3px;
+}
+
+.custom-btn:hover {
+  background-color: #017177;
+  border-color: #d5f6fa;
+  border-width: 3px;
+}
+
+.custom-btn-negative {
+  background-color: #5a6d6e;
+  border-color: #5a6d6e;
+  border-width: 3px;
+}
+
+.custom-btn-negative:hover {
+  background-color: #4d7072;
+  border-color: #d5f6fa;
+  border-width: 3px;
+}
+
+.tab-headers {
+  color: black;
+  border: 0;
+}
+
+.tab-headers .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-item .nav-link {
+  color: rgb(253, 253, 253);
+  border-radius: 0;
+  border: 0;
+  font-size: 1.1em;
+  border-bottom: 2px rgba(160, 160, 160, 0) solid;
+}
+
+.tab-headers .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+  color: rgb(253, 253, 253);
+  border-radius: 0;
+  font-size: 1.1em;
+  border-bottom: 2px #0097a1 solid;
+  background-color: #1d1f24;
+  font-weight: 700;
+}
+
+
+.tab-headers .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-item .nav-link:hover {
+  color: rgb(253, 253, 253);
+  font-size: 1.1em;
+  font-weight: 700;
+  border-radius: 0;
+  border-bottom: 2px #57bbc2 solid;
+  background-color: #1d1f24;
+}

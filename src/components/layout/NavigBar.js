@@ -22,13 +22,13 @@ function NavigBar() {
                     <Nav.Link className='custom-nav-link mx-2' as={NavLink} to="transactions/">Transactions</Nav.Link>
                     <Nav.Link className='custom-nav-link mx-2' as={NavLink} to="settings/">Settings</Nav.Link>
                 </Nav>
-                <Button onClick={logoutUser}>Logout</Button>
+                <Button className='custom-btn-negative' onClick={logoutUser}>Logout</Button>
                 </>  
                 ) : 
                 (  <Nav className="me-auto my-2 my-lg-0 customNav"
                     navbarScroll>
-                    <Nav.Link as={NavLink} to="login/">Login</Nav.Link>
-                    <Nav.Link as={NavLink} to="register/">Register</Nav.Link>
+                    <Nav.Link as={NavLink} className='custom-nav-link mx-2' to="login/">Login</Nav.Link>
+                    <Nav.Link as={NavLink} className='custom-nav-link mx-2' to="register/">Register</Nav.Link>
                     </Nav>
                 )}
                 </Navbar.Collapse>

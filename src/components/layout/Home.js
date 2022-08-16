@@ -9,26 +9,36 @@ function Home() {
     return ( <Container>
         <Row>
             {user ? <div>
-            <h2>Home</h2>
-            <p>Welcome {username}</p>
+            <Card className="bg-dark my-3 py-3 px-2">
+                <Card.Title>Welcome {username}!</Card.Title>
+                <Card.Subtitle>How to start</Card.Subtitle>
+                <Card.Text>
+                    <strong>Step 1:</strong> Create purchase categories and optionally create tax categories
+                </Card.Text>
+                <Card.Text>
+                    <strong>Step 2:</strong> Create a budget
+                </Card.Text>
+                <Card.Text>
+                    <strong>Step 3:</strong> Add transactions to budget to start tracking 
+                </Card.Text>
+                <Card.Text>
+                    <strong>Step 4:</strong> Analyze your budget after its period has ended. Add a new budget to continue.
+                </Card.Text>
+            </Card>
             <Card className="bg-dark my-3 py-3 px-2">
                 <Card.Title>Budget</Card.Title>
                 <Card.Subtitle>Start here!</Card.Subtitle>
                 <Card.Text>
-                    Create or view your budgets. 
+                    Create or view your budgets. Add and manage purchase categories and tax categories to add transactions.
                 </Card.Text>
-                <Card.Text>
-                    Add and manage purchase categories and tax categories to add transactions.
-                </Card.Text>
-                <Button as={Link} to="/budget">Visit budgets</Button>
+                <Button className="custom-btn" as={Link} to="/budget">Visit budgets</Button>
             </Card>
             <Card className="bg-dark my-3 py-3 px-2">
                 <Card.Title>Transactions</Card.Title>
-                <Card.Subtitle>Manage transactions here!</Card.Subtitle>
                 <Card.Text>
                     Add, edit, or delete transactions.
                 </Card.Text>
-                <Button as={Link} to='/transactions/'>Visit transactions</Button>
+                <Button className="custom-btn" as={Link} to='/transactions/'>Visit transactions</Button>
             </Card>
             </div> : 
             
