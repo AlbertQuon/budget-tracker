@@ -15,7 +15,7 @@ function BudgetDetails({budget, showBudgetDetail, handleCloseDetails, spendLimit
             setUseBudgetPeriod(true);
             setPurcCategoryFilter(-1);
         }
-    }, showBudgetDetail)
+    }, [showBudgetDetail])
 
     const filteredPurchases = () => {
         if (purcCategoryFilter < 0) {
