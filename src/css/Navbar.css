@@ -1,0 +1,19 @@
+.custom-nav {
+    font-size: 10px;
+    font-size: 0.95vw;
+    font-weight: 600;
+}
+
+.custom-nav-link {
+    color: rgb(78, 78, 78);
+    border-bottom: 0.15em rgba(255, 255, 255, 0) solid;
+}
+
+.custom-nav-link:hover {
+    border-bottom: 0.15em white solid;
+}
+
+.custom-nav-link.active {
+    border-bottom: 0.15em white solid;
+}
+
