@@ -54,7 +54,9 @@ function UserSettings() {
         username: Yup.string().required("Please enter a username"),
         oldPassword: Yup.string().required("Please enter your current password").min(8, "Password is too short - should be 8 characters minimum"),
         password: Yup.string().min(8, "Password is too short - should be 8 characters minimum"),
-        password2: Yup.string().min(8, "Password is too short - should be 8 characters minimum").oneOf([Yup.ref('password'), null], "Passwords must match")
+        password2: Yup.string().when('password', (password, schema) => {
+            return password?.length > 0 ? Yup.string().required("Please confirm your new password").min(8, "Password is too short - should be 8 characters minimum").oneOf([Yup.ref('password'), null], "Passwords must match") : schema;
+        })
     })
   
     return ( <Container className="my-3">
