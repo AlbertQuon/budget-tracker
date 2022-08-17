@@ -152,7 +152,7 @@ function Budget() {
             </Card.Text>)
         });
 
-        incomesList.push(<Card.Text>Total predicted income: ${totalIncome.toFixed(2)}</Card.Text>)
+        incomesList.push(<Card.Text>Total: ${totalIncome.toFixed(2)}</Card.Text>)
 
         return incomesList.length > 0 ? incomesList : <Card.Text>No incomes found</Card.Text>;
     }
@@ -171,8 +171,8 @@ function Budget() {
                 <p className="text-danger">This will delete all transactions associated with this budget</p>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShowDeleteBox(false)}>No</Button>
-                <Button variant="primary" onClick={() => onBudgetDelete(pendingDeletionBudget)}>Confirm</Button>
+                <Button className="custom-btn" onClick={() => setShowDeleteBox(false)}>No</Button>
+                <Button className="custom-btn-negative" onClick={() => onBudgetDelete(pendingDeletionBudget)}>Confirm</Button>
             </Modal.Footer>
         </Modal> );
     }
@@ -228,22 +228,46 @@ function Budget() {
                 <Row>
                     {budgets.filter((budget)=> (dayjs(budget.end_time).diff(dayjs(),'day') >= 0)).map((budget, index)=>(
                         <Col xs={3} md={3} key={index}>
-                        <Card className="text-white bg-dark" key={budget.budget_id} style={{ width: '18rem' }}>
+                        <Card className="text-white bg-dark card-budget" key={budget.budget_id} style={{ width: '18rem' }}>
                             <Card.Body>
-                                <Card.Title>
-                                    {budget.budget_name} 
-                                    <Badge bg="info mx-2">Active</Badge>
-                                    <Button className="mx-2 custom-btn" onClick={() => {setDetailedBudget(budget); handleShowDetails();}}>
-                                        <img src={GraphIcon} className='my-1' style={{'width':'1.25em', 'height': '1.25em', 'padding':'auto'}}/>
-                                    </Button>
-                                </Card.Title>
-                                <Card.Subtitle className=""><strong>{budget.start_time}</strong></Card.Subtitle>
-                                <Card.Subtitle className="mb-1"><strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
-                                <Card.Text><strong>Income</strong></Card.Text>
-                                {createIncomeList(budget.budget_id)}
-                                <Card.Text><strong>Spend Limits</strong></Card.Text>
-                                {createSpendLimitList(budget.budget_id)}
-                                <Card.Text><Button className="custom-btn-negative" onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
+                                
+                                <Container>
+                                    <Row>
+                                        <Col>
+                                        <Card.Title>
+                                            {budget.budget_name} 
+                                            <Button className="mx-2 custom-btn" onClick={() => {setDetailedBudget(budget); handleShowDetails();}}>
+                                                <img src={GraphIcon} className='my-1' style={{'width':'1.25em', 'height': '1.25em', 'padding':'auto'}}/>
+                                            </Button>
+                                        </Card.Title>
+                                        </Col>
+                                    </Row>
+                                    <Row className="my-2 py-1">
+                                        <Col>
+                                            <Card.Subtitle className=""><strong>{budget.start_time}</strong></Card.Subtitle>
+                                        </Col>
+                                        <Col>
+                                            <Card.Subtitle className="mb-1"><strong>{budget.end_time}</strong></Card.Subtitle>
+                                        </Col>
+                                    </Row>
+                                    <Row className="card-budget-income py-2">
+                                        <Col>
+                                            <Card.Text><strong>Income</strong></Card.Text>
+                                            {createIncomeList(budget.budget_id)}
+                                        </Col>
+                                    </Row>
+                                    <Row className="card-budget-income mb-2 mt-3 py-3">
+                                        <Col>
+                                        <Card.Text><strong>Spend Limits</strong></Card.Text>
+                                            {createSpendLimitList(budget.budget_id)}
+                                        </Col>
+                                    </Row>
+                                    <Row className="mb-2 mt-3">
+                                        <Col>
+                                        <Card.Text><Button className="custom-btn-negative" onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
+                                        </Col>
+                                    </Row>
+                                </Container>
                             </Card.Body>
                         </Card>
                         </Col>
@@ -255,18 +279,32 @@ function Budget() {
                         <Col xs={3} md={3} key={index}>
                         <Card className="text-white bg-dark" key={budget.budget_id} style={{ width: '18rem' }}>
                             <Card.Body>
-                                <Card.Title>
-                                    {budget.budget_name} 
-                                    <Button className="mx-2 custom-btn" onClick={() => {setDetailedBudget(budget); handleShowDetails();}}>
-                                        <img src={GraphIcon} className='my-1' style={{'width':'1.25em', 'height': '1.25em', 'padding':'auto'}}/>
-                                    </Button>
-                                </Card.Title>
-                                <Card.Subtitle className=""><strong>{budget.start_time}</strong> - <strong>{budget.end_time}</strong> ({dayjs(budget.end_time).diff(dayjs(budget.start_time), 'day')} days)</Card.Subtitle>
-                                <Card.Text><strong>Income</strong></Card.Text>
-                                {createIncomeList(budget.budget_id)}
-                                <Card.Text><strong>Spend Limits</strong></Card.Text>
-                                {createSpendLimitList(budget.budget_id)}
-                                <Card.Text><Button className="custom-btn-negative" onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
+                                <Container>
+                                    <Row>
+                                    <Col>
+                                    <Card.Title>
+                                        {budget.budget_name} 
+                                        <Button className="mx-2 ms-5 custom-btn" onClick={() => {setDetailedBudget(budget); handleShowDetails();}}>
+                                            <img src={GraphIcon} className='my-1' style={{'width':'1.25em', 'height': '1.25em', 'padding':'auto'}}/>
+                                        </Button>
+                                    </Card.Title>
+                                    </Col>
+                                    </Row>
+                                    <Row className="my-1 py-2 border-bottom">
+                                        <Col>
+                                        <Card.Subtitle className=""><strong>{budget.start_time}</strong></Card.Subtitle>
+                                        </Col>
+                                        <Col>
+                                        <Card.Subtitle className="mb-1"><strong>{budget.end_time}</strong></Card.Subtitle>
+                                        </Col>
+                                    </Row>
+                                    <Row className="mt-3 py-1">
+                                        <Col>
+                                        <Card.Text><Button className="custom-btn-negative" onClick={() => {setPendingDeletionBudget(budget.budget_id); setShowDeleteBox(true);}}>Delete</Button></Card.Text>
+                                        </Col>
+                                    </Row>
+                                </Container>
+                                
                             </Card.Body>
                         </Card>
                         </Col>

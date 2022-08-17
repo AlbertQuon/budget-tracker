@@ -95,8 +95,8 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
                 <p>Are you sure you want to delete this purchase category?</p>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={()=>{setFormEvent({});setShowPurcDeleteBox(false);}} >No</Button>
-                <Button variant="primary" onClick={()=>{onPurcCtgyDelete(formEvent);setShowPurcDeleteBox(false);}}>Confirm</Button>
+                <Button className="custom-btn" onClick={()=>{setFormEvent({});setShowPurcDeleteBox(false);}} >No</Button>
+                <Button className="custom-btn-negative" onClick={()=>{onPurcCtgyDelete(formEvent);setShowPurcDeleteBox(false);}}>Confirm</Button>
             </Modal.Footer>
         </Modal> );
     }  
@@ -112,8 +112,8 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
                 <p>Are you sure you want to delete this tax category?</p>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={()=>{setFormEvent({});setShowTaxDeleteBox(false);}} >No</Button>
-                <Button variant="primary" onClick={()=>{onTaxCtgyDelete(formEvent);setShowTaxDeleteBox(false);}}>Confirm</Button>
+                <Button className="custom-btn" onClick={()=>{setFormEvent({});setShowTaxDeleteBox(false);}} >No</Button>
+                <Button className="custom-btn-negative" onClick={()=>{onTaxCtgyDelete(formEvent);setShowTaxDeleteBox(false);}}>Confirm</Button>
             </Modal.Footer>
         </Modal> );
     }  
@@ -156,7 +156,7 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
                 </Form>
             </Col>
         </Row>
-        <Row className="my-4">
+        <Row className="my-4 border-top pt-3">
             <h3>Tax Categories</h3>
             <Col>
                 <Form onSubmit={onTaxCtgyPrefAdd}>

@@ -13,6 +13,16 @@
     color:white;
 }
 
+.card-budget-income {
+    background-color: #1d1f24;
+    border-radius: 5px;
+    border: 1px rgba(255, 255, 255, 0) solid;
+}
+
+.card-budget {
+    font-size: 0.9em;
+    border: 1px rgba(103, 237, 255, 0.329) solid;
+}
 
 
 

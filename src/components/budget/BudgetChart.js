@@ -11,9 +11,7 @@ function BudgetChart({budget, spendLimit, purchases, purcCategory, incomes, time
     var timeLabels = [];
     //var labels =  Array.from({length: timePeriod}, (v, i) => i%2===0 ? "2022/77/22" : "");
     var j = 0;
-    console.log(purchases)
 
-    console.log(budget, useBudgetPeriod)
     if (useBudgetPeriod) {
       for (let i = budgetPeriod; i >= 0; i--) {
         if (j < purchases.length && dayjs(budget.end_time).subtract(i, "day").isSame(purchases[j].date, "day")) {
@@ -52,11 +50,9 @@ function BudgetChart({budget, spendLimit, purchases, purcCategory, incomes, time
   
     var totalIncome = 0;
     incomes.forEach(income => totalIncome += income.income_amount/100);
-
-    console.log(spendingData, totalSpending, timeLabels);
     
     const incomeLimitData = purcCategory ? Array.from({length: useBudgetPeriod ? budgetPeriod+1 : timePeriod}, () => spendLimit ? spendLimit.spend_limit/100 : 0) : 
-      Array.from({length: timePeriod}, () => totalIncome);
+      Array.from({length: useBudgetPeriod ? budgetPeriod+1 : timePeriod}, () => totalIncome);
 
     const lineColour = (purcCategory && totalSpending < spendLimit?.spend_limit/100) || 
       (!purcCategory && totalSpending < totalIncome) ? "63, 166, 255" : "255, 99, 132";
@@ -73,7 +69,10 @@ function BudgetChart({budget, spendLimit, purchases, purcCategory, incomes, time
         title: {
           display: true,
           text: `Spending over time`,
-          color: "#e7e6f7"
+          color: "#e7e6f7",
+          font: {
+            size: 20
+          }
         },
       },
       scales: {
