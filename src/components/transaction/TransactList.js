@@ -54,6 +54,8 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
         }
     }, [budgetFilter, transactions, sort])
 
+
+    // Components
     const transactBudget = (budget_id) => {
         //console.log(budgets)
         let budget = budgets.find((budget) => budget.budget_id === budget_id); // REMEMBER TO USE ===
@@ -79,6 +81,7 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
         return purcList.length > 0 ? <div className="purchaseList my-2">{purcList}</div> : <p className="purchaseList my-2">No purchases found</p>
     }
 
+    // Calculation functions
     const calcTaxTotal = (transact_id) => {
         var taxTotal = 0.00;
         if (purchases[transact_id] === undefined || !purchases) {
@@ -97,7 +100,6 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
         
         return taxTotal.toFixed(2);
     }
-
 
     const calcSubtotal = (transact_id) => {
         var subtotal = 0.00;
@@ -171,8 +173,8 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
                 <p>Are you sure you want to delete this budget?</p>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={() => {setShowDeleteBox(false); }}>No</Button>
-                <Button variant="primary" onClick={() => {onTransactDelete(editTransaction.transact_id); setShowDeleteBox(false); }}>Confirm</Button>
+                <Button className="custom-btn" onClick={() => {setShowDeleteBox(false); }}>No</Button>
+                <Button className="custom-btn-negative" onClick={() => {onTransactDelete(editTransaction.transact_id); setShowDeleteBox(false); }}>Confirm</Button>
             </Modal.Footer>
         </Modal> );
     } 
@@ -198,13 +200,16 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
                 <Col><h4>{transact.transact_date}</h4></Col>
                 <Col><h5>{transactBudget(transact.budget)}</h5></Col>
                 <Col><p>Total: ${calcTotal(transact.transact_id)}</p></Col>
-                <Col><Button onClick={()=> {setShowEditForm(true); setEditTransaction(transact);}}>Edit</Button><Button onClick={() => {setShowDeleteBox(true); setEditTransaction(transact);}}>Delete</Button></Col>
+                <Col>
+                    <Button className="custom-btn mx-1" onClick={()=> {setShowEditForm(true); setEditTransaction(transact);}}>Edit</Button>
+                    <Button className="custom-btn-negative mx-1" onClick={() => {setShowDeleteBox(true); setEditTransaction(transact);}}>Delete</Button>
+                </Col>
                 </Row>
                 <Row><Col>
                     <Accordion>
                     <CustomExpand eventKey={transact.transact_id}></CustomExpand>
                     <Accordion.Collapse eventKey={transact.transact_id}>
-                        <Row className="mt-3 transactDetail">
+                        <Row className="mt-3 transaction-detail-accordion">
                             <Col>
                             <p>Subtotal: ${calcSubtotal(transact.transact_id)}</p>
                             </Col>

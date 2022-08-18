@@ -90,14 +90,13 @@ function Transact() {
     <Container className="">
         <Tabs className="tab-headers" justify>
             <Tab eventKey="transactHome" title="Summary">
-                <Row className="mt-3"><h3>Transaction Summary</h3></Row>
                 <TransactSummary budgets={budgets} purchases={purchases} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes}/>
             </Tab>
             <Tab eventKey="transactList" title="View">
             <Row className="mt-3">
                 <Col><h3>Transactions</h3></Col>
                 <Col>
-                <Button onClick={handleShowForm}>Add transaction</Button>
+                <Button className="custom-btn" onClick={handleShowForm}>Add transaction</Button>
                 </Col>
             </Row>
                 <TransactForm api={api} fetchData={fetchData} showForm={showForm} handleCloseForm={handleCloseForm} setTransactions={setTransactions} budgets={budgets} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions}/>
