@@ -93,15 +93,13 @@ function Transact() {
                 <TransactSummary budgets={budgets} purchases={purchases} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes}/>
             </Tab>
             <Tab eventKey="transactList" title="View">
-            <Row className="mt-3">
-                <Col><h3>Transactions</h3></Col>
-                <Col>
-                <Button className="custom-btn" onClick={handleShowForm}>Add transaction</Button>
-                </Col>
-            </Row>
-                <TransactForm api={api} fetchData={fetchData} showForm={showForm} handleCloseForm={handleCloseForm} setTransactions={setTransactions} budgets={budgets} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions}/>
+                <TransactForm api={api} fetchData={fetchData} showForm={showForm} handleCloseForm={handleCloseForm} setTransactions={setTransactions} 
+                    budgets={budgets} purcCategories={purcCategories} taxCategories={taxCategories} transactions={transactions}/>
                 <Row>
-                    <TransactList api={api} fetchData={fetchData} budgets={budgets} purcCategories={purcCategories} purchases={purchases} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes} onTransactDelete={onTransactDelete}></TransactList>
+                    <Col>
+                        <TransactList api={api} fetchData={fetchData} budgets={budgets} purcCategories={purcCategories} purchases={purchases} handleShowForm={handleShowForm}
+                            taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes} onTransactDelete={onTransactDelete}></TransactList>
+                    </Col>
                 </Row>
             </Tab>
         </Tabs>

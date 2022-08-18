@@ -1,10 +1,10 @@
 import dayjs from "dayjs";
 import { useEffect, useContext, useState } from "react";
-import { Accordion, AccordionContext, Button, Col, Row, useAccordionButton, Modal, Form, CloseButton } from "react-bootstrap";
+import { Accordion, AccordionContext, Button, Col, Row, useAccordionButton, Modal, Form, CloseButton, Container, FloatingLabel } from "react-bootstrap";
 import '../../css/Transact.css'
 import TransactEditForm from "./TransactEditForm";
 
-function TransactList({api, purcCategories, purchases, transactions, taxCategories, transactTaxes, budgets, onTransactDelete, fetchData}) {
+function TransactList({api, purcCategories, purchases, transactions, taxCategories, transactTaxes, budgets, onTransactDelete, fetchData, handleShowForm}) {
 
     const [showEditForm, setShowEditForm] = useState(false);
     const [editTransaction, setEditTransaction] = useState({});
@@ -156,7 +156,8 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
         const onClickExpand = useAccordionButton(eventKey, ()=> callback && callback(eventKey));
         const { activeEventKey } = useContext(AccordionContext);
         const isCurrentEventKey = activeEventKey === eventKey;
-        return <Button onClick={onClickExpand} style={{ backgroundColor: isCurrentEventKey ? 'dark-grey' : 'grey' }}>
+
+        return <Button onClick={onClickExpand} className='custom-btn'>
             {isCurrentEventKey ? '-' : '+'}
             {children}
         </Button>
@@ -180,52 +181,66 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
     } 
 
     return ( 
-    <div>
+    <Container>
         {ConfirmDeleteBox()}
         <TransactEditForm api={api} transaction={editTransaction} showEditForm={showEditForm} handleCloseEditForm={handleCloseEditForm} handleOpenEditForm={handleOpenEditForm} onTransactDelete={onTransactDelete}
             budgets={budgets} purcCategories={purcCategories} purchases={purchases} taxCategories={taxCategories} transactions={transactions} transactTaxes={transactTaxes} fetchData={fetchData} />
-        <Row>
-            <Col xs={6}><Form.Control type="text" placeholder="Search by budget..." onChange={e=>setBudgetFilter(e.target.value)} ></Form.Control></Col>
+        <Row className="mt-3">
+            <Col><h3>Transactions</h3></Col>
+            <Col className="me-2" md='auto'>
+                <Button className="custom-btn" onClick={handleShowForm}>Add transaction</Button>
+            </Col>
+        </Row>
+        <Row className="my-3">
             <Col xs={6}>
-                <Form.Select onChange={e=> setSort(parseInt(e.target.value))}>
-                    <option selected value={1}>Sort by date</option>
-                    <option value={2}>Budget name</option>
-                </Form.Select>
+                <FloatingLabel className="transaction-select-text" label="Budget Name">
+                    <Form.Control type="text" placeholder="Search by budget..." onChange={e=>setBudgetFilter(e.target.value)} ></Form.Control>
+                </FloatingLabel>
+            </Col>
+            <Col xs={6}>
+                <FloatingLabel className="transaction-select-text" label="Sort by">
+                    <Form.Select onChange={e=> setSort(parseInt(e.target.value))}>
+                        <option selected value={1}>Date</option>
+                        <option value={2}>Budget name</option>
+                    </Form.Select>
+                </FloatingLabel>
             </Col>
         </Row>
         {Object.keys(filteredTransactions).length !== 0 ? filteredTransactions.map((transact) => (
-            <Row className="transactionItem my-1 mx-2" key={transact.transact_id} bg='dark'>
+            <Row className="transaction-item" key={transact.transact_id} bg='dark'>
                 <Col className="m-2">
-                <Row>
-                <Col><h4>{transact.transact_date}</h4></Col>
-                <Col><h5>{transactBudget(transact.budget)}</h5></Col>
-                <Col><p>Total: ${calcTotal(transact.transact_id)}</p></Col>
-                <Col>
-                    <Button className="custom-btn mx-1" onClick={()=> {setShowEditForm(true); setEditTransaction(transact);}}>Edit</Button>
-                    <Button className="custom-btn-negative mx-1" onClick={() => {setShowDeleteBox(true); setEditTransaction(transact);}}>Delete</Button>
-                </Col>
-                </Row>
-                <Row><Col>
-                    <Accordion>
-                    <CustomExpand eventKey={transact.transact_id}></CustomExpand>
-                    <Accordion.Collapse eventKey={transact.transact_id}>
-                        <Row className="mt-3 transaction-detail-accordion">
-                            <Col>
-                            <p>Subtotal: ${calcSubtotal(transact.transact_id)}</p>
+                    <Accordion className="transaction-detail-accordion">
+                        <Row>
+                            <Col><h4>{transact.transact_date}</h4></Col>
+                            <Col><h5>{transactBudget(transact.budget)}</h5></Col>
+                            <Col><h5>${calcTotal(transact.transact_id)}</h5></Col>
+                            <Col md='auto'>
+                                <CustomExpand eventKey={transact.transact_id}></CustomExpand>
                             </Col>
-                            <Col>
-                            <p>Taxes: ${calcTaxTotal(transact.transact_id)} ({taxesList(transact.transact_id)})</p>
+                            <Col md='auto' className="ms-5">
+                                <Button className="custom-btn mx-1" 
+                                    onClick={()=> {setShowEditForm(true); setEditTransaction(transact);}}>Edit</Button>
+                                <Button className="custom-btn-negative mx-1" 
+                                    onClick={() => {setShowDeleteBox(true); setEditTransaction(transact);}}>Delete</Button>
                             </Col>
-                            <strong>Purchases</strong>
-                            {purchasesList(transact.transact_id)}
                         </Row>
-                    </Accordion.Collapse>
+                        <Accordion.Collapse eventKey={transact.transact_id}>
+                            <Row className="mt-3 transaction-detail-accordion-body">
+                                <Col>
+                                    <p>Subtotal: ${calcSubtotal(transact.transact_id)}</p>
+                                </Col>
+                                <Col>
+                                    <p>Taxes: ${calcTaxTotal(transact.transact_id)} ({taxesList(transact.transact_id)})</p>
+                                </Col>
+                                <strong>Purchases</strong>
+                                {purchasesList(transact.transact_id)}
+                            </Row>
+                        </Accordion.Collapse>
                     </Accordion>
-                </Col></Row>
                 </Col>
             </Row>
         )) : <h5>No transactions found</h5>}
-    </div>);
+    </Container>);
 }
 
 export default TransactList;

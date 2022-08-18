@@ -115,7 +115,7 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
     return ( 
     <Container className="py-4">
         <Row>
-            <h4>Past 30 days</h4>
+            <h3>Past 30 days</h3>
         </Row>
         <Row className="py-4">
             <Col>
@@ -178,10 +178,7 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
             <h4>Budgets</h4>
         </Row>
         <Row className="my-2">
-            <Col md='auto' className="pt-1">
-                Search:
-            </Col>
-            <Col>
+            <Col xs={6}>
                 <Form.Control type='text' onChange={(e) => setBudgetFilter(e.target.value)} placeholder="Search by budget name"></Form.Control>
             </Col>
         </Row>

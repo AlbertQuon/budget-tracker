@@ -21,7 +21,12 @@
 
 .card-budget {
     font-size: 0.9em;
+    background-color: #252b2a77;
     border: 1px rgba(103, 237, 255, 0.329) solid;
+}
+
+.past-budget-header {
+    border-top: 1px #65fff2 dotted;
 }
 
 

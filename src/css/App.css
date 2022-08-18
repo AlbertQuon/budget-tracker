@@ -81,6 +81,7 @@
 .tab-headers {
   color: black;
   border: 0;
+  margin-top: 0.5em;
 }
 
 .tab-headers .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-item .nav-link {
@@ -109,4 +110,12 @@
   border-bottom: 2px #57bbc2 solid;
   background-color: #1d1f24;
   text-decoration: underline;
+}
+
+.form-control {
+  border: 1px #01becc solid;
+}
+
+.form-select {
+  border: 1px #01becc solid;
 }
