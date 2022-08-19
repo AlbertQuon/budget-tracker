@@ -1,16 +1,3 @@
-/* Transaction form */
-.transactForm-modal-dialog {
-    width: 50%;
-    max-width: 70%;
-    
-}
-
-.transactForm-modal-content {
-    background-color: rgb(46, 46, 46);
-    color: white;
-}
-
-
 /* Main page */
 .summary-card {
     background-color: rgba(0, 13, 20, 0.103);
@@ -94,6 +81,7 @@
     font-size: 1.4em;
 }
 
+
 /* Transaction list */
 .transaction-detail-accordion-body {
     border-top: #83fbff 1px solid;
@@ -109,5 +97,62 @@
     border-bottom: 1px #83fbff49 solid;
 }
 
+
+/* Transaction form */
+.transact-form-modal-dialog {
+    width: 50vw;
+    max-width: 70vw;
+}
+
+.transact-form-modal-content {
+    background-color: #1d1f24;
+    color: white;
+}
+
+.transact-modal-header {
+    border-bottom: 1px #65fff2 solid;
+}
+
+.transaction-modal-body {
+    background-color: #252b2a77;
+    margin: 1em;
+    border-radius: 5px;
+}
+
+.transact-form-purc-ctgy-header {
+    font-weight: 600;
+    font-size: 1.025em;
+    text-align: center;
+}
+
+.form-label-header-section {
+    text-align: center;
+}
+
+.form-label-header {
+    font-size: 1.1em;
+    font-weight: 550;
+    align-self: center;
+}
+
+.form-section {
+    border-top: 1px #65fff21c solid;
+    padding-top: 1em;
+}
+
+.form-subtext {
+    color: azure;
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+.subtotal-text {
+    font-weight: 600;
+}
+
+.total-text {
+    font-weight: 650;
+    text-decoration: underline;
+}
 
 /* use styles.<class> for classes without '-' */

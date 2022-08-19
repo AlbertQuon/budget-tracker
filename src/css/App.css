@@ -36,7 +36,7 @@
 
 .custom-btn:hover {
   background-color: #017177;
-  border-color: #d5f6fa;
+  border-color: #7be9da;
   border-width: 2px;
 }
 
@@ -150,8 +150,19 @@
   color: rgb(244, 255, 253);
 }
 
+.form-select:focus-visible {
+  border: 1px #01cedd solid;
+  background-color: #282c34;
+  color: rgb(244, 255, 253);
+}
+
 .input-label {
   color: #a2a9aa;
+}
+
+.input-group-text {
+  background-color: #585b5c;
+  color: white;
 }
 
 .form-card {
@@ -172,10 +183,6 @@
 }
 
 .datePicker input:focus {
-  box-shadow: 0 0 0 .25rem rgba(13, 253, 233, 0.25);
-}
-
-.datePicker input:focus-visible {
   box-shadow: 0 0 0 .25rem rgba(13, 253, 233, 0.25);
 }
 
@@ -219,3 +226,11 @@
 .react-datepicker__day--disabled {
   color: #30353f;
 }
+
+/* Check */
+.form-check-input:checked {
+  background-color: #0097a1;
+  border-color: #0097a1;
+}
+
+

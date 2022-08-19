@@ -160,19 +160,29 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
             <h3>Tax Categories</h3>
             <Col>
                 <Form onSubmit={onTaxCtgyPrefAdd}>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Tax Category Name</Form.Label>
-                        <Form.Control type="text" placeholder="Enter a tax category" />
-                        <Form.Text className="text-white">
-                        Add taxes to keep track within your purchases
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                    <InputGroup>
-                        <Form.Control type="text" onKeyPress={(e) => !/^\d*(\.\d{0,2})?$/.test(e.key) && e.preventDefault()} placeholder="Tax rate" />
-                        <InputGroup.Text id="inputGroupPrepend">%</InputGroup.Text>
-                    </InputGroup>  
-                    </Form.Group>
+                    <Row>
+                        <Col>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Tax Category Name</Form.Label>
+                                <Form.Control type="text" placeholder="Enter a tax category" />
+                                <Form.Text className="text-white">
+                                Add taxes to keep track within your purchases
+                                </Form.Text>
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md='auto'>
+                            <Form.Group className="mb-3">
+                                <InputGroup>
+                                    <Form.Control type="text" onKeyPress={(e) => !/^\d*(\.\d{0,2})?$/.test(e.key) && e.preventDefault()} placeholder="Tax rate" />
+                                    <InputGroup.Text>%</InputGroup.Text>
+                                </InputGroup>  
+                            </Form.Group>
+                        </Col>
+                    </Row>
+                    
+                    
                     <Button className="custom-btn" type="submit">
                         Add tax category
                     </Button>

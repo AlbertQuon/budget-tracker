@@ -107,11 +107,11 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                                             <Form.Control.Feedback type="invalid">{errors.budgetName}</Form.Control.Feedback>
                                         </Form.Group>
                                         
-                                        <FieldArray name="budgetIncomes" className="my-3">
+                                        <FieldArray name="budgetIncomes">
                                         {(arrayHelpers) => {
                                             return (
-                                                <Form.Group className="my-3 form-section" as={Row}>
-                                                    <Row className="mb-3 align-items-center"> 
+                                                <Form.Group className="form-section" as={Row}>
+                                                    <Row className="mb-1 align-items-center"> 
                                                         <Col md='auto'><Form.Label className="form-label-header">Predicted Incomes</Form.Label></Col>
                                                         <Col md='auto'><Button className="custom-btn" onClick={() => arrayHelpers.push('')}>Add</Button></Col>    
                                                     </Row>
@@ -205,7 +205,7 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                 </Modal.Body>    
                 <Modal.Footer>
                     <Button className="custom-btn-negative" onClick={handleCloseForm}>
-                        Close
+                        Cancel
                     </Button>
                 </Modal.Footer>
             </Modal>
