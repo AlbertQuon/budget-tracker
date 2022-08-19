@@ -57,6 +57,11 @@
     font-weight: 600;
 }
 
+#percentage-input-group {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
 
 
 

@@ -95,7 +95,7 @@ function TransactEditForm({api, transactTaxes, transaction, purchases, purcCateg
         purchases: Yup.array().of(Yup.object().shape({
             purcCategory: Yup.number().required("Select a purchase category"),
             itemName: Yup.string().required("Enter an item name"),
-            price: Yup.number().positive("Enter a valid price").required("Please enter a price")
+            price: Yup.number().typeError("Price must be a number").positive("Enter a valid price").required("Please enter a price")
         })).min(1).required(),
         taxRates: Yup.array().of(Yup.bool())
     })

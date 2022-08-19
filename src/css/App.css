@@ -233,4 +233,18 @@
   border-color: #0097a1;
 }
 
+/* Toast */
+.toast {
+  border: 1px #01cedd46 solid;
+}
+
+.toast-header {
+  color: #1d1f24;
+}
+
+.toast-body {
+  background-color: #1d1f24;
+  border: 1px #01cedd46 solid;
+}
+
 

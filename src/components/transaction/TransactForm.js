@@ -96,7 +96,7 @@ function TransactForm({api, purcCategories, taxCategories, budgets, handleCloseF
         purchases: Yup.array().of(Yup.object().shape({
             purcCategory: Yup.number().required("Select a purchase category"),
             itemName: Yup.string().required("Enter an item name"),
-            price: Yup.number().positive("Enter a valid price").required("Please enter a price")
+            price: Yup.number().typeError("Price must be a number").positive("Enter a valid price").required("Please enter a price")
         })).min(1).required("Need at least one purchase in this transaction"),
         taxRates: Yup.array().of(Yup.bool())
     })
@@ -145,8 +145,11 @@ function TransactForm({api, purcCategories, taxCategories, budgets, handleCloseF
                         
                         <Form.Group className="mb-3 form-section">
                             <Form.Label className="form-label-header">Transaction Date</Form.Label>
-                            <DatePickerField name="transactDate" onChange={handleChange} onBlur={handleBlur} 
-                                minDate={dayjs(budgets.find(budget => budget.budget_id === values.budget).start_time).toDate()} maxDate={Date.now()}/>
+                            <DatePickerField 
+                                name="transactDate" onChange={handleChange} onBlur={handleBlur} 
+                                minDate={dayjs(budgets.find(budget => budget.budget_id === values.budget).start_time).toDate()} 
+                                maxDate={Date.now()}
+                                />
                             {errors.transactDate ? <p className="text-danger">{errors.transactDate}</p> : null}
                         </Form.Group>
                         
@@ -170,37 +173,42 @@ function TransactForm({api, purcCategories, taxCategories, budgets, handleCloseF
                                             <Col xs={2} className="transact-form-purc-ctgy-header" style={{'text-align':'left'}}>Delete</Col>
                                         </Form.Group>
                                         {values.purchases && values.purchases.length > 0 ? (
-                                            <div>{values.purchases.map((purc, index)=> (
-                                            <Row key={index} className="my-2">
-                                                <Col xs={4}>
-                                                    <Form.Select name={`purchases.${index}.purcCategory`} onChange={selectedOption => 
-                                                        {handleChange(`purchases.${index}.purcCategory`)(selectedOption.target.value);}}
-                                                        isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.purcCategory} 
-                                                        isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.purcCategory) || values.purchases[index].purcCategory !== ""}
-                                                        onBlur={()=>handleBlur({target: {name: `purchases.${index}.purcCategory`}})}>
-                                                        <option selected value="">Select a purchase category</option>
-                                                        {purcCategories?.map((ctgy, index) => (<option key={index}
-                                                                        value={`${ctgy.purc_category_id}`}>{ctgy.purc_category_name}</option>))}
-                                                    </Form.Select>
-                                                </Col>
-                                                <Col xs={4}>
-                                                    <Form.Control
-                                                        isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.itemName} 
-                                                        isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.itemName) || touched.hasOwnProperty("purchases") && touched.purchases[index]?.itemName}
-                                                        name={`purchases.${index}.itemName`} type="text" onChange={handleChange} onBlur={handleBlur}/>
-                                                </Col>
-                                                <Col xs={2}>
-                                                    <Form.Control 
-                                                        isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.price} 
-                                                        isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.price) || touched.hasOwnProperty("purchases") && touched.purchases[index]?.price}
-                                                        name={`purchases.${index}.price`} type="number" onChange={handleChange} onBlur={handleBlur}/>
-                                                </Col>
-                                                <Col xs={2}>
-                                                    <Button className="custom-btn-negative" onClick={() => arrayHelpers.remove(index)}>X</Button>
-                                                </Col>
-                                                <Form.Control.Feedback>{errors.hasOwnProperty("purchases") && errors.purchases[index] ? "errors": null}</Form.Control.Feedback>
-                                            </Row>
-                                        ))}</div>
+                                            <div>
+                                                {values.purchases.map((purc, index)=> (
+                                                    <Row key={index} className="my-2">
+                                                        <Col xs={4}>
+                                                            <Form.Select name={`purchases.${index}.purcCategory`} onChange={selectedOption => 
+                                                                {handleChange(`purchases.${index}.purcCategory`)(selectedOption.target.value);}}
+                                                                isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.purcCategory} 
+                                                                isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.purcCategory) || values.purchases[index].purcCategory !== ""}
+                                                                onBlur={()=>handleBlur({target: {name: `purchases.${index}.purcCategory`}})}
+                                                                >
+                                                                <option selected value="">Select a purchase category</option>
+                                                                {purcCategories?.map((ctgy, index) => (<option key={index}
+                                                                                value={`${ctgy.purc_category_id}`}>{ctgy.purc_category_name}</option>))}
+                                                            </Form.Select>
+                                                        </Col>
+                                                        <Col xs={4}>
+                                                            <Form.Control
+                                                                isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.itemName} 
+                                                                isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.itemName) || touched.hasOwnProperty("purchases") && touched.purchases[index]?.itemName}
+                                                                name={`purchases.${index}.itemName`} type="text" onChange={handleChange} onBlur={handleBlur}
+                                                                />
+                                                        </Col>
+                                                        <Col xs={2}>
+                                                            <Form.Control 
+                                                                isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.price} 
+                                                                isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.price) || touched.hasOwnProperty("purchases") && touched.purchases[index]?.price}
+                                                                name={`purchases.${index}.price`} type="number" onChange={handleChange} onBlur={handleBlur}
+                                                                />
+                                                        </Col>
+                                                        <Col xs={2}>
+                                                            <Button className="custom-btn-negative" onClick={() => arrayHelpers.remove(index)}>X</Button>
+                                                        </Col>
+                                                        <Form.Control.Feedback>{errors.hasOwnProperty("purchases") && errors.purchases[index] ? "errors": null}</Form.Control.Feedback>
+                                                    </Row>
+                                                ))}
+                                            </div>
                                         ) : (null)}
                                         {typeof errors.purchases === 'string' ? <p>{errors.purchases}</p>: null}
                                     </div>

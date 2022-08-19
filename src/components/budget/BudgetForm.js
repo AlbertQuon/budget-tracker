@@ -72,11 +72,16 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
         budgetName: Yup.string().required("Name required"),
         budgetIncomes: Yup.array().of(Yup.object().shape({
             incomeName: Yup.string().required("Please add a name for the income"),
-            incomeAmount: Yup.number("Please enter a number").required().moreThan(0, "Income can not be negative").min(0)
+            incomeAmount: Yup.number().typeError("Income must be a number").required().moreThan(0, "Income can not be negative").min(0)
         })).min(1, "One income source required"),
         budgetStartDate: Yup.date("Please enter a date").nullable(),
         budgetEndDate: Yup.date().required("Date required"),
-        budgetLimits: Yup.array().of(Yup.number("Spend limit must be a number").required("Spend limit is required").positive("Spend limit should be positive")).required()
+        budgetLimits: Yup.array().of(
+            Yup.number()
+                .typeError("Spend limit must be a number")
+                .required("Spend limit is required")
+                .positive("Spend limit should be positive")
+            ).required()
     });
 
     // DO NOT FORGET HANDLE CHANGE ATTRIBUTE
