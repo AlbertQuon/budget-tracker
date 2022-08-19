@@ -1,5 +1,5 @@
 import { useContext, useCallback, useState } from "react";
-import { Modal, Row, Form, Card, Button, Spinner, Alert, Col } from "react-bootstrap";
+import { Modal, Row, Form, Card, Button, Spinner, Alert, Col, CloseButton, FloatingLabel } from "react-bootstrap";
 import { Formik, useField, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import AuthContext from "../auth/AuthContext";
@@ -73,137 +73,141 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
         budgetIncomes: Yup.array().of(Yup.object().shape({
             incomeName: Yup.string().required("Please add a name for the income"),
             incomeAmount: Yup.number("Please enter a number").required().moreThan(0, "Income can not be negative").min(0)
-        })).min(1, "One income required"),
+        })).min(1, "One income source required"),
         budgetStartDate: Yup.date("Please enter a date").nullable(),
         budgetEndDate: Yup.date().required("Date required"),
-        budgetLimits: Yup.array().of(Yup.number("Spend limit must be a number").required("Spend limit is required").positive("Should be positive")).required()
+        budgetLimits: Yup.array().of(Yup.number("Spend limit must be a number").required("Spend limit is required").positive("Spend limit should be positive")).required()
     });
 
     // DO NOT FORGET HANDLE CHANGE ATTRIBUTE
     /*<Form.Control type="text" onKeyPress={(e) => !/^\d*(\.\d{0,2})?$/.test(e.key) && e.preventDefault()} placeholder="Spend limit"/>*/
     return ( 
         <Modal backdrop="static" show={showForm} onHide={handleCloseForm} dialogClassName="modal-budget" contentClassName="dark-modal-content" >
-            <Modal.Header closeButton>Add budget</Modal.Header>
-            <Modal.Body>
-            <Card bg='dark' text='white'>
-                <Card.Body>
-                <Formik
-                    validationSchema={validSchema}
-                    initialValues={{budgetStartDate: null, budgetIncomes: [{incomeName: "", incomeAmount: 0}], budgetEndDate: dayjs().toDate(), budgetLimits: Array(purcCategories.length).fill(0), budgetName: ""}}
-                    onSubmit={(values, actions) => handleFormSubmit(values, actions)}
-                    innerRef={formRef}
-                >
-                    {({handleSubmit, handleChange, handleBlur, values, touched, isValid, errors, isSubmitting}) => (
-                        <Form noValidate onSubmit={handleSubmit}>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Enter a name for the budget</Form.Label>
-                            <Form.Control name="budgetName" isValid={touched.budgetName && !errors.budgetName} 
-                                onChange={handleChange} value={values.budgetName} isInvalid={!!errors.budgetName}
-                                type="text" placeholder="Enter a name"></Form.Control>
-                            <Form.Control.Feedback type="invalid">{errors.budgetName}</Form.Control.Feedback>
-                        </Form.Group>
-                        
-                        <FieldArray name="budgetIncomes" className="my-3">
-                        {(arrayHelpers) => {
-                            return (
-                                <Form.Group className="mb-3" as={Row}>
-                                <Row className="mb-3"> 
-                                <Col xs={3}><Form.Label>Predicted Incomes</Form.Label></Col>
-                                <Col><Button onClick={() => arrayHelpers.push('')}>Add</Button></Col>    
-                                </Row>
-                                <Row className="mb-3">
-                                {values.budgetIncomes && values.budgetIncomes.length > 0 ? 
-                                    values.budgetIncomes.map((budgetIncome, index) => (
-                                        <Form.Group key={index} as={Row}>
-                                            <Form.Label></Form.Label>
-                                            <Col xs={6}>
-                                            <Form.Control type="text"
-                                                name={`budgetIncomes.${index}.incomeName`} placeholder="Income Name"
-                                                onChange={handleChange} onBlur={handleBlur}
-                                                isValid={(errors.hasOwnProperty("budgetIncomes") && !errors.budgetIncomes[index]?.incomeName) 
-                                                    || touched.hasOwnProperty("budgetIncomes") && touched.budgetIncomes[index]?.incomeName}
-                                                isInvalid={errors.hasOwnProperty("budgetIncomes") && !!errors.budgetIncomes[index]?.incomeName} 
-                                                />
+            <Modal.Header className="modal-budget-header">
+                <Modal.Title>Add Budget</Modal.Title>
+                <CloseButton onClick={handleCloseForm} variant='white'/>
+            </Modal.Header>
+                <Modal.Body>
+                    <Card className="form-card">
+                        <Card.Body>
+                            <Formik
+                                validationSchema={validSchema}
+                                initialValues={{budgetStartDate: null, budgetIncomes: [{incomeName: "", incomeAmount: 0}], budgetEndDate: dayjs().toDate(), budgetLimits: Array(purcCategories.length).fill(0), budgetName: ""}}
+                                onSubmit={(values, actions) => handleFormSubmit(values, actions)}
+                                innerRef={formRef}
+                            >
+                                {({handleSubmit, handleChange, handleBlur, values, touched, isValid, errors, isSubmitting}) => (
+                                    <Form noValidate onSubmit={handleSubmit}>
+                                        <Form.Group className="mb-3">
+                                            <FloatingLabel className="input-label" label="Budget Name">
+                                            <Form.Control name="budgetName" isValid={touched.budgetName && !errors.budgetName} 
+                                                onChange={handleChange} value={values.budgetName} isInvalid={!!errors.budgetName}
+                                                type="text" placeholder="Enter a name"></Form.Control>
+                                            </FloatingLabel>
+                                            <Form.Control.Feedback type="invalid">{errors.budgetName}</Form.Control.Feedback>
+                                        </Form.Group>
+                                        
+                                        <FieldArray name="budgetIncomes" className="my-3">
+                                        {(arrayHelpers) => {
+                                            return (
+                                                <Form.Group className="my-3 form-section" as={Row}>
+                                                    <Row className="mb-3 align-items-center"> 
+                                                        <Col md='auto'><Form.Label className="form-label-header">Predicted Incomes</Form.Label></Col>
+                                                        <Col md='auto'><Button className="custom-btn" onClick={() => arrayHelpers.push('')}>Add</Button></Col>    
+                                                    </Row>
+                                                    <Row className="mb-3">
+                                                        <Col>
+                                                            {values.budgetIncomes && values.budgetIncomes.length > 0 ? 
+                                                            values.budgetIncomes.map((budgetIncome, index) => (
+                                                                <Form.Group key={index} as={Row}>
+                                                                    <Form.Label></Form.Label>
+                                                                    <Col>
+                                                                        <Form.Control type="text"
+                                                                            name={`budgetIncomes.${index}.incomeName`} placeholder="Income Name"
+                                                                            onChange={handleChange} onBlur={handleBlur}
+                                                                            isValid={(errors.hasOwnProperty("budgetIncomes") && !errors.budgetIncomes[index]?.incomeName) 
+                                                                                || touched.hasOwnProperty("budgetIncomes") && touched.budgetIncomes[index]?.incomeName}
+                                                                            isInvalid={errors.hasOwnProperty("budgetIncomes") && !!errors.budgetIncomes[index]?.incomeName} 
+                                                                            />
+                                                                    </Col>
+                                                                    <Col xs={4}>
+                                                                        <Form.Control type="number"
+                                                                            name={`budgetIncomes.${index}.incomeAmount`} placeholder="Income Amount"
+                                                                            onChange={handleChange} onBlur={handleBlur}
+                                                                            isValid={(errors.hasOwnProperty("budgetIncomes") && !errors.budgetIncomes[index]?.incomeAmount) 
+                                                                                || touched.hasOwnProperty("budgetIncomes") && touched.budgetIncomes[index]?.incomeAmount}
+                                                                            isInvalid={errors.hasOwnProperty("budgetIncomes") && !!errors.budgetIncomes[index]?.incomeAmount} 
+                                                                            value={values.budgetIncomes[index].incomeAmount}
+                                                                            />
+                                                                    </Col>
+                                                                    <Col md='auto'>
+                                                                        <Button className="custom-btn-negative" onClick={() => arrayHelpers.remove(index)}>X</Button>
+                                                                    </Col>
+                                                                </Form.Group>
+                                                            )) : <p><em>No incomes set</em></p>
+                                                            }
+                                                        </Col>
+                                                    </Row>
+                                                    <Row className="mb-3 align-items-center">
+                                                        <Col xs={7}><Form.Text className="form-subtext">Total predicted income</Form.Text></Col>
+                                                        <Col md='auto'><Form.Text className="form-subtext">${totalIncome.toFixed(2)}</Form.Text></Col>
+                                                    </Row>
+                                                </Form.Group>
+                                            );
+                                        }}
+                                        </FieldArray>
+                                        <Form.Group className="mb-3 form-section align-items-center" as={Row}>
+                                            <Form.Label className="form-label-header">Budget Dates</Form.Label>
+                                            <Col>
+                                                <Form.Label>End Date</Form.Label>
+                                                <DatePickerField minDate={Date.now()} onChange={handleChange} onBlur={handleBlur} name="budgetEndDate"/>
+                                                {errors.budgetEndDate? <p className="text-danger">{errors.budgetEndDate}</p> : null}
                                             </Col>
-                                            <Col xs={4}>
-                                            <Form.Control type="number"
-                                                name={`budgetIncomes.${index}.incomeAmount`} placeholder="Income Amount"
-                                                onChange={handleChange} onBlur={handleBlur}
-                                                isValid={(errors.hasOwnProperty("budgetIncomes") && !errors.budgetIncomes[index]?.incomeAmount) 
-                                                    || touched.hasOwnProperty("budgetIncomes") && touched.budgetIncomes[index]?.incomeAmount}
-                                                isInvalid={errors.hasOwnProperty("budgetIncomes") && !!errors.budgetIncomes[index]?.incomeAmount} 
-                                                value={values.budgetIncomes[index].incomeAmount}
-                                                />
-                                            </Col>
-                                            <Col xs={2}>
-                                                <Button onClick={() => arrayHelpers.remove(index)}>-</Button>
+                                            <Col>
+                                                <Form.Label>Start Date (optional)</Form.Label>
+                                                <DatePickerField onChange={handleChange} onBlur={handleBlur} name="budgetStartDate"/>
+                                                {errors.budgetStartDate? <p className="text-danger">{errors.budgetStartDate}</p> : null}
                                             </Col>
                                         </Form.Group>
-                                    )) : <p><em>No incomes set</em></p>
-                                }
-                                </Row>
-                                <Row className="mb-3">
-                                    <Col><Form.Text className="text-white">Total income</Form.Text></Col>
-                                    <Col><Form.Text className="text-white">${totalIncome.toFixed(2)}</Form.Text></Col>
-                                </Row>
-                                </Form.Group>
-                            );
-                        }}
-                        </FieldArray>
-                        <Form.Group className="mb-3" as={Row}>
-                            <Col>
-                                <Form.Label>Select budget end date</Form.Label>
-                                <DatePickerField minDate={Date.now()} onChange={handleChange} onBlur={handleBlur} name="budgetEndDate"/>
-                                {errors.budgetEndDate? <p className="text-danger">{errors.budgetEndDate}</p> : null}
-                            </Col>
-                            <Col>
-                                <Form.Label>Select budget start date (optional)</Form.Label>
-                                <DatePickerField onChange={handleChange} onBlur={handleBlur} name="budgetStartDate"/>
-                                {errors.budgetStartDate? <p className="text-danger">{errors.budgetStartDate}</p> : null}
-                            </Col>
-                        </Form.Group>
-                        <Form.Group className="py-3">
-                            <Form.Label><strong>Purchase limits</strong></Form.Label>
-                            <FieldArray name="budgetLimits">
-                            {(arrayHelpers) => {
-                                return (
-                                <div>
-                                {purcCategories.length !== 0 ? 
-                                purcCategories.map((ctgy, index) => (
-                                    <Form.Group key={index}>
-                                        <Form.Label>{ctgy.purc_category_name}</Form.Label>
-                                        <Form.Control onBlur={handleBlur} onChange={handleChange} 
-                                        isInvalid={errors.hasOwnProperty("budgetLimits") && !!errors.budgetLimits[index]} 
-                                        isValid={errors.hasOwnProperty("budgetLimits") && touched.hasOwnProperty("budgetLimits") && touched.budgetLimits[index] && !errors.budgetLimits[index]}
-                                        name={`budgetLimits.${index}`} type="number"/>
-                                        {errors.budgetLimits ? <Form.Control.Feedback type="invalid">{errors.budgetLimits[index]}</Form.Control.Feedback> : null}
-                                    </Form.Group>
-                                    )) : <p><em>No purchase categories set</em></p>
-                                }
-                                </div>
-                                );
-                            }}
-                            </FieldArray>
-                            
-                        </Form.Group>
+                                        <Form.Group className="py-3 form-section" as={Row}>
+                                            <Form.Label className="form-label-header">Purchase limits</Form.Label>
+                                            <FieldArray name="budgetLimits">
+                                            {(arrayHelpers) => {
+                                                return (
+                                                <div>
+                                                {purcCategories.length !== 0 ? 
+                                                purcCategories.map((ctgy, index) => (
+                                                    <Form.Group key={index}>
+                                                        <Form.Label>{ctgy.purc_category_name}</Form.Label>
+                                                        <Form.Control onBlur={handleBlur} onChange={handleChange} 
+                                                        isInvalid={errors.hasOwnProperty("budgetLimits") && !!errors.budgetLimits[index]} 
+                                                        isValid={errors.hasOwnProperty("budgetLimits") && touched.hasOwnProperty("budgetLimits") && touched.budgetLimits[index] && !errors.budgetLimits[index]}
+                                                        name={`budgetLimits.${index}`} type="number"/>
+                                                        {errors.budgetLimits ? <Form.Control.Feedback type="invalid">{errors.budgetLimits[index]}</Form.Control.Feedback> : null}
+                                                    </Form.Group>
+                                                    )) : <p><em>No purchase categories set</em></p>
+                                                }
+                                                </div>
+                                                );
+                                            }}
+                                            </FieldArray>
+                                        </Form.Group>
 
-                        <Button variant="primary" type="submit">
-                        {isSubmitting ? <Spinner animation="border" role="status"><span className="visually-hidden">Loading...</span></Spinner> : "Submit"}
-                        </Button>
-                        
-                        </Form>
-                    )}
-                </Formik>
-                
-                </Card.Body>
-                {error.length > 0 ? <Alert variant="danger">{error}</Alert>: null}
-            </Card>
-            </Modal.Body>    
-                    <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseForm}>
+                                        <Button className="custom-btn" type="submit">
+                                        {isSubmitting ? <Spinner animation="border" role="status"><span className="visually-hidden">Loading...</span></Spinner> : "Submit"}
+                                        </Button>
+                                    </Form>
+                                )}
+                            </Formik>
+                        </Card.Body>
+                        {error.length > 0 ? <Alert variant="danger">{error}</Alert>: null}
+                    </Card>
+                </Modal.Body>    
+                <Modal.Footer>
+                    <Button className="custom-btn-negative" onClick={handleCloseForm}>
                         Close
                     </Button>
-                    </Modal.Footer>
+                </Modal.Footer>
             </Modal>
      );
 }

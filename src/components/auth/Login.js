@@ -24,7 +24,7 @@ function Login() {
                 <FloatingLabel
                     controlId="username"
                     label="Username"
-                    className="mb-3 text-dark"
+                    className="mb-3 input-label"
                 >
                 <Form.Control required id="username" type="text" placeholder="Enter username" />
                 </FloatingLabel>
@@ -34,7 +34,7 @@ function Login() {
                 <FloatingLabel
                     controlId="password"
                     label="Password"
-                    className="mb-3 text-dark"
+                    className="mb-3 input-label"
                 >
                 <Form.Control required id="password" type="password" placeholder="Password" />
                 </FloatingLabel>

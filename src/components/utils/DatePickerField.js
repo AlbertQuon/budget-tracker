@@ -5,7 +5,7 @@ import DatePicker from "react-datepicker";
 export const DatePickerField = ({...props}) => {
     const [field,, {setValue}] = useField(props); // ignoring errors
     return (
-        <DatePicker {...field} {...props} 
+        <DatePicker {...field} {...props} wrapperClassName="datePicker"
              selected={(field.value && new Date(field.value)) || null} onChange={(date) => {setValue(date);}}
         />
     )

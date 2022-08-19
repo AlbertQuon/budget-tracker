@@ -1,6 +1,12 @@
+
+/** Budget Modal **/
 .modal-budget {
     width: 40vw;
     max-width: 50vw;
+}
+
+.modal-budget-header {
+    border-bottom: 1px #65fff2 solid;
 }
 
 .modal-budget-details {
@@ -28,6 +34,29 @@
 .past-budget-header {
     border-top: 1px #65fff2 dotted;
 }
+
+/* Form */
+.form-label-header-section {
+    text-align: center;
+}
+
+.form-label-header {
+    font-size: 1.1em;
+    font-weight: 550;
+    align-self: center;
+}
+
+.form-section {
+    border-top: 1px #65fff21c solid;
+    padding-top: 1em;
+}
+
+.form-subtext {
+    color: azure;
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
 
 
 

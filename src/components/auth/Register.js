@@ -35,7 +35,7 @@ function Register() {
                 <FloatingLabel
                     controlId="username"
                     label="Username"
-                    className="mb-3 text-dark"
+                    className="mb-3 input-label"
                 >
                 <Form.Control type="text" required onChange={e => setUsername(e.target.value)} placeholder="Enter username" />
                 </FloatingLabel>
@@ -45,7 +45,7 @@ function Register() {
                 <FloatingLabel
                     controlId="password"
                     label="Password"
-                    className="mb-3 text-dark"
+                    className="mb-3 input-label"
                 >
                 <Form.Control type="password" required isValid={password === password2 && password.length > 7} placeholder="Password" onChange={e => setPassword(e.target.value)} />
                 <Form.Text id="passwordHelpBlock" muted>
@@ -58,7 +58,7 @@ function Register() {
                 <FloatingLabel
                     controlId="password2"
                     label="Confirm Password"
-                    className="mb-3 text-dark"
+                    className="mb-3 input-label"
                 >
                 <Form.Control type="password" required isValid={password === password2 && password2.length > 7} 
                 onChange={e => setPassword2(e.target.value)} placeholder="Confirm password" />

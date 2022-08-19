@@ -44,7 +44,7 @@ function Home() {
             <Container className="m-3">
                 <h2>Welcome to Budgeter!</h2>
                 <h5>A simple budgeting app.</h5>
-                <p>Please log in or register to use.</p>
+                <p>Please log in or register.</p>
             </Container>
            }
         </Row>

@@ -193,12 +193,12 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
         </Row>
         <Row className="my-3">
             <Col xs={6}>
-                <FloatingLabel className="transaction-select-text" label="Budget Name">
+                <FloatingLabel className="input-label transaction-select-text" label="Budget Name">
                     <Form.Control type="text" placeholder="Search by budget..." onChange={e=>setBudgetFilter(e.target.value)} ></Form.Control>
                 </FloatingLabel>
             </Col>
             <Col xs={6}>
-                <FloatingLabel className="transaction-select-text" label="Sort by">
+                <FloatingLabel className="input-label transaction-select-text" label="Sort by">
                     <Form.Select onChange={e=> setSort(parseInt(e.target.value))}>
                         <option selected value={1}>Date</option>
                         <option value={2}>Budget name</option>
@@ -212,8 +212,8 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
                     <Accordion className="transaction-detail-accordion">
                         <Row>
                             <Col><h4>{transact.transact_date}</h4></Col>
-                            <Col><h5>{transactBudget(transact.budget)}</h5></Col>
-                            <Col><h5>${calcTotal(transact.transact_id)}</h5></Col>
+                            <Col><p>{transactBudget(transact.budget)}</p></Col>
+                            <Col><p>${calcTotal(transact.transact_id)}</p></Col>
                             <Col md='auto'>
                                 <CustomExpand eventKey={transact.transact_id}></CustomExpand>
                             </Col>
