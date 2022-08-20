@@ -6,12 +6,20 @@
 
 .summary-card-title {
     font-size: 1.3em;
-    margin-bottom: 1rem;
-    text-decoration: underline;
+    margin-bottom: 0.5rem;
 }
 
 .summary-card-body {
     font-weight: 600;
+}
+
+.summary-card-body-price {
+    font-weight: 700;
+    text-align: right;
+}
+
+.summary-card-body-header {
+    font-weight: 350;
 }
 
 /* Accordion */
@@ -155,4 +163,36 @@
     text-decoration: underline;
 }
 
+.transaction-detail-accordion-body {
+    background-color: #252b2a77;
+}
+
+.transaction-item-detail {
+
+}
+
+.transaction-detail-accordion-body-headers {
+    font-size: 1.25em;
+    font-weight: 700;
+    margin-bottom: 1em;
+    padding-bottom: 0.25em;
+    border-bottom: 1px #3fc9ff41 solid;
+}
+
+.transaction-detail-accordion-body-list {
+    font-size: 1.05em;
+    font-weight: 350;
+}
+
+.transaction-detail-accordion-body-price {
+    text-align: end;
+}
+
+.transaction-detail-accordion-body-name {
+    font-weight: 450;
+}
+
+.transaction-detail-accordion-body-divider {
+    border-right: 2px #3fc9ff41 solid;
+}
 /* use styles.<class> for classes without '-' */

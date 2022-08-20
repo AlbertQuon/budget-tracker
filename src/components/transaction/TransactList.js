@@ -74,13 +74,50 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
             // find object
             let ctgy = purcCategories.find(purcCtgy => purcCtgy.purc_category_id === purc.purc_category);
             purcList.push(
-                <p>{purc.item_name}: ${(purc.price/100).toFixed(2)} {ctgy ? '('+ctgy.purc_category_name+')' : "(N/A)"}</p>
+                <Row> 
+                    <Col className="transaction-detail-accordion-body-name">
+                        {purc.item_name} 
+                    </Col>
+                    <Col>
+                        {ctgy ? '('+ctgy.purc_category_name+')' : "(N/A)"}
+                    </Col>
+                    <Col className="transaction-detail-accordion-body-price transaction-detail-accordion-body-divider">
+                        ${(purc.price/100).toFixed(2)}
+                    </Col>
+                </Row>
             )
         });
 
-        return purcList.length > 0 ? <div className="purchaseList my-2">{purcList}</div> : <p className="purchaseList my-2">No purchases found</p>
+        return purcList.length > 0 ? purcList : <p className="purchaseList my-2">No purchases found</p>
     }
 
+    const taxesList = (transact_id) => {
+            if (purchases[transact_id] === undefined || !purchases) {
+                return null;
+            }
+            const subtotal = calcSubtotal(transact_id);
+            const taxList = [];
+            let taxes = transactTaxes.filter(transactTax => transactTax.transact === transact_id);
+            taxCategories.forEach((taxCtgy) => {
+                if (taxes.findIndex(tax => tax.tax === taxCtgy.tax_id) !== -1) {
+                    taxList.push(
+                        <Row>
+                            <Col className="transaction-detail-accordion-body-name">
+                                {taxCtgy.tax_name}
+                            </Col>
+                            <Col>
+                                {taxCtgy.tax_rate}%
+                            </Col>
+                            <Col className="transaction-detail-accordion-body-price">
+                                ${(subtotal*taxCtgy.tax_rate/100).toFixed(2)}
+                            </Col>
+                        </Row>
+                    );
+                } 
+            });
+
+            return taxList.length > 0 ? taxList : "None";
+        }
     // Calculation functions
     const calcTaxTotal = (transact_id) => {
         var taxTotal = 0.00;
@@ -137,20 +174,7 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
         return total.toFixed(2);
     }
 
-    const taxesList = (transact_id) => {
-        if (purchases[transact_id] === undefined || !purchases) {
-            return null;
-        }
-        const taxList = [];
-        let taxes = transactTaxes.filter(transactTax => transactTax.transact === transact_id);
-        taxCategories.forEach((taxCtgy) => {
-            if (taxes.findIndex(tax => tax.tax === taxCtgy.tax_id) !== -1) {
-                taxList.push(taxCtgy.tax_name);
-            } 
-        });
-
-        return taxList.length > 0 ? taxList.join(", ") : "None";
-    }
+    
 
     function CustomExpand({children, eventKey, callback}) {
         const onClickExpand = useAccordionButton(eventKey, ()=> callback && callback(eventKey));
@@ -210,7 +234,7 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
             <Row className="transaction-item" key={transact.transact_id} bg='dark'>
                 <Col className="m-2">
                     <Accordion className="transaction-detail-accordion">
-                        <Row>
+                        <Row className="transaction-item-detail">
                             <Col><h4>{transact.transact_date}</h4></Col>
                             <Col><p>{transactBudget(transact.budget)}</p></Col>
                             <Col><p>${calcTotal(transact.transact_id)}</p></Col>
@@ -224,16 +248,30 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
                                     onClick={() => {setShowDeleteBox(true); setEditTransaction(transact);}}>Delete</Button>
                             </Col>
                         </Row>
-                        <Accordion.Collapse eventKey={transact.transact_id}>
-                            <Row className="mt-3 transaction-detail-accordion-body">
-                                <Col>
-                                    <p>Subtotal: ${calcSubtotal(transact.transact_id)}</p>
-                                </Col>
-                                <Col>
-                                    <p>Taxes: ${calcTaxTotal(transact.transact_id)} ({taxesList(transact.transact_id)})</p>
-                                </Col>
-                                <strong>Purchases</strong>
-                                {purchasesList(transact.transact_id)}
+                        <Accordion.Collapse className="" eventKey={transact.transact_id}>
+                            <Row className="mt-3 p-4 px-lg-5 transaction-detail-accordion-body">
+                                <Row className="transaction-detail-accordion-body-headers">
+                                    <Col xs={4}>
+                                        Purchases 
+                                    </Col>
+                                    <Col xs={2} className="transaction-detail-accordion-body-price transaction-detail-accordion-body-divider">
+                                        ${calcSubtotal(transact.transact_id)}
+                                    </Col>
+                                    <Col xs={4}>
+                                        Taxes
+                                    </Col>
+                                    <Col xs={2} className="transaction-detail-accordion-body-price">
+                                        ${calcTaxTotal(transact.transact_id)}
+                                    </Col>
+                                </Row>
+                                <Row className="transaction-detail-accordion-body-list">
+                                    <Col>
+                                        {purchasesList(transact.transact_id)}
+                                    </Col>
+                                    <Col>
+                                        {taxesList(transact.transact_id)}
+                                    </Col>
+                                </Row>
                             </Row>
                         </Accordion.Collapse>
                     </Accordion>

@@ -136,7 +136,7 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
             <Card className="summary-card">
             <Card.Body as={Row}>
                 <Card.Title className="summary-card-title">Total Spending</Card.Title>
-                <Card.Text className="summary-card-body">${calcTotalSpending()}</Card.Text>
+                <Card.Text className="summary-card-body" style={{'font-size' : '1.75em'}}>${calcTotalSpending()}</Card.Text>
             </Card.Body>
             </Card>
             </Col>
@@ -146,10 +146,10 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
                 <Card.Title className="summary-card-title">Categories</Card.Title>
                 {purcCategories.map((ctgy, index)=>
                     <Card.Text as={Row} className="summary-card-body" key={index}>
-                        <Col>
+                        <Col className="summary-card-body-header">
                             {ctgy.purc_category_name}
                         </Col> 
-                        <Col>
+                        <Col className="summary-card-body-price">
                             ${calcPurcCtgySpending(ctgy.purc_category_id)}
                         </Col>
                     </Card.Text>)}
@@ -162,10 +162,10 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
                 <Card.Title className="summary-card-title">Taxes</Card.Title>
                 {taxCategories.map((tax, index)=>
                     <Card.Text as={Row} className="summary-card-body" key={index}>
-                        <Col>
-                            {tax.tax_name}:
+                        <Col className="summary-card-body-header">
+                            {tax.tax_name}
                         </Col>
-                        <Col>
+                        <Col className="summary-card-body-price">
                             ${calcTaxCtgySpending(tax.tax_id, tax.tax_rate)}
                         </Col>
                     </Card.Text>)}
