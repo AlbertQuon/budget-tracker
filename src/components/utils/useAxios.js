@@ -6,7 +6,8 @@ import AuthContext from "../auth/AuthContext";
 
 const baseURL = "http://127.0.0.1:8000/api";
 
-
+axios.defaults.xsrfCookieName = 'csrftoken'; 
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 
 const useAxios = () => {
     const {authTokens, setUser, setAuthTokens, logoutUser} = useContext(AuthContext);
