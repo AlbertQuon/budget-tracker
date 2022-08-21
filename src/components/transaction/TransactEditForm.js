@@ -1,10 +1,9 @@
 import { useState, useContext, useEffect, useCallback } from "react";
-import { Modal, Form, Card, Button, Row, Col, FormCheck, CloseButton, FloatingLabel } from "react-bootstrap";
-import useAxios from "../utils/useAxios";
+import { Modal, Form, Button, Row, Col, CloseButton, FloatingLabel } from "react-bootstrap";
 import AuthContext from "../auth/AuthContext";
 import { DatePickerField } from "../utils/DatePickerField";
 import dayjs from "dayjs";
-import { Formik, useField, FieldArray } from 'formik';
+import { Formik, FieldArray } from 'formik';
 import * as Yup from 'yup';
 
 function TransactEditForm({api, transactTaxes, transaction, purchases, purcCategories, taxCategories, budgets, handleCloseEditForm, showEditForm, onTransactDelete, handleOpenEditForm, fetchData}) {
@@ -20,12 +19,10 @@ function TransactEditForm({api, transactTaxes, transaction, purchases, purcCateg
     const [transactDate, setTransactDate] = useState(Date.now());
     const [total, setTotal] = useState(0.00);
     const [currentBudget, setCurrentBudget] = useState({});
-    
-    const [toBeDeletedPurchases, setToBeDeletedPurchases] = useState([]);
-    const [toBeDeletedTaxes, setToBeDeletedTaxes] = useState([]);
+
     useEffect(() => {
         if (showEditForm) {
-            //setCurrentBudget(budgets.find(budget => transaction.budget === budget.budget_id));
+
             if (budgets.find(budget => transaction.budget === budget.budget_id)) {
                 setCurrentBudget(budgets.find(budget => transaction.budget === budget.budget_id));
             }
@@ -60,8 +57,6 @@ function TransactEditForm({api, transactTaxes, transaction, purchases, purcCateg
             setCurrentBudget({});
             setPurchasePrices([]);
             setInitialTaxRates([]);
-            setToBeDeletedPurchases([]);
-            setToBeDeletedTaxes([]);
         }
     }, [showEditForm]);
 
@@ -258,7 +253,7 @@ function TransactEditForm({api, transactTaxes, transaction, purchases, purcCateg
                                                         <Form.Select name={`purchases.${index}.purcCategory`} onChange={selectedOption => 
                                                             {handleChange(`purchases.${index}.purcCategory`)(selectedOption.target.value);}}
                                                             isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.purcCategory} 
-                                                            isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.purcCategory) || values.purchases[index].purcCategory !== ""}
+                                                            isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.purcCategory) || (values.purchases[index].purcCategory !== "")}
                                                             onBlur={()=>handleBlur({target: {name: `purchases.${index}.purcCategory`}})}
                                                             value={purc.purcCategory}>
                                                             <option selected value="">Select a purchase category</option>
@@ -269,13 +264,13 @@ function TransactEditForm({api, transactTaxes, transaction, purchases, purcCateg
                                                     <Col md={4}>
                                                         <Form.Control
                                                             isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.itemName} 
-                                                            isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.itemName) || touched.hasOwnProperty("purchases") && touched.purchases[index]?.itemName}
+                                                            isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.itemName) || (touched.hasOwnProperty("purchases") && touched.purchases[index]?.itemName)}
                                                             value={purc.itemName} name={`purchases.${index}.itemName`} type="text" onChange={handleChange} onBlur={handleBlur}/>
                                                     </Col>
                                                     <Col md={2}>
                                                         <Form.Control 
-                                                            isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.price} 
-                                                            isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.price) || touched.hasOwnProperty("purchases") && touched.purchases[index]?.price}
+                                                            isInvalid={errors.hasOwnProperty("purchases") && (!!errors.purchases[index]?.price)} 
+                                                            isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.price) || (touched.hasOwnProperty("purchases") && touched.purchases[index]?.price)}
                                                             value={purc.price?.toFixed(2)} name={`purchases.${index}.price`} type="number" onChange={handleChange} onBlur={handleBlur}/>
                                                     </Col>
                                                     <Col md={2}>

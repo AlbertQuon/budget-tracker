@@ -6,7 +6,6 @@ import CustomPagination from "../layout/CustomPagination.js";
 
 function TransactSummary({purcCategories, purchases, taxCategories, transactions, budgets, transactTaxes}) {
     
-    const [recentTransactions, setRecentTransactions] = useState(transactions.filter(transact => dayjs().diff(dayjs(transact.transact_date), 'day') <= 30));
     const [budgetFilter, setBudgetFilter] = useState("");
     const [filteredBudgets, setFilteredBudgets] = useState(budgets);
 
@@ -27,10 +26,6 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
             setFilteredBudgets(newBudgets);
         }
     }, [budgetFilter, budgets])
-
-    useEffect(() => {
-        setRecentTransactions(transactions.filter(transact => dayjs().diff(dayjs(transact.transact_date), 'days') <= 30));
-    }, [transactions])
 
     const purchaseCtgyList = (budget) => {
         if (purcCategories === undefined || budgets === undefined) {
@@ -95,7 +90,7 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
 
     const calcTaxCtgySpending = (taxCtgy, taxRate) => {
         var total = 0;
-        var taxTransactions = [];
+        
         transactTaxes.filter(transactTax => taxCtgy === transactTax.tax).forEach(transactTax => {
             transactions.filter(transact => transactTax.transact === transact.transact_id).forEach(transact =>
                 {if (purchases[transact.transact_id] && dayjs().diff(dayjs(transact.transact_date), 'day') <= 30) {

@@ -1,6 +1,6 @@
 import { useContext, useCallback, useState } from "react";
 import { Modal, Row, Form, Card, Button, Spinner, Alert, Col, CloseButton, FloatingLabel } from "react-bootstrap";
-import { Formik, useField, FieldArray } from 'formik';
+import { Formik, FieldArray } from 'formik';
 import * as Yup from 'yup';
 import AuthContext from "../auth/AuthContext";
 import dayjs from "dayjs";
@@ -131,7 +131,7 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                                                                             name={`budgetIncomes.${index}.incomeName`} placeholder="Income Name"
                                                                             onChange={handleChange} onBlur={handleBlur}
                                                                             isValid={(errors.hasOwnProperty("budgetIncomes") && !errors.budgetIncomes[index]?.incomeName) 
-                                                                                || touched.hasOwnProperty("budgetIncomes") && touched.budgetIncomes[index]?.incomeName}
+                                                                                || (touched.hasOwnProperty("budgetIncomes") && touched.budgetIncomes[index]?.incomeName)}
                                                                             isInvalid={errors.hasOwnProperty("budgetIncomes") && !!errors.budgetIncomes[index]?.incomeName} 
                                                                             />
                                                                     </Col>
@@ -140,7 +140,7 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                                                                             name={`budgetIncomes.${index}.incomeAmount`} placeholder="Income Amount"
                                                                             onChange={handleChange} onBlur={handleBlur}
                                                                             isValid={(errors.hasOwnProperty("budgetIncomes") && !errors.budgetIncomes[index]?.incomeAmount) 
-                                                                                || touched.hasOwnProperty("budgetIncomes") && touched.budgetIncomes[index]?.incomeAmount}
+                                                                                || (touched.hasOwnProperty("budgetIncomes") && touched.budgetIncomes[index]?.incomeAmount)}
                                                                             isInvalid={errors.hasOwnProperty("budgetIncomes") && !!errors.budgetIncomes[index]?.incomeAmount} 
                                                                             value={values.budgetIncomes[index].incomeAmount}
                                                                             />
