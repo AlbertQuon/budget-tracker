@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Container, Row, Card, Accordion, Col, Form } from "react-bootstrap";
 import SpendingChart from './SpendingChart.js'
 import dayjs from "dayjs";
+import CustomPagination from "../layout/CustomPagination.js";
 
 function TransactSummary({purcCategories, purchases, taxCategories, transactions, budgets, transactTaxes}) {
     
@@ -9,11 +10,21 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
     const [budgetFilter, setBudgetFilter] = useState("");
     const [filteredBudgets, setFilteredBudgets] = useState(budgets);
 
+    const [currentBudgetPage, setCurrentBudgetPage] = useState(1);
+    const ITEMS_PER_PAGE = 10;
+    const PAGE_INTERVAL = 2;
+
     useEffect(() => {
         if (budgetFilter.length > 0) {
-            setFilteredBudgets(budgets.filter(budget => budget.budget_name.includes(budgetFilter)));
+            let newBudgets = budgets.filter(budget => budget.budget_name.includes(budgetFilter)).sort((a,b) => {
+                return b.budget_id - a.budget_id;
+            })
+            setFilteredBudgets(newBudgets);
         } else {
-            setFilteredBudgets(budgets);
+            let newBudgets = [...budgets].sort((a,b) => {
+                return b.budget_id - a.budget_id;
+            });
+            setFilteredBudgets(newBudgets);
         }
     }, [budgetFilter, budgets])
 
@@ -39,10 +50,10 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
             });
             transactPurchases.forEach((purc) => purcCtgyTotal += purc.price/100);
             purcCtgyList.push(<Row className="my-1">
-                <Col className="budget-summary-accordion-item-ctgy" xs={3}>{ctgy.purc_category_name}</Col> 
-                <Col xs={3} className="budget-summary-accordion-item-price">${purcCtgyTotal.toFixed(2)}</Col>
-                <Col xs={3} className="budget-summary-accordion-item-ctgy"></Col>
-                <Col xs={3} className="budget-summary-accordion-item-price">{transactPurchases.length} purchases</Col>
+                <Col className="budget-summary-accordion-item-ctgy" md={3}>{ctgy.purc_category_name}</Col> 
+                <Col md={3} className="budget-summary-accordion-item-price">${purcCtgyTotal.toFixed(2)}</Col>
+                <Col md={3} className="budget-summary-accordion-item-ctgy"></Col>
+                <Col md={3} className="budget-summary-accordion-item-price">{transactPurchases.length} purchases</Col>
             </Row>);
         });
         // null case
@@ -55,8 +66,8 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
         });
         if (emptyCtgyTotal > 0) {
             purcCtgyList.push(<Row className="my-1">
-                <Col className="budget-summary-accordion-item-ctgy" xs={3}>None/No category</Col> 
-                <Col className="budget-summary-accordion-item-price" xs={3}>${emptyCtgyTotal.toFixed(2)}</Col>
+                <Col className="budget-summary-accordion-item-ctgy" md={3}>None/No category</Col> 
+                <Col className="budget-summary-accordion-item-price" md={3}>${emptyCtgyTotal.toFixed(2)}</Col>
             </Row>);
         }   
         
@@ -132,7 +143,7 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
             </Col>
         </Row>
         <Row className="my-2 mb-4">
-            <Col xs={4}>
+            <Col md={4}>
             <Card className="summary-card">
             <Card.Body as={Row}>
                 <Card.Title className="summary-card-title">Total Spending</Card.Title>
@@ -178,13 +189,15 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
             <h4>Budgets</h4>
         </Row>
         <Row className="my-2">
-            <Col xs={6}>
+            <Col md={6}>
                 <Form.Control type='text' onChange={(e) => setBudgetFilter(e.target.value)} placeholder="Search by budget name"></Form.Control>
             </Col>
         </Row>
         <Row>
             <Accordion flush className="accordion-round">
-                {filteredBudgets.map((budget, index) => (
+                {filteredBudgets
+                .slice((currentBudgetPage-1)*ITEMS_PER_PAGE, currentBudgetPage*ITEMS_PER_PAGE)
+                .map((budget, index) => (
                     <Accordion.Item className="budget-summary-accordion-item" key={index} eventKey={budget.budget_id}>
                         <Accordion.Header className="">
                             {budget.budget_name}
@@ -214,7 +227,17 @@ function TransactSummary({purcCategories, purchases, taxCategories, transactions
                         </Accordion.Body>
                     </Accordion.Item>))}
             </Accordion>
-            
+        </Row>
+        <Row className="my-5 justify-content-md-center">
+            <Col md='auto'>
+                <CustomPagination
+                    totalItems={filteredBudgets?.length}
+                    itemsPerPage={ITEMS_PER_PAGE}
+                    currentPage={currentBudgetPage}
+                    onPageChange={(page) => setCurrentBudgetPage(page)}
+                    pagesInterval={PAGE_INTERVAL}
+                />
+            </Col>
         </Row>
         </div>
         

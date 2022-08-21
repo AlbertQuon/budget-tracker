@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import TransactPrefs from "./TransactPrefs";
 import '../../css/Budget.css'
 import GraphIcon from './../../images/graph-icon-w.png'
+import CustomPagination from "../layout/CustomPagination";
 
 function Budget() {
     const [budgets, setBudgets] = useState([]);
@@ -16,7 +17,7 @@ function Budget() {
     const [purchases, setPurchases] = useState({});
     const [spendLimits, setSpendLimits] = useState({});
     const [incomes, setIncomes] = useState({});
-    const [onlyCurrentBudgets, setOnlyCurrentBudgets] = useState(false);
+    
     const api = useAxios();
 
     const [showDeleteBox, setShowDeleteBox] = useState(false);
@@ -30,6 +31,10 @@ function Budget() {
     const handleShowDetails = () => setShowBudgetDetail(true);
     const handleCloseDetails = () => setShowBudgetDetail(false);
     const [detailedBudget, setDetailedBudget] = useState(null);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 8;
+    const PAGE_INTERVAL = 2;
 
     const fetchData = () => {
         api.get('/budget/')
@@ -270,7 +275,9 @@ function Budget() {
                 </Row>
                 <Row className="mb-2 pt-3 past-budget-header"><h3>Past budgets</h3></Row>
                 <Row>
-                    {budgets.filter((budget)=> (dayjs(budget.end_time).diff(dayjs(),'day') <= -1)).map((budget, index)=>(
+                    {budgets.filter((budget)=> (dayjs(budget.end_time).diff(dayjs(),'day') <= -1))
+                        .slice((currentPage-1)*ITEMS_PER_PAGE, currentPage*ITEMS_PER_PAGE)
+                        .map((budget, index)=>(
                         <Col xs={3} md={3} key={index} className="my-2">
                             <Card className="card-budget" key={budget.budget_id}>
                                 <Card.Body>
@@ -303,6 +310,17 @@ function Budget() {
                             </Card>
                         </Col>
                     ))}
+                </Row>
+                <Row className="my-5 justify-content-md-center">
+                    <Col md='auto'>
+                        <CustomPagination
+                            totalItems={budgets.filter((budget)=> (dayjs(budget.end_time).diff(dayjs(),'day') <= -1)).length}
+                            itemsPerPage={ITEMS_PER_PAGE}
+                            currentPage={currentPage}
+                            onPageChange={(page) => setCurrentPage(page)}
+                            pagesInterval={PAGE_INTERVAL}
+                        />
+                    </Col>
                 </Row>
             </Tab>
             <Tab eventKey="transactPrefs" title="Categories">

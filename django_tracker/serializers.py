@@ -64,6 +64,10 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
         if attrs['oldPassword'] == attrs['password']:
             raise serializers.ValidationError({"oldPassword": "Entered the same password"})
+        
+        if not attrs['username'].isalnum(): 
+            raise serializers.ValidationError({"username": "Username must not contain smybols"})
+            
         return attrs
     
     def validate_oldPassword(self, value):

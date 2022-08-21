@@ -1,0 +1,32 @@
+.page-link {
+    background-color: #0097a1;
+    color: #ffffff;
+
+}
+
+.active > .page-link {
+    background-color: #017177;
+    border-color: #017177;
+}
+
+.page-link:hover{
+    background-color: #03afb8;
+    color: white;
+    border-color: #0097a1;
+}
+
+.page-link {
+    border-color: #007d86;
+}
+
+.disabled > .page-link {
+    background-color: #212529;
+    border-color: #212529;
+}
+
+.page-link:focus{
+    background-color: #03afb8;
+    color: white;
+    border-color: #0097a1;
+    box-shadow: 0;
+}

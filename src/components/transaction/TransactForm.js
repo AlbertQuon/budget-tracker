@@ -167,20 +167,20 @@ function TransactForm({api, purcCategories, taxCategories, budgets, handleCloseF
                                             </Col>
                                         </Form.Group>
                                         <Form.Group as={Row}>
-                                            <Col xs={4} className="transact-form-purc-ctgy-header">Purchase Category</Col>
-                                            <Col xs={4} className="transact-form-purc-ctgy-header">Item Name</Col>
-                                            <Col xs={2} className="transact-form-purc-ctgy-header">Price</Col>
-                                            <Col xs={2} className="transact-form-purc-ctgy-header" style={{'text-align':'left'}}>Delete</Col>
+                                            <Col md={4} className="transact-form-purc-ctgy-header">Purchase Category</Col>
+                                            <Col md={4} className="transact-form-purc-ctgy-header">Item Name</Col>
+                                            <Col md={2} className="transact-form-purc-ctgy-header">Price</Col>
+                                            <Col md={2} className="transact-form-purc-ctgy-header" style={{'text-align':'left'}}>Delete</Col>
                                         </Form.Group>
                                         {values.purchases && values.purchases.length > 0 ? (
                                             <div>
                                                 {values.purchases.map((purc, index)=> (
                                                     <Row key={index} className="my-2">
-                                                        <Col xs={4}>
+                                                        <Col md={4}>
                                                             <Form.Select name={`purchases.${index}.purcCategory`} onChange={selectedOption => 
                                                                 {handleChange(`purchases.${index}.purcCategory`)(selectedOption.target.value);}}
-                                                                isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.purcCategory} 
-                                                                isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.purcCategory) || values.purchases[index].purcCategory !== ""}
+                                                                isInvalid={errors.hasOwnProperty("purchases") && (!!errors.purchases[index]?.purcCategory)} 
+                                                                isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.purcCategory) || (values.purchases[index].purcCategory !== "")}
                                                                 onBlur={()=>handleBlur({target: {name: `purchases.${index}.purcCategory`}})}
                                                                 >
                                                                 <option selected value="">Select a purchase category</option>
@@ -188,21 +188,21 @@ function TransactForm({api, purcCategories, taxCategories, budgets, handleCloseF
                                                                                 value={`${ctgy.purc_category_id}`}>{ctgy.purc_category_name}</option>))}
                                                             </Form.Select>
                                                         </Col>
-                                                        <Col xs={4}>
+                                                        <Col md={4}>
                                                             <Form.Control
-                                                                isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.itemName} 
-                                                                isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.itemName) || touched.hasOwnProperty("purchases") && touched.purchases[index]?.itemName}
+                                                                isInvalid={errors.hasOwnProperty("purchases") && (!!errors.purchases[index]?.itemName)} 
+                                                                isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.itemName) || (touched.hasOwnProperty("purchases") && touched.purchases[index]?.itemName)}
                                                                 name={`purchases.${index}.itemName`} type="text" onChange={handleChange} onBlur={handleBlur}
                                                                 />
                                                         </Col>
-                                                        <Col xs={2}>
+                                                        <Col md={2}>
                                                             <Form.Control 
-                                                                isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.price} 
-                                                                isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.price) || touched.hasOwnProperty("purchases") && touched.purchases[index]?.price}
+                                                                isInvalid={errors.hasOwnProperty("purchases") && (!!errors.purchases[index]?.price)} 
+                                                                isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.price) || (touched.hasOwnProperty("purchases") && touched.purchases[index]?.price)}
                                                                 name={`purchases.${index}.price`} type="number" onChange={handleChange} onBlur={handleBlur}
                                                                 />
                                                         </Col>
-                                                        <Col xs={2}>
+                                                        <Col md={2}>
                                                             <Button className="custom-btn-negative" onClick={() => arrayHelpers.remove(index)}>X</Button>
                                                         </Col>
                                                         <Form.Control.Feedback>{errors.hasOwnProperty("purchases") && errors.purchases[index] ? "errors": null}</Form.Control.Feedback>
@@ -218,7 +218,7 @@ function TransactForm({api, purcCategories, taxCategories, budgets, handleCloseF
                         </Form.Group>
                         
                         <Form.Group as={Row} className="my-3">   
-                            <Col xs={{span: 1, offset: 7}}><p className="subtotal-text">Subtotal:</p></Col>
+                            <Col md={{span: 1, offset: 7}}><p className="subtotal-text">Subtotal:</p></Col>
                             <Col md='auto'><p className="subtotal-text">${subtotal.toFixed(2)}</p></Col>
                         </Form.Group>
                         <Form.Group className="mb-3 form-section">
@@ -230,14 +230,14 @@ function TransactForm({api, purcCategories, taxCategories, budgets, handleCloseF
                                     {taxCategories.length !== 0 ? 
                                         taxCategories.map((tax, index) => (
                                             <Row key={index}>
-                                                <Col xs={4}>
+                                                <Col md={4}>
                                                     <p>{tax.tax_name} ({tax.tax_rate}%)</p>
                                                 </Col>
-                                                <Col xs={4}>
+                                                <Col md={4}>
                                                     <Form.Check name={`taxRates.${index}`} onChange={e => setFieldValue(`taxRates.${index}`, e.target.checked)} onBlur={handleBlur} 
                                                         feedback={errors.taxRates ? errors.taxRates[index] : null} feedbackType="invalid"/>
                                                 </Col>
-                                                <Col xs={2}>
+                                                <Col md={2}>
                                                     <p>{values.taxRates && values.taxRates[index] ? calcTaxPrice(tax.tax_rate) : null}</p>
                                                 </Col>
                                             </Row>
@@ -251,12 +251,12 @@ function TransactForm({api, purcCategories, taxCategories, budgets, handleCloseF
                         </Form.Group>
                         
                         <Form.Group as={Row} className="form-section">   
-                            <Col xs={{span: 1, offset: 7}}><p className="total-text">Total:</p></Col>
+                            <Col md={{span: 1, offset: 7}}><p className="total-text">Total:</p></Col>
                             <Col md='auto'><p className="total-text">${total.toFixed(2)}</p></Col>
                         </Form.Group>
                             
                         <Form.Group as={Row} className="form-section justify-content-end">  
-                            <Col xs={{span: 'auto', offset: 10}}>
+                            <Col md={{span: 'auto', offset: 10}}>
                                 <Button className="custom-btn" type="submit">
                                     Submit
                                 </Button>

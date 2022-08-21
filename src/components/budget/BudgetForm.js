@@ -135,7 +135,7 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                                                                             isInvalid={errors.hasOwnProperty("budgetIncomes") && !!errors.budgetIncomes[index]?.incomeName} 
                                                                             />
                                                                     </Col>
-                                                                    <Col xs={4}>
+                                                                    <Col md={4}>
                                                                         <Form.Control type="number"
                                                                             name={`budgetIncomes.${index}.incomeAmount`} placeholder="Income Amount"
                                                                             onChange={handleChange} onBlur={handleBlur}
@@ -154,7 +154,7 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                                                         </Col>
                                                     </Row>
                                                     <Row className="mb-3 align-items-center">
-                                                        <Col xs={7}><Form.Text className="form-subtext">Total predicted income</Form.Text></Col>
+                                                        <Col md={7}><Form.Text className="form-subtext">Total predicted income</Form.Text></Col>
                                                         <Col md='auto'><Form.Text className="form-subtext">${totalIncome.toFixed(2)}</Form.Text></Col>
                                                     </Row>
                                                 </Form.Group>

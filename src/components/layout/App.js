@@ -25,7 +25,7 @@ function App() {
     <Router>
       <div className="app">
         <AuthProvider>
-        <Container className="header pb-lg-3">
+        <Container className="header pb-lg-4">
           <NavigBar/>
           <Routes>
             <Route path="/" element={<Home/>}/>

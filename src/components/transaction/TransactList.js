@@ -2,18 +2,25 @@ import dayjs from "dayjs";
 import { useEffect, useContext, useState } from "react";
 import { Accordion, AccordionContext, Button, Col, Row, useAccordionButton, Modal, Form, CloseButton, Container, FloatingLabel } from "react-bootstrap";
 import '../../css/Transact.css'
+import CustomPagination from "../layout/CustomPagination";
 import TransactEditForm from "./TransactEditForm";
 
 function TransactList({api, purcCategories, purchases, transactions, taxCategories, transactTaxes, budgets, onTransactDelete, fetchData, handleShowForm}) {
 
     const [showEditForm, setShowEditForm] = useState(false);
     const [editTransaction, setEditTransaction] = useState({});
+    
     const handleCloseEditForm = () => setShowEditForm(false);
     const handleOpenEditForm = () => setShowEditForm(true);
     const [showDeleteBox, setShowDeleteBox] = useState(false);
+    
     const [budgetFilter, setBudgetFilter] = useState("");
     const [filteredTransactions, setFilteredTransactions] = useState([]);
     const [sort, setSort] = useState(1);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 15;
+    const PAGE_INTERVAL = 3;
 
     useEffect(()=>{
         if (budgetFilter.length > 0) {
@@ -174,8 +181,6 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
         return total.toFixed(2);
     }
 
-    
-
     function CustomExpand({children, eventKey, callback}) {
         const onClickExpand = useAccordionButton(eventKey, ()=> callback && callback(eventKey));
         const { activeEventKey } = useContext(AccordionContext);
@@ -216,12 +221,12 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
             </Col>
         </Row>
         <Row className="my-3">
-            <Col xs={6}>
+            <Col md={6}>
                 <FloatingLabel className="input-label transaction-select-text" label="Budget Name">
                     <Form.Control type="text" placeholder="Search by budget..." onChange={e=>setBudgetFilter(e.target.value)} ></Form.Control>
                 </FloatingLabel>
             </Col>
-            <Col xs={6}>
+            <Col md={6}>
                 <FloatingLabel className="input-label transaction-select-text" label="Sort by">
                     <Form.Select onChange={e=> setSort(parseInt(e.target.value))}>
                         <option selected value={1}>Date</option>
@@ -230,7 +235,10 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
                 </FloatingLabel>
             </Col>
         </Row>
-        {Object.keys(filteredTransactions).length !== 0 ? filteredTransactions.map((transact) => (
+        {filteredTransactions.length !== 0 ? 
+            filteredTransactions
+            .slice((currentPage-1)*ITEMS_PER_PAGE, currentPage*ITEMS_PER_PAGE)
+            .map((transact) => (
             <Row className="transaction-item" key={transact.transact_id} bg='dark'>
                 <Col className="m-2">
                     <Accordion className="transaction-detail-accordion">
@@ -251,16 +259,16 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
                         <Accordion.Collapse className="" eventKey={transact.transact_id}>
                             <Row className="mt-3 p-4 px-lg-5 transaction-detail-accordion-body">
                                 <Row className="transaction-detail-accordion-body-headers">
-                                    <Col xs={4}>
+                                    <Col md={4}>
                                         Purchases 
                                     </Col>
-                                    <Col xs={2} className="transaction-detail-accordion-body-price transaction-detail-accordion-body-divider">
+                                    <Col md={2} className="transaction-detail-accordion-body-price transaction-detail-accordion-body-divider">
                                         ${calcSubtotal(transact.transact_id)}
                                     </Col>
-                                    <Col xs={4}>
+                                    <Col md={4}>
                                         Taxes
                                     </Col>
-                                    <Col xs={2} className="transaction-detail-accordion-body-price">
+                                    <Col md={2} className="transaction-detail-accordion-body-price">
                                         ${calcTaxTotal(transact.transact_id)}
                                     </Col>
                                 </Row>
@@ -278,6 +286,17 @@ function TransactList({api, purcCategories, purchases, transactions, taxCategori
                 </Col>
             </Row>
         )) : <h5>No transactions found</h5>}
+        <Row className="my-5 justify-content-md-center">
+            <Col md='auto'>
+                <CustomPagination
+                    totalItems={filteredTransactions?.length}
+                    itemsPerPage={ITEMS_PER_PAGE}
+                    currentPage={currentPage}
+                    onPageChange={(page) => setCurrentPage(page)}
+                    pagesInterval={PAGE_INTERVAL}
+                />
+            </Col>
+        </Row>
     </Container>);
 }
 
