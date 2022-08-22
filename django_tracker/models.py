@@ -1,15 +1,6 @@
 from django.db import models
 
 
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
-#   * Remove `managed = True` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
-
-
 class AuthUser(models.Model):
     password = models.CharField(max_length=128)
     last_login = models.DateTimeField(blank=True, null=True)
@@ -31,7 +22,7 @@ class Budget(models.Model):
     budget_id = models.AutoField(primary_key=True)
     start_time = models.DateField()
     end_time = models.DateField()
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING, default=None)
     budget_name = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
@@ -42,8 +33,8 @@ class Budget(models.Model):
 class BudgetIncomes(models.Model):
     income_id = models.AutoField(primary_key=True)
     income_name = models.CharField(max_length=100)
-    budget = models.ForeignKey(Budget, models.DO_NOTHING)
-    income_amount = models.IntegerField()
+    budget = models.ForeignKey(Budget, models.DO_NOTHING, default=None)
+    income_amount = models.IntegerField(default=0)
 
     class Meta:
         managed = True
@@ -51,8 +42,9 @@ class BudgetIncomes(models.Model):
 
 
 class BudgetLimits(models.Model):
-    budget = models.ForeignKey(Budget, models.DO_NOTHING, db_index=True)
-    purc_category = models.ForeignKey('PurchaseCategory', models.DO_NOTHING, db_index=True)
+    id = models.AutoField(primary_key=True)
+    budget = models.ForeignKey(Budget, models.DO_NOTHING, db_index=True, default=None)
+    purc_category = models.ForeignKey('PurchaseCategory', models.DO_NOTHING, db_index=True, default=None)
     spend_limit = models.IntegerField(blank=True, null=True)
 
     class Meta:
@@ -64,21 +56,10 @@ class BudgetLimits(models.Model):
         #unique_together = (('budget', 'purc_category'),)
 
 
-class DjangoMigrations(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    app = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    applied = models.DateTimeField()
-
-    class Meta:
-        managed = True
-        db_table = 'django_migrations'
-
-
 class PurchaseCategory(models.Model):
     purc_category_id = models.AutoField(primary_key=True)
-    purc_category_name = models.CharField(max_length=100)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    purc_category_name = models.CharField(max_length=100, default="")
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING, default=None)
     spend_limit = models.IntegerField(blank=True, null=True)
 
     class Meta:
@@ -90,7 +71,7 @@ class Purchases(models.Model):
     purc_id = models.AutoField(primary_key=True)
     item_name = models.CharField(max_length=64)
     price = models.IntegerField()
-    transact = models.ForeignKey('Transactions', models.DO_NOTHING, db_column='transact_id')
+    transact = models.ForeignKey('Transactions', models.DO_NOTHING, db_column='transact_id', default=None)
     purc_category = models.ForeignKey(PurchaseCategory, models.DO_NOTHING, db_column='purc_category', blank=True, null=True)
 
     class Meta:
@@ -103,7 +84,7 @@ class TaxCategory(models.Model):
     tax_id = models.AutoField(primary_key=True)
     tax_name = models.CharField(max_length=100)
     tax_rate = models.IntegerField()
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING, default=None)
 
     class Meta:
         managed = True
@@ -113,7 +94,7 @@ class TaxCategory(models.Model):
 class TransactTax(models.Model):
     transact = models.ForeignKey('Transactions', models.DO_NOTHING, db_column='transact_id')
     tax = models.ForeignKey(TaxCategory, models.DO_NOTHING)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING, default=None)
     id = models.AutoField(primary_key=True)
 
     class Meta:
@@ -125,8 +106,8 @@ class TransactTax(models.Model):
 class Transactions(models.Model):
     transact_id = models.AutoField(primary_key=True)
     transact_date = models.DateField()
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    budget = models.ForeignKey(Budget, models.DO_NOTHING)
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING, default=None)
+    budget = models.ForeignKey(Budget, models.DO_NOTHING, default=None)
 
     class Meta:
         managed = True
