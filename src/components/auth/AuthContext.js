@@ -8,7 +8,7 @@ export default AuthContext;
 
 export const AuthProvider = ({children}) => {
     //const baseURL = 'https://aq-budget-track.herokuapp.com/api';
-    const baseURL = process.env.BASE_URL || "http://127.0.0.1:8000/api";
+    const baseURL = process.env.REACT_APP_BASE_URL || "http://127.0.0.1:8000/api";
 
     const [authTokens, setAuthTokens] = useState( () =>
         localStorage.getItem("authTokens") ? 
