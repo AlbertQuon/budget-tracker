@@ -127,14 +127,14 @@
   box-shadow: 0 0 0 .25rem rgba(13, 253, 233, 0.25);
   border: 1px #01cedd solid;
   background-color: #282c34;
-  color: rgb(244, 255, 253);
+  color: rgb(255, 255, 255);
 }
 
 .form-control:focus-visible {
   box-shadow: 0 0 0 .2rem rgba(13, 253, 233, 0.25);
   border: 1px #01cedd solid;
   background-color: #282c34;
-  color: rgb(244, 255, 253);
+  color: rgb(255, 255, 255);
 }
 
 .form-select {
@@ -147,13 +147,13 @@
   box-shadow: 0 0 0 .25rem rgba(13, 253, 233, 0.25);
   border: 1px #01cedd solid;
   background-color: #282c34;
-  color: rgb(244, 255, 253);
+  color: rgb(255, 255, 255);
 }
 
 .form-select:focus-visible {
   border: 1px #01cedd solid;
   background-color: #282c34;
-  color: rgb(244, 255, 253);
+  color: rgb(255, 255, 255);
 }
 
 .input-label {
