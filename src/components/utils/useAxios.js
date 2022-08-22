@@ -3,7 +3,8 @@ import jwt_decode from "jwt-decode";
 import { useContext } from "react";
 import AuthContext from "../auth/AuthContext";
 
-const baseURL = process.env.BASEURL || "http://127.0.0.1:8000/api";
+const baseURL = process.env.BASEURL;
+// const baseURL = process.env.BASEURL || "http://127.0.0.1:8000/api";
 
 axios.defaults.xsrfCookieName = 'csrftoken'; 
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
@@ -16,36 +17,6 @@ const useAxios = () => {
         headers: { Authorization: `Bearer ${authTokens?.access}`}
     });
     var recentToken = authTokens;
-    /*axiosInstance.interceptors.request.use(async req => {
-        //const user = jwt_decode(authTokens.access);
-        //const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
-
-        //if (!isExpired) return req;
-
-        const response = await axios.post(`${baseURL}/token/refresh/`, {
-            refresh: authTokens.refresh
-        });
-        // if refresh fails, logout user
-
-        // update storage
-        localStorage.setItem("authTokens", JSON.stringify(response.data));
-
-        // update context api
-        setAuthTokens(response.data);
-        setUser(jwt_decode(response.data.access));
-
-        req.headers.Authorization = `Bearer ${response.data.access}`;
-        logoutUser();
-        return {
-            ...req,
-            signal: AbortSignal.abort()
-        };
-
-        return req;
-    }, (error) => {
-      return Promise.reject(error);
-    });*/
-
     let isTokenRefreshing = false;
     var failedQueue = [];
     

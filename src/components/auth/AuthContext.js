@@ -7,7 +7,9 @@ const AuthContext = createContext();
 export default AuthContext;
 
 export const AuthProvider = ({children}) => {
-    const baseURL = process.env.BASEURL || "http://127.0.0.1:8000/api";
+    const baseURL = process.env.BASEURL;
+    // const baseURL = process.env.BASEURL || "http://127.0.0.1:8000/api";
+
     const [authTokens, setAuthTokens] = useState( () =>
         localStorage.getItem("authTokens") ? 
         JSON.parse(localStorage.getItem("authTokens")) : null);
