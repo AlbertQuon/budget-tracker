@@ -23,7 +23,7 @@ export const AuthProvider = ({children}) => {
     const navigate = useNavigate();
 
     const loginUser = async (username, password) => {
-        const response = await fetch(`${baseURL}/token/`, {
+        const response = await fetch(`/token/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -46,7 +46,8 @@ export const AuthProvider = ({children}) => {
     }
 
     const registerUser = async (username, password, password2) => {
-        const response = await fetch(`${baseURL}/register/`, {
+        //const response = await fetch(`${baseURL}/register/`, {
+        const response = await fetch(`/register/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -66,7 +67,7 @@ export const AuthProvider = ({children}) => {
     }
 
     const updateUser = async (newUsername, oldPassword, password, password2) => {
-        let response = await fetch(`${baseURL}/updateUser/`, {
+        let response = await fetch(`/updateUser/`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -80,7 +81,7 @@ export const AuthProvider = ({children}) => {
             }),
         });
         if (response.status === 401) {
-            let refreshRes = await fetch(`${baseURL}/token/refresh/`, {
+            let refreshRes = await fetch(`$/token/refresh/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -95,7 +96,7 @@ export const AuthProvider = ({children}) => {
                 localStorage.setItem("authTokens", JSON.stringify(data));
                 setAuthTokens(data);
                 setUser(jwt_decode(data.access));
-                let retryRes = await fetch(`${baseURL}/updateUser/`, {
+                let retryRes = await fetch(`$/updateUser/`, {
                     method: "PATCH",
                     headers: {
                         "Content-Type": "application/json",
@@ -129,7 +130,7 @@ export const AuthProvider = ({children}) => {
     }
 
     const updateUsername = async (newUsername, password) => {
-        let response = await fetch(`${baseURL}/updateUsername/`, {
+        let response = await fetch(`$/updateUsername/`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -141,7 +142,7 @@ export const AuthProvider = ({children}) => {
             }),
         });
         if (response.status === 401) {
-            let refreshRes = await fetch(`${baseURL}/token/refresh/`, {
+            let refreshRes = await fetch(`$/token/refresh/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -156,7 +157,7 @@ export const AuthProvider = ({children}) => {
                 localStorage.setItem("authTokens", JSON.stringify(data));
                 setAuthTokens(data);
                 setUser(jwt_decode(data.access));
-                let retryRes = await fetch(`${baseURL}/updateUsername/`, {
+                let retryRes = await fetch(`$/updateUsername/`, {
                     method: "PATCH",
                     headers: {
                         "Content-Type": "application/json",

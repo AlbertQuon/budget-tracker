@@ -58,7 +58,8 @@ const useAxios = () => {
             isTokenRefreshing = true;
             
             return new Promise(function (resolve, reject) {
-                axios.post(`${baseURL}/token/refresh/`, {
+                //axios.post(`${baseURL}/token/refresh/`, {
+                axios.post('/token/refresh/', {
                     refresh: authTokens.refresh
                 }).then(res => {
                     //console.log("token reso", res);
