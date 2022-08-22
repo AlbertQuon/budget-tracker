@@ -120,7 +120,7 @@
 .form-control {
   border: 1px #01becc solid;
   background-color: #282c34;
-  color: azure;
+  color: white;
 }
 
 .form-control:focus {
@@ -140,7 +140,7 @@
 .form-select {
   border: 1px #01becc solid;
   background-color: #282c34;
-  color: azure;
+  color: white;
 }
 
 .form-select:focus {
