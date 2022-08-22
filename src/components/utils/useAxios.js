@@ -3,8 +3,8 @@ import jwt_decode from "jwt-decode";
 import { useContext } from "react";
 import AuthContext from "../auth/AuthContext";
 
-const baseURL = 'https://aq-budget-track.herokuapp.com/api';
-// const baseURL = process.env.BASEURL || "http://127.0.0.1:8000/api";
+// const baseURL = 'https://aq-budget-track.herokuapp.com/api';
+const baseURL = process.env.BASEURL || "http://127.0.0.1:8000/api";
 
 axios.defaults.xsrfCookieName = 'csrftoken'; 
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
