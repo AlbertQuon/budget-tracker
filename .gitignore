@@ -21,6 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-budget_django/local_settings.py
 todo.txt
 .env
+django_budget/local_settings.py
