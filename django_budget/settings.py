@@ -63,7 +63,7 @@ ROOT_URLCONF = 'django_budget.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR/'templates'], # remove base-dir/templates if broken
+        'DIRS': [os.path.join(BASE_DIR, 'build')], # remove base-dir/templates if broken
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
