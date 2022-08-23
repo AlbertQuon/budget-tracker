@@ -117,6 +117,10 @@
 
 
 /** Forms **/
+.form-text {
+  color: white;
+}
+
 .form-control {
   border: 1px #01becc solid;
   background-color: #282c34;
