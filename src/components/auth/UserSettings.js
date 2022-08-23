@@ -1,8 +1,7 @@
 import { useContext, useState } from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
-import useAxios from "../utils/useAxios";
 import AuthContext from "./AuthContext";
-import { Formik, useField, FieldArray } from 'formik';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
 
 function UserSettings() {
@@ -52,10 +51,17 @@ function UserSettings() {
 
     const validSchema = Yup.object().shape({
         username: Yup.string().required("Please enter a username"),
-        oldPassword: Yup.string().required("Please enter your current password").min(8, "Password is too short - should be 8 characters minimum"),
-        password: Yup.string().min(8, "Password is too short - should be 8 characters minimum"),
+        oldPassword: Yup.string()
+            .required("Please enter your current password")
+            .min(8, "Password is too short - should be 8 characters minimum"),
+        password: Yup.string()
+            .min(8, "Password is too short - should be 8 characters minimum")
+            .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+                "Must contain at least 8 characters, One Uppercase, One Lowercase, One Number and One Special Case Character"),
         password2: Yup.string().when('password', (password, schema) => {
-            return password?.length > 0 ? Yup.string().required("Please confirm your new password").min(8, "Password is too short - should be 8 characters minimum").oneOf([Yup.ref('password'), null], "Passwords must match") : schema;
+            return password?.length > 0 ? 
+                Yup.string().required("Please confirm your new password").min(8, "Password is too short - should be 8 characters minimum").oneOf([Yup.ref('password'), null], "Passwords must match") 
+                : schema;
         })
     })
   
@@ -78,27 +84,52 @@ function UserSettings() {
                         <Form noValidate onSubmit={handleSubmit}>
                             <Form.Group className="mb-3">
                                 <Form.Label>Username</Form.Label>
-                                <Form.Control name="username" type="text" placeholder="Enter username" isValid={!errors.username} isInvalid={!!errors.username}
-                                    value={values.username} onChange={handleChange} onBlur={handleBlur} />
-                                <Form.Control.Feedback type="invalid">{errors.username ? errors.username : null}</Form.Control.Feedback>
+                                <Form.Control name="username" type="text" 
+                                    placeholder="Enter username" 
+                                    isValid={touched.username && !errors.username} 
+                                    isInvalid={touched.username && !!errors.username}
+                                    value={values.username} 
+                                    onChange={handleChange} 
+                                    onBlur={handleBlur} 
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {touched.username && errors.username ? errors.username : null}
+                                </Form.Control.Feedback>
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Password</Form.Label>
-                                <Form.Control name="oldPassword" type="password" isInvalid={!!errors.oldPassword} onChange={handleChange} 
-                                    onBlur={handleBlur} placeholder="Enter current password" />
-                                <Form.Control.Feedback type="invalid">{errors.oldPassword ? errors.oldPassword : null}</Form.Control.Feedback>
+                                <Form.Control name="oldPassword" type="password" 
+                                    isValid={!errors.oldPassword}
+                                    isInvalid={!!errors.oldPassword} 
+                                    onChange={handleChange} 
+                                    onBlur={handleBlur} 
+                                    placeholder="Enter current password"
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {!!errors.oldPassword ? errors.oldPassword : null}
+                                </Form.Control.Feedback>
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>New Password</Form.Label>
-                                <Form.Control name="password" className="mb-2" isInvalid={!!errors.password} isValid={touched.password && !errors.password} onBlur={handleBlur} 
-                                    onChange={handleChange} type="password" placeholder="Enter new password" />
-                                <Form.Control.Feedback type="invalid">{errors.password ? errors.password : null}</Form.Control.Feedback>
-                                <Form.Control name="password2" className="mb-2" isInvalid={!!errors.password2} isValid={touched.password2 &&!errors.password2} onBlur={handleBlur} 
-                                    onChange={handleChange} type="password" placeholder="Confirm new password" />
-                                <Form.Control.Feedback type="invalid">{errors.password2 ? errors.password2 : null}</Form.Control.Feedback>
+                                <Form.Control name="password" className="mb-2" type="password"
+                                    isInvalid={touched.password && !!errors.password} 
+                                    isValid={touched.password && !errors.password} 
+                                    onBlur={handleBlur} 
+                                    onChange={handleChange}  
+                                    placeholder="Enter new password" 
+                                />
+                                <Form.Control.Feedback type="invalid">{touched.password && !!errors.password ? errors.password : null}</Form.Control.Feedback>
+                                <Form.Control name="password2" className="mb-2" type="password" 
+                                    isInvalid={touched.password2 && !!errors.password2} 
+                                    isValid={touched.password2 && !errors.password2} 
+                                    onBlur={handleBlur} 
+                                    onChange={handleChange} 
+                                    placeholder="Confirm new password" 
+                                />
+                                <Form.Control.Feedback type="invalid">{touched.password2 && !!errors.password2 ? errors.password2 : null}</Form.Control.Feedback>
                                 <Form.Text id="passwordHelpBlock" className="text-white">
-                                    Your new password must be 8-20 characters long, contain letters and numbers, and
-                                    must not contain spaces, special characters, or emoji.
+                                    The password must contain at least 8 characters, One Uppercase,
+                                        One Lowercase, One Number and One Special Case Character.
                                 </Form.Text>
                                 <br></br>
                                 <Form.Text id="passwordHelpBlock" className="text-warning">

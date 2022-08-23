@@ -62,7 +62,6 @@ function TransactEditForm({api, transactTaxes, transaction, purchases, purcCateg
 
     const formRef = useCallback(node=> {
         if (node !== null) {
-            console.log(node.values)
             let newSubtotal = parseFloat(0.00);
             let newTotal = parseFloat(0.00);
 
@@ -86,7 +85,7 @@ function TransactEditForm({api, transactTaxes, transaction, purchases, purcCateg
 
     const validSchema = Yup.object().shape({
         budget: Yup.number().required("Please select a budget"),
-        transactDate: Yup.date().required(),
+        transactDate: Yup.date().required("Please select a date"),
         purchases: Yup.array().of(Yup.object().shape({
             purcCategory: Yup.number().required("Select a purchase category"),
             itemName: Yup.string().required("Enter an item name"),
@@ -108,7 +107,6 @@ function TransactEditForm({api, transactTaxes, transaction, purchases, purcCateg
 
             let addTaxRatePromises = [];
             let deleteTaxRatePromises = [];
-            console.log(values)
             values.taxRates.forEach((tax,index) => {
                 let taxCtgy = taxCategories[index];
                 let taxRate = initialTaxRates.find(taxRate => taxRate.taxId === taxCtgy.tax_id);
@@ -179,167 +177,198 @@ function TransactEditForm({api, transactTaxes, transaction, purchases, purcCateg
     return (
         <div>
             <Modal backdrop="static" show={showEditForm} onHide={handleCloseEditForm} contentClassName="transact-form-modal-content" dialogClassName="transact-form-modal-dialog">
-            <Modal.Header>
-                <Modal.Title>Edit transaction</Modal.Title>
-                <CloseButton onClick={handleCloseEditForm} variant='white'/>
-            </Modal.Header>
-            <Modal.Body className="transaction-modal-body">
-                <Formik
-                    validationSchema={validSchema}
-                    onSubmit={(values, actions) => onFormSubmit(values, actions)}
-                    initialValues={{budget: transaction.budget, purchases: purchasePrices, transactDate: transactDate, taxRates: taxRates}}
-                    innerRef={formRef}
-                    enableReinitialize
-                >
-                    {({handleSubmit, handleBlur, values, errors, touched, setFieldValue, handleChange}) => (
-                        <Form noValidate onSubmit={handleSubmit}>
-                            <Form.Group className="mb-3">
-                                <FloatingLabel label="Budget Name">
-                                    {budgets.length > 0 ? // e.target value is string
-                                        <Form.Select name="budget" onChange={selectedOption => {
-                                            //let event = {target: {name:"budget", value: selectedOption}}; 
-                                            handleChange("budget")(selectedOption.target.value)
-                                            }}
-                                            onBlur={()=>handleBlur({target: {name: "budget"}})}
-                                            isValid={!errors.budget}
-                                            isInvalid={!!errors.budget}
-                                            defaultValue={values.budget}
+                <Modal.Header>
+                    <Modal.Title>Edit transaction</Modal.Title>
+                    <CloseButton onClick={handleCloseEditForm} variant='white'/>
+                </Modal.Header>
+                <Modal.Body className="transaction-modal-body">
+                    <Formik
+                        validationSchema={validSchema}
+                        onSubmit={(values, actions) => onFormSubmit(values, actions)}
+                        initialValues={{budget: transaction.budget, purchases: purchasePrices, transactDate: transactDate, taxRates: taxRates}}
+                        innerRef={formRef}
+                        validateOnChange={false}
+                        validateOnBlur={false}
+                        enableReinitialize
+                    >
+                        {({handleSubmit, handleBlur, values, errors, touched, setFieldValue, handleChange}) => (
+                            <Form noValidate onSubmit={handleSubmit}>
+                                <Form.Group className="mb-3">
+                                    <FloatingLabel label="Budget Name">
+                                        {budgets.length > 0 ? // e.target value is string
+                                            <Form.Select 
+                                                name="budget" 
+                                                onChange={selectedOption => {
+                                                    //let event = {target: {name:"budget", value: selectedOption}}; 
+                                                    handleChange("budget")(selectedOption.target.value)
+                                                }}
+                                                onBlur={()=>handleBlur({target: {name: "budget"}})}
+                                                isValid={!errors.budget}
+                                                isInvalid={!!errors.budget}
+                                                defaultValue={values.budget}
                                             > 
-                                            <option disabled value>Select a budget</option>
-                                            {budgets.map((budget) => {
-                                                if (dayjs(budget.end_time).diff(dayjs(), 'day') >= 0 || budget.budget_id===values.budget) {
-                                                    return (<option key={budget.budget_id} value={budget.budget_id}>{budget.budget_name}
-                                                    </option>);
-                                                }
-                                        })}
-                                        </Form.Select> : <p><strong>No budgets found</strong></p>
-                                    }
-                                </FloatingLabel>
-                                
-                                {errors.budget ? <p className="text-danger">{errors.budget}</p> : null}
-                            </Form.Group>
-
-                            <Form.Group className="mb-3 form-section">
-                                <Form.Label className="form-label-header">Transaction Date</Form.Label>
-                                <DatePickerField name="transactDate" onChange={handleChange} onBlur={handleBlur} selected={transactDate}
-                                    minDate={dayjs(currentBudget?.start_time).toDate()} maxDate={Date.now()}/>
-                                {errors.transactDate ? <p className="text-danger">{errors.transactDate}</p> : null}
-                            </Form.Group>
-                            
-                            <Form.Group className="mb-3 form-section">
-                                <FieldArray name="purchases">
-                                    {(arrayHelpers) => {
-
-                                        return (
-                                        <div>
-                                        <Form.Group className="mb-3" as={Row}>
-                                            <Col md='auto' className="form-label-header-section">
-                                                <Form.Label className="form-label-header">Purchases</Form.Label>
-                                            </Col>
-                                            <Col md='auto'>
-                                                <Button className="custom-btn" onClick={() => arrayHelpers.push('')}>Add</Button>
-                                            </Col>
-                                        </Form.Group>
-                                        <Form.Group as={Row}>
-                                            <Col md={4} className="transact-form-purc-ctgy-header">Purchase Category</Col>
-                                            <Col md={4} className="transact-form-purc-ctgy-header">Item Name</Col>
-                                            <Col md={2} className="transact-form-purc-ctgy-header">Price</Col>
-                                            <Col md={2} className="transact-form-purc-ctgy-header" style={{'text-align':'left'}}>Delete</Col>
-                                        </Form.Group>
-                                        {values.purchases && values.purchases.length > 0 ? (
-                                            <div>{values.purchases.map((purc, index)=> (
-                                                <Row key={index} className="my-2">
-                                                    <Col md={4}>
-                                                        <Form.Select name={`purchases.${index}.purcCategory`} onChange={selectedOption => 
-                                                            {handleChange(`purchases.${index}.purcCategory`)(selectedOption.target.value);}}
-                                                            isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.purcCategory} 
-                                                            isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.purcCategory) || (values.purchases[index].purcCategory !== "")}
-                                                            onBlur={()=>handleBlur({target: {name: `purchases.${index}.purcCategory`}})}
-                                                            value={purc.purcCategory}>
-                                                            <option selected value="">Select a purchase category</option>
-                                                            {purcCategories?.map((ctgy, index) => (<option key={index}
-                                                                            value={`${ctgy.purc_category_id}`}>{ctgy.purc_category_name}</option>))}
-                                                        </Form.Select>
-                                                    </Col>
-                                                    <Col md={4}>
-                                                        <Form.Control
-                                                            isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.itemName} 
-                                                            isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.itemName) || (touched.hasOwnProperty("purchases") && touched.purchases[index]?.itemName)}
-                                                            value={purc.itemName} name={`purchases.${index}.itemName`} type="text" onChange={handleChange} onBlur={handleBlur}/>
-                                                    </Col>
-                                                    <Col md={2}>
-                                                        <Form.Control 
-                                                            isInvalid={errors.hasOwnProperty("purchases") && (!!errors.purchases[index]?.price)} 
-                                                            isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.price) || (touched.hasOwnProperty("purchases") && touched.purchases[index]?.price)}
-                                                            value={purc.price?.toFixed(2)} name={`purchases.${index}.price`} type="number" onChange={handleChange} onBlur={handleBlur}/>
-                                                    </Col>
-                                                    <Col md={2}>
-                                                        <Button className="custom-btn-negative" onClick={() => arrayHelpers.remove(index)}>X</Button>
-                                                    </Col>
-                                                    <Form.Control.Feedback>{errors.hasOwnProperty("purchases") && errors.purchases[index] ? "errors": null}</Form.Control.Feedback>
-                                                </Row>
-                                            ))}
-                                            </div>
-                                        ) : (null)}
-                                        {typeof errors.purchases === 'string' ? <p>{errors.purchases}</p>: null}
-                                        </div>
-                                        );
-                                    }}
-                                </FieldArray>
-                            </Form.Group>
-                            
-                            <Form.Group as={Row} className="my-3">   
-                                <Col md={{span: 1, offset: 7}}><p className="subtotal-text">Subtotal:</p></Col>
-                                <Col md='auto'><p className="subtotal-text">${subtotal.toFixed(2)}</p></Col>
-                            </Form.Group>
-
-                            <Form.Group className="mb-3 form-section">
-                                <Form.Label className="me-2 form-label-header">Tax</Form.Label>
-                                <FieldArray name="taxRates">
-                                {(arrayHelpers) => {
-                                    return(
-                                        <div>
-                                        {taxCategories.length !== 0 ? 
-                                            taxCategories.map((tax, index) => (
-                                                <Row key={index}>
-                                                    <Col md={4}>
-                                                        <p>{tax.tax_name} ({tax.tax_rate}%)</p>
-                                                    </Col>
-                                                    <Col md={4}>
-                                                        <Form.Check checked={values.taxRates[index]} name={`taxRates.${index}`} onChange={e => {setFieldValue(`taxRates.${index}`, e.target.checked); console.log(e)}} onBlur={handleBlur} 
-                                                            feedback={errors.taxRates ? errors.taxRates[index] : null} feedbackType="invalid"/>
-                                                    </Col>
-                                                    <Col md={2}>
-                                                        <p>{values.taxRates && values.taxRates[index] ? calcTaxPrice(tax.tax_rate) : null}</p>
-                                                    </Col>
-                                                </Row>
-                                            ))
-                                        : <Row>No tax categories found</Row>
+                                                <option disabled value>Select a budget</option>
+                                                {budgets.map((budget) => {
+                                                    if (dayjs(budget.end_time).diff(dayjs(), 'day') >= 0 || budget.budget_id===values.budget) {
+                                                        return (<option key={budget.budget_id} value={budget.budget_id}>{budget.budget_name}
+                                                        </option>);
+                                                    }
+                                            })}
+                                            </Form.Select> : <p><strong>No budgets found</strong></p>
                                         }
-                                        </div>
-                                    )
-                                }}
-                                </FieldArray>
-                            </Form.Group>
-                            
-                            <Form.Group as={Row} className="form-section">   
-                                <Col md={{span: 1, offset: 7}}><p className="total-text">Total:</p></Col>
-                                <Col md='auto'><p className="total-text">${total.toFixed(2)}</p></Col>
-                            </Form.Group>
-                            
-                            <Form.Group as={Row} className="form-section justify-content-end">  
-                                <Col md={{span: 'auto', offset: 10}}>
-                                    <Button className="custom-btn" type="submit">
-                                        Submit
-                                    </Button>
-                                </Col>
-                            </Form.Group>
-                            
-                        </Form>
-                    )}
-                </Formik>
-                
-            </Modal.Body>
+                                    </FloatingLabel>
+                                    
+                                    {errors.budget ? <p className="text-danger">{errors.budget}</p> : null}
+                                </Form.Group>
+
+                                <Form.Group className="mb-3 form-section">
+                                    <Form.Label className="form-label-header">Transaction Date</Form.Label>
+                                    <DatePickerField name="transactDate" 
+                                        onChange={handleChange} 
+                                        onBlur={handleBlur} 
+                                        selected={transactDate}
+                                        minDate={dayjs(currentBudget?.start_time).toDate()} 
+                                        maxDate={Date.now()}
+                                    />
+                                    {touched.transactDate && !!errors.transactDate ? 
+                                        <p className="text-danger">{errors.transactDate}</p> : null}
+                                </Form.Group>
+                                
+                                <Form.Group className="mb-3 form-section">
+                                    <FieldArray name="purchases">
+                                        {(arrayHelpers) => {
+                                            return (
+                                            <div>
+                                                <Form.Group className="mb-3" as={Row}>
+                                                    <Col md='auto' className="form-label-header-section">
+                                                        <Form.Label className="form-label-header">Purchases</Form.Label>
+                                                    </Col>
+                                                    <Col md='auto'>
+                                                        <Button className="custom-btn" onClick={() => arrayHelpers.push('')}>Add</Button>
+                                                    </Col>
+                                                </Form.Group>
+                                                <Form.Group as={Row}>
+                                                    <Col md={4} className="transact-form-purc-ctgy-header">Purchase Category</Col>
+                                                    <Col md={4} className="transact-form-purc-ctgy-header">Item Name</Col>
+                                                    <Col md={2} className="transact-form-purc-ctgy-header">Price</Col>
+                                                    <Col md={2} className="transact-form-purc-ctgy-header" style={{'text-align':'left'}}>Delete</Col>
+                                                </Form.Group>
+                                                {values.purchases && values.purchases.length > 0 ? (
+                                                    <div>
+                                                        {values.purchases.map((purc, index)=> (
+                                                            <Row key={index} className="my-2">
+                                                                <Col md={4}>
+                                                                    <Form.Select name={`purchases.${index}.purcCategory`} 
+                                                                        onChange={selectedOption => {handleChange(`purchases.${index}.purcCategory`)(selectedOption.target.value);}}
+                                                                        isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.purcCategory && !(touched.purchases[index].purcCategory)} 
+                                                                        isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.purcCategory) 
+                                                                            && (values.purchases[index].purcCategory !== "") && (touched.purchases[index].purcCategory)}
+                                                                        onBlur={()=>handleBlur({target: {name: `purchases.${index}.purcCategory`}})}
+                                                                        value={purc.purcCategory}>
+                                                                        <option selected value="">Select a purchase category</option>
+                                                                        {purcCategories?.map((ctgy, index) => (
+                                                                            <option  
+                                                                                key={index}
+                                                                                value={`${ctgy.purc_category_id}`}
+                                                                            >
+                                                                                    {ctgy.purc_category_name}
+                                                                            </option>))
+                                                                        }
+                                                                    </Form.Select>
+                                                                </Col>
+                                                                <Col md={4}>
+                                                                    <Form.Control
+                                                                        isInvalid={errors.hasOwnProperty("purchases") && !!errors.purchases[index]?.itemName} 
+                                                                        isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.itemName)
+                                                                            && (touched.hasOwnProperty("purchases") && touched.purchases[index]?.itemName)}
+                                                                        value={purc.itemName} 
+                                                                        name={`purchases.${index}.itemName`} 
+                                                                        type="text" 
+                                                                        onChange={handleChange} 
+                                                                        onBlur={handleBlur}
+                                                                    />
+                                                                </Col>
+                                                                <Col md={2}>
+                                                                    <Form.Control 
+                                                                        isInvalid={errors.hasOwnProperty("purchases") && (!!errors.purchases[index]?.price)} 
+                                                                        isValid={(errors.hasOwnProperty("purchases") && !errors.purchases[index]?.price) 
+                                                                           && (touched.hasOwnProperty("purchases") && touched.purchases[index]?.price)}
+                                                                        value={purc.price?.toFixed(2)} 
+                                                                        name={`purchases.${index}.price`} 
+                                                                        type="number" 
+                                                                        onChange={handleChange} 
+                                                                        onBlur={handleBlur}
+                                                                    />
+                                                                </Col>
+                                                                <Col md={2}>
+                                                                    <Button className="custom-btn-negative" onClick={() => arrayHelpers.remove(index)}>X</Button>
+                                                                </Col>
+                                                                <p className="text-danger">
+                                                                    {errors.hasOwnProperty("purchases") && errors.purchases[index] ? "Error in purchase": null}
+                                                                </p>
+                                                            </Row>
+                                                        ))}
+                                                    </div>
+                                                ) : (null)}
+                                                {typeof errors.purchases === 'string' ? <p>{errors.purchases}</p>: null}
+                                            </div>
+                                            );
+                                        }}
+                                    </FieldArray>
+                                </Form.Group>
+                                
+                                <Form.Group as={Row} className="my-3">   
+                                    <Col md={{span: 1, offset: 7}}><p className="subtotal-text">Subtotal:</p></Col>
+                                    <Col md='auto'><p className="subtotal-text">${subtotal.toFixed(2)}</p></Col>
+                                </Form.Group>
+
+                                <Form.Group className="mb-3 form-section">
+                                    <Form.Label className="me-2 form-label-header">Tax</Form.Label>
+                                    <FieldArray name="taxRates">
+                                    {(arrayHelpers) => {
+                                        return(
+                                            <div>
+                                            {taxCategories.length !== 0 ? 
+                                                taxCategories.map((tax, index) => (
+                                                    <Row key={index}>
+                                                        <Col md={4}>
+                                                            <p>{tax.tax_name} ({tax.tax_rate}%)</p>
+                                                        </Col>
+                                                        <Col md={4}>
+                                                            <Form.Check checked={values.taxRates[index]} name={`taxRates.${index}`} onChange={e => {setFieldValue(`taxRates.${index}`, e.target.checked); console.log(e)}} onBlur={handleBlur} 
+                                                                feedback={errors.taxRates ? errors.taxRates[index] : null} feedbackType="invalid"/>
+                                                        </Col>
+                                                        <Col md={2}>
+                                                            <p>{values.taxRates && values.taxRates[index] ? calcTaxPrice(tax.tax_rate) : null}</p>
+                                                        </Col>
+                                                    </Row>
+                                                ))
+                                            : <Row>No tax categories found</Row>
+                                            }
+                                            </div>
+                                        )
+                                    }}
+                                    </FieldArray>
+                                </Form.Group>
+                                
+                                <Form.Group as={Row} className="form-section">   
+                                    <Col md={{span: 1, offset: 7}}><p className="total-text">Total:</p></Col>
+                                    <Col md='auto'><p className="total-text">${total.toFixed(2)}</p></Col>
+                                </Form.Group>
+                                
+                                <Form.Group as={Row} className="form-section justify-content-end">  
+                                    <Col md={{span: 'auto', offset: 10}}>
+                                        <Button className="custom-btn" type="submit">
+                                            Submit
+                                        </Button>
+                                    </Col>
+                                </Form.Group>
+                                
+                            </Form>
+                        )}
+                    </Formik>
+                    
+                </Modal.Body>
             </Modal> 
         </div>
         

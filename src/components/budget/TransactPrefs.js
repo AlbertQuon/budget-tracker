@@ -64,12 +64,6 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
         });
     }
 
-    const onTaxCtgyPrefAdd = (event) => {
-        event.preventDefault();
-        const form = event.currentTarget;
-        
-    }
-    
     // DELETE functions
     const onPurcCtgyDelete = (event) => {
         event.preventDefault();
@@ -178,13 +172,17 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     value={values?.purcCtgyName}
-                                    />
-                                {typeof errors.purcCtgyName === 'string' ? <Form.Control.Feedback type="invalid">{errors.purcCtgyName}</Form.Control.Feedback> : null}
+                                />
+                                {typeof errors.purcCtgyName === 'string' ? 
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.purcCtgyName}
+                                    </Form.Control.Feedback> 
+                                : null}
                                 <Form.Text className="text-white">
                                     Add categories to sort your purchases and budget limits
                                 </Form.Text>
                             </Form.Group>
-                            <Button className="custom-btn"  type="submit">
+                            <Button className="custom-btn" type="submit">
                                 Add
                             </Button>
                         </Form>        
@@ -197,8 +195,12 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
                         <Form.Label>Delete purchase category</Form.Label>
                         <Form.Select>
                             {purcCategories.map((ctgy) => (
-                                <option key={ctgy.purc_category_id}
-                                value={`${ctgy.purc_category_id}`}>{ctgy.purc_category_name}</option>
+                                <option 
+                                    key={ctgy.purc_category_id}
+                                    value={`${ctgy.purc_category_id}`}
+                                >
+                                    {ctgy.purc_category_name}
+                                </option>
                             ))}
                         </Form.Select>
                     </Form.Group>
@@ -250,7 +252,7 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
                                             onChange={handleChange}
                                             onBlur={handleBlur}
                                             value={values?.taxRate}
-                                            />
+                                        />
                                         <InputGroup.Text id="percentage-input-group">%</InputGroup.Text>
                                         {typeof errors.taxRate === 'string' ? <Form.Control.Feedback type="invalid">{errors.taxRate}</Form.Control.Feedback> : null}
                                     </InputGroup> 
@@ -271,8 +273,12 @@ function TransactPrefs({purcCategories, setPurcCategories}) {
                         <Form.Label>Delete tax category</Form.Label>
                         <Form.Select>
                             {taxCategories.map((tax) => (
-                                <option key={tax.tax_id}
-                                value={`${tax.tax_id}`}>{tax.tax_name}</option>
+                                <option 
+                                    key={tax.tax_id}
+                                    value={`${tax.tax_id}`}
+                                >
+                                    {tax.tax_name}
+                                </option>
                             ))}
                         </Form.Select>
                     </Form.Group>

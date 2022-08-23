@@ -84,8 +84,6 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
             ).required()
     });
 
-    // DO NOT FORGET HANDLE CHANGE ATTRIBUTE
-    /*<Form.Control type="text" onKeyPress={(e) => !/^\d*(\.\d{0,2})?$/.test(e.key) && e.preventDefault()} placeholder="Spend limit"/>*/
     return ( 
         <Modal backdrop="static" show={showForm} onHide={handleCloseForm} dialogClassName="modal-budget" contentClassName="dark-modal-content" >
             <Modal.Header className="modal-budget-header">
@@ -100,6 +98,8 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                                 initialValues={{budgetStartDate: null, budgetIncomes: [{incomeName: "", incomeAmount: 0}], budgetEndDate: dayjs().toDate(), budgetLimits: Array(purcCategories.length).fill(0), budgetName: ""}}
                                 onSubmit={(values, actions) => handleFormSubmit(values, actions)}
                                 innerRef={formRef}
+                                validateOnChange={false}
+                                validateOnBlur={false}
                             >
                                 {({handleSubmit, handleChange, handleBlur, values, touched, isValid, errors, isSubmitting}) => (
                                     <Form noValidate onSubmit={handleSubmit}>

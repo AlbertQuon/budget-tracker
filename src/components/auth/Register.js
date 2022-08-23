@@ -1,77 +1,119 @@
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import {Container, Form, Button, Row, FloatingLabel} from 'react-bootstrap'
 import AuthContext from './AuthContext';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
 function Register() {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [password2, setPassword2] = useState("");
-    const [wrongPassword, setWrongPassword] = useState(false);
-    const [validated, setValidated] = useState(false);
+
     const { registerUser } = useContext(AuthContext);
 
-    const handleSubmit = async event => {
-        event.preventDefault();
-        const form = event.currentTarget;
-        if (password !== password2 && form.checkValidity()) {
-            setWrongPassword(true);
-            event.stopPropagation();
-        } else {
-            setWrongPassword(false);
-            registerUser(username, password, password2);
-            setValidated(true);
-        }
-        
+    const onFormSubmit = (values, actions) => {
+        return registerUser(values.username, values.password, values.password2);
     }
-    console.log(password === password2 && password.length > 7)
-    return ( <Container>
-        <Row>
+
+    const initialValues = {username: "", password: "", password2: ""}
+
+    const validSchema = Yup.object().shape({
+        username: Yup.string()
+            .min(4, "Username must be greater than 3 characters")
+            .required("Please enter a username")
+            .matches(/[a-zA-Z0-9]/, "Username cannot only be numbers and must cannot contain symbols"),
+        password: Yup.string()
+            .required('Please enter a password')
+            .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
+                "Must contain at least 8 characters, One Uppercase, One Lowercase, One Number and One Special Case Character"),
+        password2: Yup.string()
+            .required("Please confirm your password")
+            .min(8, "")
+            .oneOf([Yup.ref('password'), null], 'Passwords must match'),
+    })
+
+    return ( 
+    <Container className="my-2">
+        <Row className="my-2">
             <h3>Register</h3>
         </Row>
         <Row>
-        <Form noValidate validated={validated} onSubmit={handleSubmit}>
+            <Formik
+                initialValues={initialValues}
+                validationSchema={validSchema}
+                onSubmit={(values, actions) => onFormSubmit(values, actions)}
+                validateOnChange={false}
+                validateOnBlur={false}
+            >
+                {({handleChange, handleBlur, values, errors, touched, handleSubmit}) => (
+                    <Form noValidate onSubmit={handleSubmit}>
+                        <Form.Group className="mb-3">
+                            <FloatingLabel
+                                label="Username"
+                                className="mb-3 input-label"
+                            >
+                                <Form.Control type="text" name="username"
+                                    isValid={!errors.username && touched.username}
+                                    isInvalid={touched.username && !!errors.username}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                />
+                                <Form.Text className={!!errors.username && touched.username && values.username.length > 3  ? 'text-danger' : ''}>
+                                    {!!errors.username && touched.username && values.username.length > 3 ? errors.username : 
+                                        'Your username must be at least 4 characters long and must not contain special characters or emoji.'
+                                    }
+                                </Form.Text>
+                            </FloatingLabel>
+                        </Form.Group>
 
-            <Form.Group className="mb-3">
-                <FloatingLabel
-                    controlId="username"
-                    label="Username"
-                    className="mb-3 input-label"
-                >
-                <Form.Control type="text" required onChange={e => setUsername(e.target.value)} placeholder="Enter username" />
-                </FloatingLabel>
-            </Form.Group>
+                        <Form.Group className="mb-3">
+                            <FloatingLabel
+                                label="Password"
+                                className="mb-3 input-label"
+                            >
+                                <Form.Control type="password" name="password" 
+                                    isValid={!errors.password && touched.password}
+                                    isInvalid={!!errors.password && touched.password}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                />
+                                <Form.Text className={!!errors.password && touched.password && values.password.length > 8 ? 'text-danger' : ''}>
+                                    {!!errors.password && touched.password && values.password.length > 8 ? errors.password : 
+                                        'The password must contain at least 8 characters, One Uppercase, \
+                                        One Lowercase, One Number and One Special Case Character.' 
+                                    }
+                                </Form.Text>
+                            </FloatingLabel>
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <FloatingLabel
+                                controlId="password2"
+                                label="Confirm Password"
+                                className="mb-3 input-label"
+                            >
+                                <Form.Control type="password" name="password2" 
+                                    onChange={handleChange}
+                                    isValid={!errors.password2 && touched.password2}
+                                    isInvalid={!!errors.password2 && touched.password2}
+                                    onBlur={handleBlur}
+                                />
+                                <Form.Text className={!!errors.password2 && touched.password2 && values.password2.length > 8 ? 'text-danger' : ''}>
+                                    {!!errors.password2 && touched.password2 && values.password2.length > 8 ? errors.password2 : 
+                                        null
+                                    }
+                                </Form.Text>
+                            </FloatingLabel>
+                        </Form.Group>
 
-            <Form.Group className="mb-3">
-                <FloatingLabel
-                    controlId="password"
-                    label="Password"
-                    className="mb-3 input-label"
-                >
-                <Form.Control type="password" required isValid={password === password2 && password.length > 7} placeholder="Password" onChange={e => setPassword(e.target.value)} />
-                <Form.Text id="passwordHelpBlock" muted>
-                    Your password must be 8-20 characters long, contain letters and numbers, and
-                    must not contain spaces, special characters, or emoji.
-                </Form.Text>
-                </FloatingLabel>
-            </Form.Group>
-            <Form.Group className="mb-3">
-                <FloatingLabel
-                    controlId="password2"
-                    label="Confirm Password"
-                    className="mb-3 input-label"
-                >
-                <Form.Control type="password" required isValid={password === password2 && password2.length > 7} 
-                onChange={e => setPassword2(e.target.value)} placeholder="Confirm password" />
-                </FloatingLabel>
-            </Form.Group>
-            <Form.Group>
-            <Form.Text className="text-info" id="wrongMatchPassword">{wrongPassword ? "Passwords do not match!" : ""}</Form.Text>
-            </Form.Group>
+                        <Form.Group>
+                            <Form.Text className="text-info"></Form.Text>
+                        </Form.Group>
+                        
+                        <Button className='custom-btn' type="submit">
+                            Register
+                        </Button>
+                    </Form>
+                )}
+
+            </Formik>
             
-            <Button variant="dark" type="submit">
-                Register
-            </Button>
-        </Form>
         </Row>
     </Container> );
 }
