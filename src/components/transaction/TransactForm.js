@@ -101,6 +101,20 @@ function TransactForm({api, purcCategories, taxCategories, budgets, handleCloseF
         taxRates: Yup.array().of(Yup.bool())
     })
 
+    if (budgets.length === 0) {
+        return (
+            <Modal backdrop="static" show={showForm} onHide={handleCloseForm} contentClassName="transact-form-modal-content" dialogClassName="transact-form-modal-dialog">
+                <Modal.Header className="transact-modal-header">
+                    <Modal.Title>Error occurred</Modal.Title>
+                    <CloseButton onClick={handleCloseForm} variant="white" />
+                </Modal.Header>
+                <Modal.Body>
+                    Please add a budget before you can add a transaction.
+                </Modal.Body>
+            </Modal>
+        );
+    }
+
     return (
     <Modal backdrop="static" show={showForm} onHide={handleCloseForm} contentClassName="transact-form-modal-content" dialogClassName="transact-form-modal-dialog">
         <Modal.Header className="transact-modal-header">
@@ -119,7 +133,8 @@ function TransactForm({api, purcCategories, taxCategories, budgets, handleCloseF
                 {({handleSubmit, handleChange, handleBlur, values, touched, setFieldValue, errors}) => (
                     <Form noValidate onSubmit={handleSubmit}>
                         <Form.Group className="mb-3">
-                            <FloatingLabel label="Budget Name">
+                            <Form.Label className="form-label-header">Budget Name</Form.Label>
+                            <FloatingLabel label="Current Budget Name">
                                 {budgets.length > 0 ? // e.target value is string
                                     <Form.Select 
                                         name="budget" 

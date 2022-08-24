@@ -194,7 +194,8 @@ function TransactEditForm({api, transactTaxes, transaction, purchases, purcCateg
                         {({handleSubmit, handleBlur, values, errors, touched, setFieldValue, handleChange}) => (
                             <Form noValidate onSubmit={handleSubmit}>
                                 <Form.Group className="mb-3">
-                                    <FloatingLabel label="Budget Name">
+                                    <Form.Label className="form-label-header">Budget Name</Form.Label>
+                                    <FloatingLabel label="Current Budget Name">
                                         {budgets.length > 0 ? // e.target value is string
                                             <Form.Select 
                                                 name="budget" 

@@ -50,13 +50,13 @@ function Register() {
                                 className="mb-3 input-label"
                             >
                                 <Form.Control type="text" name="username"
-                                    isValid={!errors.username && touched.username}
-                                    isInvalid={touched.username && !!errors.username}
+                                    isValid={!errors.username}
+                                    isInvalid={!!errors.username}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                 />
-                                <Form.Text className={!!errors.username && touched.username && values.username.length > 3  ? 'text-danger' : ''}>
-                                    {!!errors.username && touched.username && values.username.length > 3 ? errors.username : 
+                                <Form.Text className={!!errors.username ? 'text-danger' : ''}>
+                                    {!!errors.username ? errors.username : 
                                         'Your username must be at least 4 characters long and must not contain special characters or emoji.'
                                     }
                                 </Form.Text>
@@ -69,13 +69,13 @@ function Register() {
                                 className="mb-3 input-label"
                             >
                                 <Form.Control type="password" name="password" 
-                                    isValid={!errors.password && touched.password}
-                                    isInvalid={!!errors.password && touched.password}
+                                    isValid={!errors.password}
+                                    isInvalid={!!errors.password}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                 />
-                                <Form.Text className={!!errors.password && touched.password && values.password.length > 8 ? 'text-danger' : ''}>
-                                    {!!errors.password && touched.password && values.password.length > 8 ? errors.password : 
+                                <Form.Text className={!!errors.password ? 'text-danger' : ''}>
+                                    {!!errors.password ? errors.password : 
                                         'The password must contain at least 8 characters, One Uppercase, \
                                         One Lowercase, One Number and One Special Case Character.' 
                                     }
@@ -90,12 +90,12 @@ function Register() {
                             >
                                 <Form.Control type="password" name="password2" 
                                     onChange={handleChange}
-                                    isValid={!errors.password2 && touched.password2}
-                                    isInvalid={!!errors.password2 && touched.password2}
+                                    isValid={!errors.password2}
+                                    isInvalid={!!errors.password2}
                                     onBlur={handleBlur}
                                 />
-                                <Form.Text className={!!errors.password2 && touched.password2 && values.password2.length > 8 ? 'text-danger' : ''}>
-                                    {!!errors.password2 && touched.password2 && values.password2.length > 8 ? errors.password2 : 
+                                <Form.Text className={!!errors.password2 ? 'text-danger' : ''}>
+                                    {!!errors.password2 ? errors.password2 : 
                                         null
                                     }
                                 </Form.Text>

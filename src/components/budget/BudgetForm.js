@@ -84,6 +84,20 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
             ).required()
     });
 
+    if (purcCategories.length === 0) {
+        return (
+            <Modal backdrop="static" show={showForm} onHide={handleCloseForm} dialogClassName="modal-budget" contentClassName="dark-modal-content" >
+                <Modal.Header className="modal-budget-header">
+                    <Modal.Title>Error occurred</Modal.Title>
+                    <CloseButton onClick={handleCloseForm} variant='white'/>
+                </Modal.Header>
+                <Modal.Body>
+                    Please add a purchase category to create a budget.
+                </Modal.Body>
+            </Modal>
+        );
+    }
+
     return ( 
         <Modal backdrop="static" show={showForm} onHide={handleCloseForm} dialogClassName="modal-budget" contentClassName="dark-modal-content" >
             <Modal.Header className="modal-budget-header">
@@ -104,12 +118,18 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                                 {({handleSubmit, handleChange, handleBlur, values, touched, isValid, errors, isSubmitting}) => (
                                     <Form noValidate onSubmit={handleSubmit}>
                                         <Form.Group className="mb-3">
-                                            <FloatingLabel className="input-label" label="Budget Name">
-                                            <Form.Control name="budgetName" isValid={touched.budgetName && !errors.budgetName} 
-                                                onChange={handleChange} value={values.budgetName} isInvalid={!!errors.budgetName}
-                                                type="text" placeholder="Enter a name"></Form.Control>
-                                            </FloatingLabel>
+                                        <Form.Label className="form-label-header">Budget Name</Form.Label>
+                                        <FloatingLabel label="Current Budget Name">
+                                            <Form.Control name="budgetName" 
+                                                isValid={touched.budgetName && !errors.budgetName} 
+                                                onChange={handleChange} 
+                                                value={values.budgetName} 
+                                                isInvalid={!!errors.budgetName}
+                                                type="text" placeholder="Enter a name"
+                                            />
                                             <Form.Control.Feedback type="invalid">{errors.budgetName}</Form.Control.Feedback>
+                                        </FloatingLabel>
+                                        
                                         </Form.Group>
                                         
                                         <FieldArray name="budgetIncomes">
@@ -125,13 +145,11 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                                                             {values.budgetIncomes && values.budgetIncomes.length > 0 ? 
                                                             values.budgetIncomes.map((budgetIncome, index) => (
                                                                 <Form.Group key={index} as={Row}>
-                                                                    <Form.Label></Form.Label>
                                                                     <Col>
                                                                         <Form.Control type="text"
                                                                             name={`budgetIncomes.${index}.incomeName`} placeholder="Income Name"
                                                                             onChange={handleChange} onBlur={handleBlur}
-                                                                            isValid={(errors.hasOwnProperty("budgetIncomes") && !errors.budgetIncomes[index]?.incomeName) 
-                                                                                || (touched.hasOwnProperty("budgetIncomes") && touched.budgetIncomes[index]?.incomeName)}
+                                                                            isValid={(errors.hasOwnProperty("budgetIncomes") && !errors.budgetIncomes[index]?.incomeName)}
                                                                             isInvalid={errors.hasOwnProperty("budgetIncomes") && !!errors.budgetIncomes[index]?.incomeName} 
                                                                             />
                                                                     </Col>
@@ -139,8 +157,7 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                                                                         <Form.Control type="number"
                                                                             name={`budgetIncomes.${index}.incomeAmount`} placeholder="Income Amount"
                                                                             onChange={handleChange} onBlur={handleBlur}
-                                                                            isValid={(errors.hasOwnProperty("budgetIncomes") && !errors.budgetIncomes[index]?.incomeAmount) 
-                                                                                || (touched.hasOwnProperty("budgetIncomes") && touched.budgetIncomes[index]?.incomeAmount)}
+                                                                            isValid={(errors.hasOwnProperty("budgetIncomes") && !errors.budgetIncomes[index]?.incomeAmount)}
                                                                             isInvalid={errors.hasOwnProperty("budgetIncomes") && !!errors.budgetIncomes[index]?.incomeAmount} 
                                                                             value={values.budgetIncomes[index].incomeAmount}
                                                                             />
@@ -181,15 +198,18 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                                                 return (
                                                 <div>
                                                 {purcCategories.length !== 0 ? 
-                                                purcCategories.map((ctgy, index) => (
-                                                    <Form.Group key={index}>
-                                                        <Form.Label>{ctgy.purc_category_name}</Form.Label>
-                                                        <Form.Control onBlur={handleBlur} onChange={handleChange} 
-                                                        isInvalid={errors.hasOwnProperty("budgetLimits") && !!errors.budgetLimits[index]} 
-                                                        isValid={errors.hasOwnProperty("budgetLimits") && touched.hasOwnProperty("budgetLimits") && touched.budgetLimits[index] && !errors.budgetLimits[index]}
-                                                        name={`budgetLimits.${index}`} type="number"/>
-                                                        {errors.budgetLimits ? <Form.Control.Feedback type="invalid">{errors.budgetLimits[index]}</Form.Control.Feedback> : null}
-                                                    </Form.Group>
+                                                    purcCategories.map((ctgy, index) => (
+                                                        <Form.Group key={index}>
+                                                            <Form.Label>{ctgy.purc_category_name}</Form.Label>
+                                                            <Form.Control 
+                                                                onBlur={handleBlur} 
+                                                                onChange={handleChange} 
+                                                                isInvalid={errors.hasOwnProperty("budgetLimits") && !!errors.budgetLimits[index]} 
+                                                                isValid={errors.hasOwnProperty("budgetLimits") && touched.hasOwnProperty("budgetLimits") && touched.budgetLimits[index] && !errors.budgetLimits[index]}
+                                                                name={`budgetLimits.${index}`} type="number"
+                                                            />
+                                                            {errors.budgetLimits ? <Form.Control.Feedback type="invalid">{errors.budgetLimits[index]}</Form.Control.Feedback> : null}
+                                                        </Form.Group>
                                                     )) : <p><em>No purchase categories set</em></p>
                                                 }
                                                 </div>
@@ -199,7 +219,7 @@ function BudgetForm({api, budgets, setBudgets, handleCloseForm, showForm, fetchD
                                         </Form.Group>
 
                                         <Button className="custom-btn" type="submit">
-                                        {isSubmitting ? <Spinner animation="border" role="status"><span className="visually-hidden">Loading...</span></Spinner> : "Submit"}
+                                            {isSubmitting ? <Spinner animation="border" role="status"><span className="visually-hidden">Loading...</span></Spinner> : "Submit"}
                                         </Button>
                                     </Form>
                                 )}
