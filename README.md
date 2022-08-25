@@ -1,7 +1,7 @@
 # budget-tracker app
 
-A summer side project developed for personal use.
-Hosted on <https://aq-budget-track.herokuapp.com/>
+A summer side project developed for personal use.\
+Hosted on <https://aq-budget-track.herokuapp.com/>\
 Sample account with data: (Username: sample, Password: C$d%7!6#)
 
 ## Features
