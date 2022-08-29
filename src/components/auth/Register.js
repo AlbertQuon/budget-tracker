@@ -42,7 +42,7 @@ function Register() {
                 validateOnChange={false}
                 validateOnBlur={false}
             >
-                {({handleChange, handleBlur, values, errors, touched, handleSubmit}) => (
+                {({handleChange, handleBlur, values, errors, touched, handleSubmit, isValid}) => (
                     <Form noValidate onSubmit={handleSubmit}>
                         <Form.Group className="mb-3">
                             <FloatingLabel
@@ -50,7 +50,6 @@ function Register() {
                                 className="mb-3 input-label"
                             >
                                 <Form.Control type="text" name="username"
-                                    isValid={!errors.username}
                                     isInvalid={!!errors.username}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
@@ -69,7 +68,6 @@ function Register() {
                                 className="mb-3 input-label"
                             >
                                 <Form.Control type="password" name="password" 
-                                    isValid={!errors.password}
                                     isInvalid={!!errors.password}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
@@ -90,7 +88,6 @@ function Register() {
                             >
                                 <Form.Control type="password" name="password2" 
                                     onChange={handleChange}
-                                    isValid={!errors.password2}
                                     isInvalid={!!errors.password2}
                                     onBlur={handleBlur}
                                 />
