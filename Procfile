@@ -1,2 +1,2 @@
-release: python manage.py migrate --no-input
-web: gunicorn django_budget.wsgi
+release: python manage.py migrate
+web: gunicorn django_budget.wsgi -b 0.0.0.0:8000 --access-logfile -

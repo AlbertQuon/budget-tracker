@@ -1,10 +1,8 @@
 from pathlib import Path
-from django.conf import settings
 from datetime import timedelta
-import django_heroku
 import os
 from decouple import config
-import psycopg2
+import dj_database_url
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -16,7 +14,8 @@ SECRET_KEY = config('SECRET_KEY')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+ENVIRONMENT = os.getenv("ENVIRONMENT", "DEV")
+DEBUG = os.getenv("DEBUG", False)
 
 ALLOWED_HOSTS = ["*"]
 
@@ -113,7 +112,7 @@ SIMPLE_JWT = {
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {} # remove sqlite default
-
+DATABASES = {'default': dj_database_url.config(conn_max_age=600)}
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = [
@@ -160,7 +159,7 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-django_heroku.settings(locals())
+#django_heroku.settings(locals())
 
 LOGGING = {
     'version': 1,
@@ -182,7 +181,3 @@ LOGGING = {
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-try:
-    from .local_settings import *
-except ImportError:
-    pass
